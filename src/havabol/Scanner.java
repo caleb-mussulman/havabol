@@ -1,13 +1,14 @@
 package havabol;
 
 import java.io.*;
-import java.util.ArrayList;
+import java.util.*;
 
 public class Scanner
 {
     public final static String delimiters = " \t;:()\'\"=!<>+-*/[]#,^\n"; // terminate a token
     public final static String whitespace = " \t\n";
-    public final static String operators = "+-*/<>=!";
+    public final static String charOperators = "+-*/<>=!^#";
+    public final static Set<String> logicalOperators = Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(new String[] {"and", "or", "not", "in", "notin"})));
     public final static String separators = "(),:;[]";
     
     public String sourceFileNm;
@@ -235,8 +236,14 @@ public class Scanner
         nextToken.iSourceLineNr = this.iSourceLineNr;
         
         // Determine token classification.
-        if(operators.indexOf(nextToken.tokenStr) > -1)
+        if( (charOperators.indexOf(nextToken.tokenStr) > -1) || (logicalOperators.contains(nextToken.tokenStr)) )
         {
+            // Check if the operator is a two character operator
+            if( (iColPos < textCharM.length) && (textCharM[iColPos] == '=') )
+            {
+                nextToken.tokenStr += "=";
+                iColPos++;
+            }
             nextToken.primClassif = Token.OPERATOR;
         }
         else if(separators.indexOf(nextToken.tokenStr) > -1)
