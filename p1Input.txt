@@ -1,6 +1,9 @@
-Int x;
+Int x; // This is an integer
 Float pi;
 String yStr;
+
+// This is a line starting with a comment
+//
 
 x = 11;
 x = x + 1;

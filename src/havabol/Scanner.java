@@ -122,8 +122,8 @@ public class Scanner
         currentToken = nextToken;
         nextToken = new Token();
         
-        // Go through whitespace until at a token or at the end of the file.
-        while( (iColPos >= textCharM.length) || (whitespace.indexOf(textCharM[iColPos]) > -1) )
+        // Go through whitespace and comments until at a token or at the end of the file.
+        while(true)
         {
             // Empty line or at the end of a line.
             if(iColPos >= textCharM.length)
@@ -142,16 +142,33 @@ public class Scanner
                 // Get the next line and reset the column position.
                 textCharM = sourceLineM.get(iSourceLineNr).toCharArray();
                 iColPos = 0;
-                
-                continue;
             }
-            
-            // Cursor was on whitespace so move forward.
-            while( (iColPos < textCharM.length) && (whitespace.indexOf(textCharM[iColPos]) > -1) )
+            // On line that contains characters.
+            else
             {
-                iColPos++;
+                // Check if on whitespace.
+                if(whitespace.indexOf(textCharM[iColPos]) > -1)
+                {
+                    // On whitespace so move forward.
+                    while( (iColPos < textCharM.length) && (whitespace.indexOf(textCharM[iColPos]) > -1) )
+                    {
+                        iColPos++;
+                    }
+                }
+                // Check if at the beginning of comment
+                else if( ((iColPos + 1) < textCharM.length) && (textCharM[iColPos] == '/') && (textCharM[iColPos + 1] == '/') )
+                {
+                    // Skip the rest of the comment by getting the next line and resetting the column position.
+                    iSourceLineNr++;
+                    textCharM = sourceLineM.get(iSourceLineNr).toCharArray();
+                    iColPos = 0;
+                }
+                // On a token
+                else
+                {
+                    break;
+                }
             }
-            
         }
         
         // At the beginning of the next token.
