@@ -1,0 +1,7 @@
+# ignore the bin and doc directories
+bin/
+doc/
+
+# ignore class files and html files
+*.class
+*.html
