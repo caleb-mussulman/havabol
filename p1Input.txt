@@ -1,0 +1,27 @@
+Int x;
+Float pi;
+String yStr;
+
+x = 11;
+x = x + 1;
+pi = 3.14;
+print ("x=", x);
+print ("pi=", pi);
+
+yStr = 'Hello';
+print ("yStr=", yStr);
+
+yStr = "Can't";
+print ("yStr=", yStr);
+
+x = 10*3 + 7;
+if x > 20:
+    print ("x=", x);
+    yStr = "yes";
+else:
+   print ("x is low");
+endif;
+
+yStr = 'Can\'t wait';
+print (yStr);
+
