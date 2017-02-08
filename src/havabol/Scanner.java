@@ -8,11 +8,16 @@ public class Scanner
     public final static String delimiters = " \t;:()\'\"=!<>+-*/[]#,^\n"; // terminate a token
     public final static String whitespace = " \t\n";
     public final static String charOperators = "+-*/<>=!^#";
+    public final static String separators = "(),:;[]";
+    @SuppressWarnings("serial")
+    public final static Map<Character, Character> escapeChars = Collections.unmodifiableMap(new HashMap<Character, Character>(){{
+                                                                put('"', '"'); put('\'', '\''); put('\\', '\\');
+                                                                put('n', '\n'); put('t', '\t'); put('a', (char)0x07);          }});
     public final static Set<String> logicalOperators = Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(new String[] {"and", "or", "not", "in", "notin"})));
     public final static Set<String> controlFlow      = Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(new String[] {"if", "else", "while", "for"})));
     public final static Set<String> controlEnd       = Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(new String[] {"endif", "endwhile", "endfor"})));
     public final static Set<String> controlDeclare   = Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(new String[] {"Int", "Float", "String", "Bool", "Date"})));
-    public final static String separators = "(),:;[]";
+    
     
     public String sourceFileNm;
     public ArrayList<String> sourceLineM;
@@ -97,8 +102,10 @@ public class Scanner
         boolean bFoundDecimal;
         char chCurrentChar;
         char chTokenBegin;
+        char[] retCharM;
         int index;
         int iPrintLineNr;
+        int iRet;
         int iTokenBeginIndex;
         int iTokenLength;
         String error;
@@ -184,6 +191,8 @@ public class Scanner
         if(chTokenBegin == '\"' || chTokenBegin == '\'')
         {
             iColPos++;
+            iRet = 0;
+            retCharM = new char[textCharM.length];
             
             // String literal token will have quotes removed so start at next index.
             iTokenBeginIndex = iColPos;
@@ -191,16 +200,39 @@ public class Scanner
             // Try to find the end of the string literal up until the end of the line.
             while(iColPos < textCharM.length)
             {
-                // If there is a matching quote that is not escaped by backslash, then
-                // this is the end of the string.
-                if(textCharM[iColPos] == chTokenBegin && textCharM[iColPos - 1] != '\\')
+                // Check if the current character is a backslash
+                if(textCharM[iColPos] == '\\')
+                {
+                    // Go to the character after the backslash
+                    iColPos++;
+                    
+                    // If the character after the backslash is a valid escape character, then replace it
+                    // with its single byte hex value
+                    if( (iColPos < textCharM.length) && (escapeChars.containsKey(textCharM[iColPos])) )
+                    {
+                        retCharM[iRet++] = escapeChars.get(textCharM[iColPos++]);
+                    }
+                    // If the character after the backslash is not a valid escape character, then error
+                    else
+                    {
+                        error = "Line "+ (iSourceLineNr + 1) + " Unknown escape sequence: '\\"
+                                + textCharM[iColPos] + "', File: " + sourceFileNm;
+                        throw new Exception(error);
+                    }
+                }
+                // If there is a matching quote, then this is the end of the string.
+                else if(textCharM[iColPos] == chTokenBegin)
                 {
                     // Ending of string literal will not include the quote character.
-                    iTokenLength = iColPos - iTokenBeginIndex;
+                    iTokenLength = iRet;
                     iColPos++;
                     break;
                 }
-                iColPos++;
+                // Otherwise, just go to the next character
+                else
+                {
+                    retCharM[iRet++] = textCharM[iColPos++];
+                }
             }
             
             // If the string literal was not ended on the same line.
@@ -211,7 +243,7 @@ public class Scanner
             }
             
             // Initialize token as a String token.
-            nextToken.tokenStr = new String(textCharM, iTokenBeginIndex, iTokenLength);
+            nextToken.tokenStr = new String(retCharM, 0, iTokenLength);
             nextToken.iSourceLineNr = this.iSourceLineNr;
             nextToken.iColPos = iTokenBeginIndex;
             nextToken.primClassif = Token.OPERAND;
