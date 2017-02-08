@@ -1,0 +1,115 @@
+Int i;
+Float pi;
+String day;
+   day 
+   = 
+   "Sunday";
+String name;
+name = "Anita Goodgrade";
+String weird;
+weird = "\tTX\tTexas\n";
+String loc;
+loc = "TX";
+
+// numeric stuff
+print(">>> Checking datatype results based on left operand");
+pi = 3.14;
+Float area;
+Float radius2;
+Int radius;
+radius = 8;
+radius2 = radius ^ 2;  // square the radius
+print("\t1. area all float");
+area = pi * radius2;
+print("\tradius="
+      ,  radius
+      ,  "radius2="
+      ,  radius2
+      ,  "area="
+      ,  area);
+Int irad2;
+irad2 = radius ^ 2;
+print("\t2. area using int radius as left operand");
+area = irad2 * pi;
+print("\tradius=", radius, "irad2=", irad2, "area=", area);
+Float circum;
+Float twoPi;
+print("\t3. circumference using twoPi as float * int");
+twoPi = pi * 2;
+circum = twoPi * radius;
+print("\tradius=", radius, "twoPi=", twoPi, "circum=", circum);
+print("\t4. circumference using twoPi as int * float");
+twoPi = 2 * pi;
+circum = twoPi * radius;
+print("\tradius=", radius, "twoPi=", twoPi, "circum=", circum);
+
+// Simple if
+i = 0;
+print(">>> First If");
+if loc == "TX": // check for TX
+    // It is TX
+    print("\tloc is", loc);
+    // it is ok to have this statement on multiple lines.  
+    // That is why we have a semicolon
+    i 
+       = 
+          i 
+          + 1;
+endif;
+print("\tDone with first if");
+
+print(">>> Second If");
+// if then else
+if i >= 5:
+    print("\t2nd if true, i >= 5, i =", i);
+else:
+    print("\t2nd if false, i >= 5, i =", i);
+endif;
+// while and if 
+print(">>> First while i < 5");    
+i = 1;
+while i < 5:
+    print("\ttop of while, i=", i);
+    if i < 3:
+        print("\twhile first if true i<3, i=", i);
+        i = i + 2;
+        if loc != "TX":
+             print("\t\twhile inner if true ... wrong!");
+        else:
+             print('\t\twhile inner if false, loc!=\'TX\', loc is', loc);
+        endif;
+    else:
+        print("\twhile first if false i<3, i=", i);
+        if loc=="TX":
+             print("\t\twhile 2nd inner if true loc=='TX', loc is", loc);
+             i = i + 1;
+        else:
+             print("\t\twhile 2nd inner if false ... wrong");
+             i = i + 10;
+        endif;
+        print("\twhile first if false after inner if");
+    endif;
+    print("\tbottom of while, i=", i);
+endwhile;
+print("\tAfter first while");
+
+// nested while loops
+print(">>> Second while i < 5 ... with nested while");
+i = 1;
+Int j;
+Bool bFlag;
+bFlag = T;
+while i < 5:
+    j = i;
+    print("\ttop of while, i=", i, "j=", j);
+    print("\t>>> Inner while j <= 3");
+    while  j <= 3:
+        print("\t\tinner while, j=", j);
+        j = j + 1;
+    endwhile;
+    bFlag = F;
+    print("\tbottom of while, i=", i, "j=", j);
+    i = i + 1;
+endwhile;
+print("\tAfter outer while");
+        

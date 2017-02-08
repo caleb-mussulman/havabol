@@ -13,6 +13,9 @@ print ("pi=", pi);
 
 if x in y or x notin z
 
+Bool b = T;
+Bool a = F;
+
 yStr = 'Hello';
 print ("yStr=", yStr);
 

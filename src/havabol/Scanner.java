@@ -9,6 +9,9 @@ public class Scanner
     public final static String whitespace = " \t\n";
     public final static String charOperators = "+-*/<>=!^#";
     public final static Set<String> logicalOperators = Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(new String[] {"and", "or", "not", "in", "notin"})));
+    public final static Set<String> controlFlow      = Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(new String[] {"if", "else", "while", "for"})));
+    public final static Set<String> controlEnd       = Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(new String[] {"endif", "endwhile", "endfor"})));
+    public final static Set<String> controlDeclare   = Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(new String[] {"Int", "Float", "String", "Bool", "Date"})));
     public final static String separators = "(),:;[]";
     
     public String sourceFileNm;
@@ -235,7 +238,7 @@ public class Scanner
         nextToken.iColPos = iTokenBeginIndex;
         nextToken.iSourceLineNr = this.iSourceLineNr;
         
-        // Determine token classification.
+        // Token is an operator
         if( (charOperators.indexOf(nextToken.tokenStr) > -1) || (logicalOperators.contains(nextToken.tokenStr)) )
         {
             // Check if the operator is a two character operator
@@ -246,9 +249,31 @@ public class Scanner
             }
             nextToken.primClassif = Token.OPERATOR;
         }
+        // Token is a separator
         else if(separators.indexOf(nextToken.tokenStr) > -1)
         {
             nextToken.primClassif = Token.SEPARATOR;
+        }
+        // Token is a control
+        else if(controlFlow.contains(nextToken.tokenStr) || controlEnd.contains(nextToken.tokenStr) || controlDeclare.contains(nextToken.tokenStr))
+        {
+            nextToken.primClassif = Token.CONTROL;
+            
+            // Control token has a flow subclassification
+            if(controlFlow.contains(nextToken.tokenStr))
+            {
+                nextToken.subClassif = Token.FLOW;
+            }
+            // Control token has an end subclassification
+            else if(controlEnd.contains(nextToken.tokenStr))
+            {
+                nextToken.subClassif = Token.END;
+            }
+            // Control token has a declare subclassification
+            else
+            {
+                nextToken.subClassif = Token.DECLARE;
+            }
         }
         else
         {
@@ -299,7 +324,11 @@ public class Scanner
                     nextToken.subClassif = Token.INTEGER;
                 }
             }
-            
+            // Determine if operand is a boolean constant
+            else if(nextToken.tokenStr.equals("T") || nextToken.tokenStr.equals("F"))
+            {
+                nextToken.subClassif = Token.BOOLEAN;
+            }
             // Operand must be an identifier
             else
             {
