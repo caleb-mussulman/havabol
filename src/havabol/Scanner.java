@@ -1,14 +1,23 @@
 package havabol;
 
 import java.io.*;
-import java.util.ArrayList;
+import java.util.*;
 
 public class Scanner
 {
     public final static String delimiters = " \t;:()\'\"=!<>+-*/[]#,^\n"; // terminate a token
     public final static String whitespace = " \t\n";
-    public final static String operators = "+-*/<>=!";
+    public final static String charOperators = "+-*/<>=!^#";
     public final static String separators = "(),:;[]";
+    @SuppressWarnings("serial")
+    public final static Map<Character, Character> escapeChars = Collections.unmodifiableMap(new HashMap<Character, Character>(){{
+                                                                put('"', '"'); put('\'', '\''); put('\\', '\\');
+                                                                put('n', '\n'); put('t', '\t'); put('a', (char)0x07);          }});
+    public final static Set<String> logicalOperators = Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(new String[] {"and", "or", "not", "in", "notin"})));
+    public final static Set<String> controlFlow      = Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(new String[] {"if", "else", "while", "for"})));
+    public final static Set<String> controlEnd       = Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(new String[] {"endif", "endwhile", "endfor"})));
+    public final static Set<String> controlDeclare   = Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(new String[] {"Int", "Float", "String", "Bool", "Date"})));
+    
     
     public String sourceFileNm;
     public ArrayList<String> sourceLineM;
@@ -93,8 +102,10 @@ public class Scanner
         boolean bFoundDecimal;
         char chCurrentChar;
         char chTokenBegin;
+        char[] retCharM;
         int index;
         int iPrintLineNr;
+        int iRet;
         int iTokenBeginIndex;
         int iTokenLength;
         String error;
@@ -122,8 +133,8 @@ public class Scanner
         currentToken = nextToken;
         nextToken = new Token();
         
-        // Go through whitespace until at a token or at the end of the file.
-        while( (iColPos >= textCharM.length) || (whitespace.indexOf(textCharM[iColPos]) > -1) )
+        // Go through whitespace and comments until at a token or at the end of the file.
+        while(true)
         {
             // Empty line or at the end of a line.
             if(iColPos >= textCharM.length)
@@ -142,16 +153,33 @@ public class Scanner
                 // Get the next line and reset the column position.
                 textCharM = sourceLineM.get(iSourceLineNr).toCharArray();
                 iColPos = 0;
-                
-                continue;
             }
-            
-            // Cursor was on whitespace so move forward.
-            while( (iColPos < textCharM.length) && (whitespace.indexOf(textCharM[iColPos]) > -1) )
+            // On line that contains characters.
+            else
             {
-                iColPos++;
+                // Check if on whitespace.
+                if(whitespace.indexOf(textCharM[iColPos]) > -1)
+                {
+                    // On whitespace so move forward.
+                    while( (iColPos < textCharM.length) && (whitespace.indexOf(textCharM[iColPos]) > -1) )
+                    {
+                        iColPos++;
+                    }
+                }
+                // Check if at the beginning of comment
+                else if( ((iColPos + 1) < textCharM.length) && (textCharM[iColPos] == '/') && (textCharM[iColPos + 1] == '/') )
+                {
+                    // Skip the rest of the comment by getting the next line and resetting the column position.
+                    iSourceLineNr++;
+                    textCharM = sourceLineM.get(iSourceLineNr).toCharArray();
+                    iColPos = 0;
+                }
+                // On a token
+                else
+                {
+                    break;
+                }
             }
-            
         }
         
         // At the beginning of the next token.
@@ -163,6 +191,8 @@ public class Scanner
         if(chTokenBegin == '\"' || chTokenBegin == '\'')
         {
             iColPos++;
+            iRet = 0;
+            retCharM = new char[textCharM.length];
             
             // String literal token will have quotes removed so start at next index.
             iTokenBeginIndex = iColPos;
@@ -170,16 +200,39 @@ public class Scanner
             // Try to find the end of the string literal up until the end of the line.
             while(iColPos < textCharM.length)
             {
-                // If there is a matching quote that is not escaped by backslash, then
-                // this is the end of the string.
-                if(textCharM[iColPos] == chTokenBegin && textCharM[iColPos - 1] != '\\')
+                // Check if the current character is a backslash
+                if(textCharM[iColPos] == '\\')
+                {
+                    // Go to the character after the backslash
+                    iColPos++;
+                    
+                    // If the character after the backslash is a valid escape character, then replace it
+                    // with its single byte hex value
+                    if( (iColPos < textCharM.length) && (escapeChars.containsKey(textCharM[iColPos])) )
+                    {
+                        retCharM[iRet++] = escapeChars.get(textCharM[iColPos++]);
+                    }
+                    // If the character after the backslash is not a valid escape character, then error
+                    else
+                    {
+                        error = "Line "+ (iSourceLineNr + 1) + " Unknown escape sequence: '\\"
+                                + textCharM[iColPos] + "', File: " + sourceFileNm;
+                        throw new Exception(error);
+                    }
+                }
+                // If there is a matching quote, then this is the end of the string.
+                else if(textCharM[iColPos] == chTokenBegin)
                 {
                     // Ending of string literal will not include the quote character.
-                    iTokenLength = iColPos - iTokenBeginIndex;
+                    iTokenLength = iRet;
                     iColPos++;
                     break;
                 }
-                iColPos++;
+                // Otherwise, just go to the next character
+                else
+                {
+                    retCharM[iRet++] = textCharM[iColPos++];
+                }
             }
             
             // If the string literal was not ended on the same line.
@@ -190,7 +243,7 @@ public class Scanner
             }
             
             // Initialize token as a String token.
-            nextToken.tokenStr = new String(textCharM, iTokenBeginIndex, iTokenLength);
+            nextToken.tokenStr = new String(retCharM, 0, iTokenLength);
             nextToken.iSourceLineNr = this.iSourceLineNr;
             nextToken.iColPos = iTokenBeginIndex;
             nextToken.primClassif = Token.OPERAND;
@@ -217,14 +270,42 @@ public class Scanner
         nextToken.iColPos = iTokenBeginIndex;
         nextToken.iSourceLineNr = this.iSourceLineNr;
         
-        // Determine token classification.
-        if(operators.indexOf(nextToken.tokenStr) > -1)
+        // Token is an operator
+        if( (charOperators.indexOf(nextToken.tokenStr) > -1) || (logicalOperators.contains(nextToken.tokenStr)) )
         {
+            // Check if the operator is a two character operator
+            if( (iColPos < textCharM.length) && (textCharM[iColPos] == '=') )
+            {
+                nextToken.tokenStr += "=";
+                iColPos++;
+            }
             nextToken.primClassif = Token.OPERATOR;
         }
+        // Token is a separator
         else if(separators.indexOf(nextToken.tokenStr) > -1)
         {
             nextToken.primClassif = Token.SEPARATOR;
+        }
+        // Token is a control
+        else if(controlFlow.contains(nextToken.tokenStr) || controlEnd.contains(nextToken.tokenStr) || controlDeclare.contains(nextToken.tokenStr))
+        {
+            nextToken.primClassif = Token.CONTROL;
+            
+            // Control token has a flow subclassification
+            if(controlFlow.contains(nextToken.tokenStr))
+            {
+                nextToken.subClassif = Token.FLOW;
+            }
+            // Control token has an end subclassification
+            else if(controlEnd.contains(nextToken.tokenStr))
+            {
+                nextToken.subClassif = Token.END;
+            }
+            // Control token has a declare subclassification
+            else
+            {
+                nextToken.subClassif = Token.DECLARE;
+            }
         }
         else
         {
@@ -275,7 +356,11 @@ public class Scanner
                     nextToken.subClassif = Token.INTEGER;
                 }
             }
-            
+            // Determine if operand is a boolean constant
+            else if(nextToken.tokenStr.equals("T") || nextToken.tokenStr.equals("F"))
+            {
+                nextToken.subClassif = Token.BOOLEAN;
+            }
             // Operand must be an identifier
             else
             {

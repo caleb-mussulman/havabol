@@ -1,12 +1,20 @@
-Int x;
+Int x; // This is an integer
 Float pi;
 String yStr;
 
+// This is a line starting with a comment
+//
+
 x = 11;
-x = x + 1;
+x += x + 1;
 pi = 3.14;
 print ("x=", x);
 print ("pi=", pi);
+
+if x in y or x notin z
+
+Bool b = T;
+Bool a = F;
 
 yStr = 'Hello';
 print ("yStr=", yStr);
