@@ -10,5 +10,8 @@ package havabol;
  * @author root
  */
 public class STControl {
-    
+   int subClassif;
+   public static final int FLOW = 1;
+   public static final int END = 2;
+   public static final int DELCARE = 3;
 }
