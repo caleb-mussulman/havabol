@@ -14,7 +14,7 @@ class STEntry
 
     public STEntry(String symbol, int primClassif)
     {
-        // TODO Auto-generated constructor stub
+        
     }
     
 }

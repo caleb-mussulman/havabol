@@ -15,7 +15,7 @@ public class STIdentifier
    public String parm;
    public int nonLocal;
    public int structure;
-   //======Structures=======
+   //=======Structures=======
    public static final int PRIMITIVE = 1;
    public static final int FIXED_ARRAY = 2;
    public static final int UNBOUNDED_ARRAY = 3;
@@ -24,9 +24,9 @@ public class STIdentifier
    public static final int VALUE = 5;
    public static final int REF = 6;
    public static final int NOT_PARM = 7;
-   //=======Declare Type======
+   //=======Declare Type=====
    public String dclType;
-   //=======Non-Locals========
+   //=======Non-Locals=======
    public static final int LOCAL = 0;
    public static final int GLOBAL = 99;
    public STIdentifier()

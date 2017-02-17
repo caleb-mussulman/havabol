@@ -9,33 +9,41 @@ public class SymbolTable
 {
     public String symbol;
     public HashMap<String, STEntry> ht;
-	public SymbolTable() 
-        {
-	    ht = new HashMap<String, STEntry>();
-	    initGlobal();
-	}
+    
+    public SymbolTable() 
+    {
+        //Creating our HashMap
+	ht = new HashMap<String, STEntry>();
+        //Initializing Key Values in the HashMap
+        initGlobal();
+    }
 	
-	STEntry getSymbol (String symbol) 
-        {
-	    return null;	
-	}
+    STEntry getSymbol(String symbol) 
+    {
         
-	void putSymbol (String symbol, STEntry entry) 
-	{
-		
-	}
+        return null;	
+    }
+        
+    void putSymbol(String symbol, STEntry entry) 
+    {
+        
+    }
 	
-	private void initGlobal()
-	{
-        //==========================CONTROL===========================    
-	ht.put("def", new STControl("if", Token.CONTROL, Token.FLOW));
+    private void initGlobal()
+    {
+        //==========================CONTROL==========================    
+        ht.put("def", new STControl("if", Token.CONTROL, Token.FLOW));
         ht.put("enddef",new STControl("enddef", Token.CONTROL, Token.END));
+        
         ht.put("if", new STControl("if",Token.CONTROL,Token.FLOW));
         ht.put("else", new STControl("else",Token.CONTROL,Token.END));
+        
         ht.put("for", new STControl("for",Token.CONTROL,Token.FLOW));
         ht.put("endfor", new STControl("endfor", Token.CONTROL, Token.END));
+        
         ht.put("while", new STControl("while",Token.CONTROL,Token.FLOW));
         ht.put("endwhile", new STControl("endwhile",Token.CONTROL,Token.END));
+        
         ht.put("Int", new STControl("Int",Token.CONTROL,Token.DECLARE));
         ht.put("Float", new STControl("Float",Token.CONTROL,Token.DECLARE));
         ht.put("String", new STControl("String",Token.CONTROL,Token.DECLARE));
@@ -45,13 +53,16 @@ public class SymbolTable
         //===========================FUNCTIONS=======================
         ht.put("print", new STFunction("print",Token.FUNCTION,Token.VOID
                  , Token.BUILTIN, STFunction.VAR_ARGS));
+        
         ht.put("LENGTH", new STFunction("LENGTH",Token.FUNCTION,Token.INTEGER
                  , Token.BUILTIN, 1));
         ht.put("MAXLENGTH", new STFunction("MAXLENGTH",Token.FUNCTION,Token.INTEGER
                  , Token.BUILTIN, 1));
+        
         //RETURN TYPE IS BOOL, BUT TYPE IS DEFINIED AS INTEGER IN NOTES?
         ht.put("SPACES", new STFunction("SPACE",Token.FUNCTION,Token.BOOLEAN
                  , Token.BUILTIN, 1));
+        
         ht.put("ELEM", new STFunction("ELEM",Token.FUNCTION,Token.INTEGER
                  , Token.BUILTIN, 1));
         ht.put("MAXELEM", new STFunction("MAXELEM",Token.FUNCTION,Token.INTEGER
@@ -63,5 +74,5 @@ public class SymbolTable
         ht.put("not", new STEntry("not", Token.OPERATOR));
         ht.put("in", new STEntry("in", Token.OPERATOR));
         ht.put("notin", new STEntry("notin", Token.OPERATOR));
-	}
+    }
 }
