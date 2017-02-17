@@ -9,7 +9,8 @@ package havabol;
  *
  * @author root
  */
-public class STIdentifier {
+public class STIdentifier
+{
    
    public String parm;
    public int nonLocal;
