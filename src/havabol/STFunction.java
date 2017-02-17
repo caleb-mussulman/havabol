@@ -13,10 +13,13 @@ import java.util.*;
  */
 public class STFunction extends STEntry
 {
-    public int returnType;
-    public int definedBy;
-    public int numArgs;
+    int primClassif;
+    int subClassif;
+    int returnType;
+    int numArgs;
     ArrayList parmList;
+    String symbol;
+    
     SymbolTable symbolTable;
     
     public static final int INT = 1;
@@ -32,10 +35,23 @@ public class STFunction extends STEntry
     // POSSIBLE TO CHANGE TO ARRAY?!
     public static final int VAR_ARGS = -1;
     
-    public STFunction(String symbol, int primClassif, int type, int definedBy, int numArgs)
+    public STFunction(String aSymbol, int aPrimClassif, int aReturnType, int aSubClassif, int aNumArgs)
     {
-        super(symbol, primClassif);
+        super(aSymbol, aPrimClassif);
+        
+        // set the symbol
+        this.symbol = aSymbol;
+        
+        // set the primClassif
+        this.primClassif = aPrimClassif;
+        
+        // set a return type
+        this.returnType = aReturnType;
+        
+        // set subClassif
+        this.subClassif = aSubClassif;
+        
+        // set number of arguments
+        this.numArgs = aNumArgs;
     }
-    
-    
 }

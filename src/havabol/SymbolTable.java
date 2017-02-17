@@ -54,21 +54,21 @@ public class SymbolTable
         ht.put("Date", new STControl("Date",Token.CONTROL,Token.DECLARE));
         
         //===========================FUNCTIONS=======================
-        ht.put("print", new STFunction("print",Token.FUNCTION,Token.VOID
+        ht.put("print", new STFunction("print", Token.FUNCTION,Token.VOID
                  , Token.BUILTIN, STFunction.VAR_ARGS));
         
-        ht.put("LENGTH", new STFunction("LENGTH",Token.FUNCTION,Token.INTEGER
+        ht.put("LENGTH", new STFunction("LENGTH", Token.FUNCTION,Token.INTEGER
                  , Token.BUILTIN, 1));
-        ht.put("MAXLENGTH", new STFunction("MAXLENGTH",Token.FUNCTION,Token.INTEGER
+        ht.put("MAXLENGTH", new STFunction("MAXLENGTH", Token.FUNCTION,Token.INTEGER
                  , Token.BUILTIN, 1));
         
         //RETURN TYPE IS BOOL, BUT TYPE IS DEFINIED AS INTEGER IN NOTES?
-        ht.put("SPACES", new STFunction("SPACE",Token.FUNCTION,Token.BOOLEAN
+        ht.put("SPACES", new STFunction("SPACE", Token.FUNCTION,Token.BOOLEAN
                  , Token.BUILTIN, 1));
         
-        ht.put("ELEM", new STFunction("ELEM",Token.FUNCTION,Token.INTEGER
+        ht.put("ELEM", new STFunction("ELEM", Token.FUNCTION,Token.INTEGER
                  , Token.BUILTIN, 1));
-        ht.put("MAXELEM", new STFunction("MAXELEM",Token.FUNCTION,Token.INTEGER
+        ht.put("MAXELEM", new STFunction("MAXELEM", Token.FUNCTION,Token.INTEGER
                  , Token.BUILTIN, 1));
         
         //==========================OPERATORS========================
