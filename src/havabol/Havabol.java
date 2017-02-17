@@ -36,7 +36,7 @@ public class Havabol
             while (! scan.getNext().isEmpty())
             {
                 //Send the currentToken to ST and make an entry with it.
-                symbolTable.getSymbol(scan.currentToken.tokenStr);
+                STEntry entry = symbolTable.getSymbol(scan.currentToken.tokenStr);
                 scan.currentToken.printToken();
             }
         }

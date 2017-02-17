@@ -20,8 +20,9 @@ public class SymbolTable
 	
     STEntry getSymbol(String symbol) 
     {
-        
-        return null;	
+        // Convert symbol to a legitimate STEntry.
+    	
+        return null;
     }
         
     void putSymbol(String symbol, STEntry entry) 
