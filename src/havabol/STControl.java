@@ -25,7 +25,6 @@ public class STControl extends STEntry
     public STControl(String aSymbol, int aPrimClassif, int aSubclassif)
     {
         super(aSymbol, aPrimClassif);
-        // TODO Auto-generated constructor stub
         
         // set the symbol
         this.symbol = aSymbol;
