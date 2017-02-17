@@ -35,9 +35,13 @@ public class Havabol
             Scanner scan = new Scanner(args[0], symbolTable);
             while (! scan.getNext().isEmpty())
             {
-                //Send the currentToken to ST and make an entry with it.
+                // Send the currentToken to ST and make an entry with it.
                 STEntry entry = symbolTable.getSymbol(scan.currentToken.tokenStr);
-                scan.currentToken.printToken();
+                
+                // put this entry somewhere
+                
+                // Print the final token result in table format
+                //scan.currentToken.printToken();
             }
         }
         catch (Exception e)

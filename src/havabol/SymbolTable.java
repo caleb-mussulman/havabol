@@ -18,9 +18,13 @@ public class SymbolTable
         initGlobal();
     }
 	
-    STEntry getSymbol(String symbol) 
+    STEntry getSymbol(String symbol)
     {
         // Convert symbol to a legitimate STEntry.
+    	//System.out.println(symbol);
+    	// First one is an Int so do operand stuff with it in the entry table.
+    	System.out.println(ht.get(symbol));
+    	
     	
         return null;
     }
@@ -32,17 +36,15 @@ public class SymbolTable
 	
     private void initGlobal()
     {
-        //==========================CONTROL==========================    
-        ht.put("def", new STControl("if", Token.CONTROL, Token.FLOW));
-        ht.put("enddef",new STControl("enddef", Token.CONTROL, Token.END));
-        
+        //==========================CONTROL==========================
+        ht.put("def", new STControl("def", Token.CONTROL, Token.FLOW));
         ht.put("if", new STControl("if",Token.CONTROL,Token.FLOW));
-        ht.put("else", new STControl("else",Token.CONTROL,Token.END));
-        
         ht.put("for", new STControl("for",Token.CONTROL,Token.FLOW));
-        ht.put("endfor", new STControl("endfor", Token.CONTROL, Token.END));
-        
         ht.put("while", new STControl("while",Token.CONTROL,Token.FLOW));
+        
+        ht.put("enddef",new STControl("enddef", Token.CONTROL, Token.END));
+        ht.put("else", new STControl("else",Token.CONTROL,Token.END));
+        ht.put("endfor", new STControl("endfor", Token.CONTROL, Token.END));
         ht.put("endwhile", new STControl("endwhile",Token.CONTROL,Token.END));
         
         ht.put("Int", new STControl("Int",Token.CONTROL,Token.DECLARE));
