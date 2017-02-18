@@ -12,8 +12,8 @@ package havabol;
 public class STControl extends STEntry
 {
    
-	String symbol;
-	int primClassif;
+    String symbol;
+    int primClassif;
     int subClassif;
     public static final int FLOW = 1;
     public static final int END = 2;
