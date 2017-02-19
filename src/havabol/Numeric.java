@@ -11,4 +11,10 @@ package havabol;
  */
 public class Numeric {
     
+	// CONSTRUCTOR
+	public Numeric() {
+		
+	}
+	
+	// METHODS
 }

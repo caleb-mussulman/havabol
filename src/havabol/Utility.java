@@ -9,7 +9,11 @@ package havabol;
  *
  * @author root
  */
-public class Utility
-{
+public class Utility {
+	// CONSTRUCTOR
+    public Utility() {
+    	
+    }
     
+    // METHODS
 }
