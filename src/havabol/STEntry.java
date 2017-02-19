@@ -12,10 +12,10 @@ package havabol;
 class STEntry
 {
 
-	String symbol;
-	int primClassif;
+    String symbol;
+    int primClassif;
 	
-	public static final int OR = 1;
+    public static final int OR = 1;
     public static final int AND = 2;
     public static final int NOT = 3;
     public static final int IN = 4;

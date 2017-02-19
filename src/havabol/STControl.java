@@ -18,7 +18,6 @@ public class STControl extends STEntry
     public static final int FLOW = 1;
     public static final int END = 2;
     public static final int DECLARE = 3;
-    
     public static final int CONTROL = 4;
     
     // CONSTRUCTOR

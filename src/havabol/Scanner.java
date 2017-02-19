@@ -13,11 +13,11 @@ public class Scanner
     public final static Map<Character, Character> escapeChars = Collections.unmodifiableMap(new HashMap<Character, Character>(){{
                                                                 put('"', '"'); put('\'', '\''); put('\\', '\\');
                                                                 put('n', '\n'); put('t', '\t'); put('a', (char)0x07);          }});
-    public final static Set<String> logicalOperators = Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(new String[] {"and", "or", "not", "in", "notin"})));
+    /*public final static Set<String> logicalOperators = Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(new String[] {"and", "or", "not", "in", "notin"})));
     public final static Set<String> controlFlow      = Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(new String[] {"if", "else", "while", "for"})));
     public final static Set<String> controlEnd       = Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(new String[] {"endif", "endwhile", "endfor"})));
     public final static Set<String> controlDeclare   = Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(new String[] {"Int", "Float", "String", "Bool", "Date"})));
-    
+    */
     
     public String sourceFileNm;
     public ArrayList<String> sourceLineM;
@@ -346,21 +346,26 @@ public class Scanner
             else
             {
                 nextToken.subClassif = Token.IDENTIFIER;
-                // Default to OPERAND IDENTIFIER -- Now we check if it needs to be reclassified.
+                // Defaulted to OPERAND IDENTIFIER -- Now we check if it needs to be reclassified.
                 // If its in hash table it will overwrite subclass.
             	STEntry result = symbolTable.getSymbol(nextToken.tokenStr);
             	
             	// DEBUG : REMOVE
             	if (result instanceof STControl) {
                     
-                        //symbolTable.putSymbol(tokenStr, STEntry result)
+                        //symbolTable.putSymbol(String string, STEntry result)
             		symbolTable.putSymbol((((STControl) result).symbol).toString(), (STControl) result);
-            		System.out.println("primClass " + result.primClassif);
+                        nextToken.primClassif = result.primClassif;
+                        nextToken.subClassif = ((STControl) result).subClassif;
+                        //Prints the primary classification of the STEntry result primClassif
+       
             	} else if (result instanceof STFunction) {
                     
-            		//symbolTable.putSymbol((((STFunction) result).symbol).toString(), (STFunction) result);
-            		//System.out.println("primClass F" + result.primClassif);
+            		symbolTable.putSymbol((((STFunction) result).symbol).toString(), (STFunction) result);
+                        nextToken.primClassif = result.primClassif;
+                        nextToken.subClassif = ((STFunction) result).subClassif;
             	}
+                //STIdentifier still needs to be implemented properly
             	//symbolTable.putSymbol(nextToken.tokenStr, result);
             	
             	
