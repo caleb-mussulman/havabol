@@ -19,19 +19,24 @@ public class SymbolTable
     }
 	
     STEntry getSymbol(String symbol)
-    {
-        // Convert symbol to a legitimate STEntry.
-    	//System.out.println(symbol);
-    	// First one is an Int so do operand stuff with it in the entry table.
-    	System.out.println(ht.get(symbol));
-    	
-    	
+    {    	
+    	// Found it in the HT
+    	if (ht.containsKey(symbol))
+    		return ht.get(symbol);
+
         return null;
     }
         
     void putSymbol(String symbol, STEntry entry) 
     {
-        
+    	
+    	ht.put(symbol, entry);
+        // symbol is key
+//    	if (ht.containsKey(symbol)) {
+//    		entry.primClassif = ht.get(symbol).primClassif;
+//    	}
+    	
+    	// entry is value
     }
 	
     private void initGlobal()
@@ -62,7 +67,7 @@ public class SymbolTable
         ht.put("MAXLENGTH", new STFunction("MAXLENGTH", Token.FUNCTION,Token.INTEGER
                  , Token.BUILTIN, 1));
         
-        //RETURN TYPE IS BOOL, BUT TYPE IS DEFINIED AS INTEGER IN NOTES?
+        // RETURN TYPE IS BOOL, BUT TYPE IS DEFINIED AS INTEGER IN NOTES?
         ht.put("SPACES", new STFunction("SPACE", Token.FUNCTION,Token.BOOLEAN
                  , Token.BUILTIN, 1));
         

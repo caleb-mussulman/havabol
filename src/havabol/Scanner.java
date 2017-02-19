@@ -271,7 +271,7 @@ public class Scanner
         nextToken.iSourceLineNr = this.iSourceLineNr;
         
         // Token is an operator
-        if( (charOperators.indexOf(nextToken.tokenStr) > -1) || (logicalOperators.contains(nextToken.tokenStr)) )
+        if( (charOperators.indexOf(nextToken.tokenStr) > -1) )
         {
             // Check if the operator is a two character operator
             if( (iColPos < textCharM.length) && (textCharM[iColPos] == '=') )
@@ -286,31 +286,12 @@ public class Scanner
         {
             nextToken.primClassif = Token.SEPARATOR;
         }
-        // Token is a control
-        else if(controlFlow.contains(nextToken.tokenStr) || controlEnd.contains(nextToken.tokenStr) || controlDeclare.contains(nextToken.tokenStr))
-        {
-            nextToken.primClassif = Token.CONTROL;
-            
-            // Control token has a flow subclassification
-            if(controlFlow.contains(nextToken.tokenStr))
-            {
-                nextToken.subClassif = Token.FLOW;
-            }
-            // Control token has an end subclassification
-            else if(controlEnd.contains(nextToken.tokenStr))
-            {
-                nextToken.subClassif = Token.END;
-            }
-            // Control token has a declare subclassification
-            else
-            {
-                nextToken.subClassif = Token.DECLARE;
-            }
-        }
+        // its an operand by default.
         else
         {
             nextToken.primClassif = Token.OPERAND;
-            
+
+            // NOT IN HASHTABLE
             // Determine if operand is a numeric constant. Must begin with a digit.
             if( (chTokenBegin >= '0') && (chTokenBegin <= '9') )
             {
@@ -361,10 +342,27 @@ public class Scanner
             {
                 nextToken.subClassif = Token.BOOLEAN;
             }
-            // Operand must be an identifier
+            // Might be in hashtable otherwise it is an identifier.
             else
             {
                 nextToken.subClassif = Token.IDENTIFIER;
+                
+                // If its in hash table it will overwrite subclass.
+            	STEntry result = symbolTable.getSymbol(nextToken.tokenStr);
+            	
+            	// DEBUG : REMOVE
+            	if (result instanceof STControl) {
+            		symbolTable.putSymbol((((STControl) result).symbol).toString(), (STControl) result);
+            		System.out.println("primClass " + result.primClassif);
+            		//currentToken.tokenStr = result.symbol;
+            	} else if (result instanceof STFunction) {
+            		symbolTable.putSymbol((((STFunction) result).symbol).toString(), (STFunction) result);
+            		System.out.println("primClass F" + result.primClassif);
+            		//System.out.println("function");
+            	}
+            	//symbolTable.putSymbol(nextToken.tokenStr, result);
+            	
+            	
             }
         }
         return currentToken.tokenStr;
