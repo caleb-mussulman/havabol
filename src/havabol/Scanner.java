@@ -346,19 +346,20 @@ public class Scanner
             else
             {
                 nextToken.subClassif = Token.IDENTIFIER;
-                
+                // Default to OPERAND IDENTIFIER -- Now we check if it needs to be reclassified.
                 // If its in hash table it will overwrite subclass.
             	STEntry result = symbolTable.getSymbol(nextToken.tokenStr);
             	
             	// DEBUG : REMOVE
             	if (result instanceof STControl) {
+                    
+                        //symbolTable.putSymbol(tokenStr, STEntry result)
             		symbolTable.putSymbol((((STControl) result).symbol).toString(), (STControl) result);
             		System.out.println("primClass " + result.primClassif);
-            		//currentToken.tokenStr = result.symbol;
             	} else if (result instanceof STFunction) {
-            		symbolTable.putSymbol((((STFunction) result).symbol).toString(), (STFunction) result);
-            		System.out.println("primClass F" + result.primClassif);
-            		//System.out.println("function");
+                    
+            		//symbolTable.putSymbol((((STFunction) result).symbol).toString(), (STFunction) result);
+            		//System.out.println("primClass F" + result.primClassif);
             	}
             	//symbolTable.putSymbol(nextToken.tokenStr, result);
             	

@@ -11,12 +11,6 @@ weird = "\tTX\tTexas\n";
 String loc;
 loc = "TX";
 
-String testEscapeChars = "a:\at:\tn:\nquotes:\" \' backslash:\\"
-
-"\\\\\\\\"
-
-'Pete said, "I can\'t"'
-
 // numeric stuff
 print(">>> Checking datatype results based on left operand");
 pi = 3.14;
