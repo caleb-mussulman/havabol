@@ -60,6 +60,7 @@ public class SymbolTable
         htGlobal.put("while", new STControl("while",Token.CONTROL,Token.FLOW));
         
         htGlobal.put("enddef",new STControl("enddef",Token.CONTROL, Token.END));
+        htGlobal.put("endif", new STControl("if",Token.CONTROL,Token.END));
         htGlobal.put("else", new STControl("else",Token.CONTROL,Token.END));
         htGlobal.put("endfor", new STControl("endfor", Token.CONTROL, Token.END));
         htGlobal.put("endwhile", new STControl("endwhile",Token.CONTROL,Token.END));
