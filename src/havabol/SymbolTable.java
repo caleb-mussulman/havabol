@@ -8,12 +8,12 @@ import java.util.HashMap;
 public class SymbolTable     
 {
     public String symbol;
-    public HashMap<String, STEntry> ht;
+    public HashMap<String, STEntry> htGlobal;
     
     public SymbolTable() 
     {
         //Creating our HashMap
-	ht = new HashMap<String, STEntry>();
+	htGlobal = new HashMap<String, STEntry>();
         //Initializing Key Values in the HashMap
         initGlobal();
     }
@@ -30,10 +30,10 @@ public class SymbolTable
     STEntry getSymbol(String symbol)
     {    	
     	// The tokenStr (symbol) is in the HashMap ht
-    	if (ht.containsKey(symbol))
+    	if (htGlobal.containsKey(symbol))
         {
             //Return the STEntry or STEntry Subclass value that is in the HashMap
-            return ht.get(symbol);
+            return htGlobal.get(symbol);
         }
         //Return an actual null when we miss in the ht
         return null;
@@ -42,7 +42,7 @@ public class SymbolTable
     void putSymbol(String symbol, STEntry entry) 
     {
         //Insert a new 
-    	ht.put(symbol, entry);
+    	htGlobal.put(symbol, entry);
     }
     /**
      * Initializes all the keys in the HashMap ht to their corresponding values
@@ -54,45 +54,45 @@ public class SymbolTable
     private void initGlobal()
     {
         //==========================CONTROL==========================
-        ht.put("def", new STControl("def",Token.CONTROL, Token.FLOW));
-        ht.put("if", new STControl("if",Token.CONTROL,Token.FLOW));
-        ht.put("for", new STControl("for",Token.CONTROL,Token.FLOW));
-        ht.put("while", new STControl("while",Token.CONTROL,Token.FLOW));
+        htGlobal.put("def", new STControl("def",Token.CONTROL, Token.FLOW));
+        htGlobal.put("if", new STControl("if",Token.CONTROL,Token.FLOW));
+        htGlobal.put("for", new STControl("for",Token.CONTROL,Token.FLOW));
+        htGlobal.put("while", new STControl("while",Token.CONTROL,Token.FLOW));
         
-        ht.put("enddef",new STControl("enddef",Token.CONTROL, Token.END));
-        ht.put("else", new STControl("else",Token.CONTROL,Token.END));
-        ht.put("endfor", new STControl("endfor", Token.CONTROL, Token.END));
-        ht.put("endwhile", new STControl("endwhile",Token.CONTROL,Token.END));
+        htGlobal.put("enddef",new STControl("enddef",Token.CONTROL, Token.END));
+        htGlobal.put("else", new STControl("else",Token.CONTROL,Token.END));
+        htGlobal.put("endfor", new STControl("endfor", Token.CONTROL, Token.END));
+        htGlobal.put("endwhile", new STControl("endwhile",Token.CONTROL,Token.END));
         
-        ht.put("Int", new STControl("Int",Token.CONTROL,Token.DECLARE));
-        ht.put("Float", new STControl("Float",Token.CONTROL,Token.DECLARE));
-        ht.put("String", new STControl("String",Token.CONTROL,Token.DECLARE));
-        ht.put("Bool", new STControl("Bool",Token.CONTROL,Token.DECLARE));
-        ht.put("Date", new STControl("Date",Token.CONTROL,Token.DECLARE));
+        htGlobal.put("Int", new STControl("Int",Token.CONTROL,Token.DECLARE));
+        htGlobal.put("Float", new STControl("Float",Token.CONTROL,Token.DECLARE));
+        htGlobal.put("String", new STControl("String",Token.CONTROL,Token.DECLARE));
+        htGlobal.put("Bool", new STControl("Bool",Token.CONTROL,Token.DECLARE));
+        htGlobal.put("Date", new STControl("Date",Token.CONTROL,Token.DECLARE));
         
         //===========================FUNCTIONS=======================
-        ht.put("print", new STFunction("print",Token.FUNCTION,Token.VOID
+        htGlobal.put("print", new STFunction("print",Token.FUNCTION,Token.VOID
                       , Token.BUILTIN, STFunction.VAR_ARGS));
         
-        ht.put("LENGTH", new STFunction("LENGTH",Token.FUNCTION,Token.INTEGER
+        htGlobal.put("LENGTH", new STFunction("LENGTH",Token.FUNCTION,Token.INTEGER
                        , Token.BUILTIN, 1));
-        ht.put("MAXLENGTH", new STFunction("MAXLENGTH",Token.FUNCTION,Token.INTEGER
+        htGlobal.put("MAXLENGTH", new STFunction("MAXLENGTH",Token.FUNCTION,Token.INTEGER
                           , Token.BUILTIN, 1));
         
         // RETURN TYPE IS BOOL, BUT TYPE IS DEFINIED AS INTEGER IN NOTES?
-        ht.put("SPACES", new STFunction("SPACE",Token.FUNCTION,Token.BOOLEAN
+        htGlobal.put("SPACES", new STFunction("SPACE",Token.FUNCTION,Token.BOOLEAN
                        , Token.BUILTIN, 1));
         
-        ht.put("ELEM", new STFunction("ELEM",Token.FUNCTION,Token.INTEGER
+        htGlobal.put("ELEM", new STFunction("ELEM",Token.FUNCTION,Token.INTEGER
                      , Token.BUILTIN, 1));
-        ht.put("MAXELEM", new STFunction("MAXELEM",Token.FUNCTION,Token.INTEGER
+        htGlobal.put("MAXELEM", new STFunction("MAXELEM",Token.FUNCTION,Token.INTEGER
                         , Token.BUILTIN, 1));
         
         //==========================OPERATORS========================
-        ht.put("and", new STEntry("and",Token.OPERATOR));
-        ht.put("or", new STEntry("or",Token.OPERATOR));
-        ht.put("not", new STEntry("not",Token.OPERATOR));
-        ht.put("in", new STEntry("in",Token.OPERATOR));
-        ht.put("notin", new STEntry("notin",Token.OPERATOR));
+        htGlobal.put("and", new STEntry("and",Token.OPERATOR));
+        htGlobal.put("or", new STEntry("or",Token.OPERATOR));
+        htGlobal.put("not", new STEntry("not",Token.OPERATOR));
+        htGlobal.put("in", new STEntry("in",Token.OPERATOR));
+        htGlobal.put("notin", new STEntry("notin",Token.OPERATOR));
     }
 }

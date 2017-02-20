@@ -4,7 +4,7 @@ package havabol;
  *
  * @author root
  */
-public class STIdentifier
+public class STIdentifier extends STEntry
 {
    public String parm;
    public int nonLocal;
@@ -19,8 +19,9 @@ public class STIdentifier
     * @param aStructure
     * @param aNonLocal 
     */
-   public STIdentifier(String aDclType, String aParm, int aStructure, int aNonLocal)
+   public STIdentifier(String aSymbol, int aPrimClassif, String aDclType, String aParm, int aStructure, int aNonLocal)
    {
+       super(aSymbol, aPrimClassif);
         //Declaration Type -- INT, FLOAT, STRING, BOOL, DATE
         this.dclType = aDclType;
         //Parameter type -- Not a Param, By Ref, By Value

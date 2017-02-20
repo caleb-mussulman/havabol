@@ -264,8 +264,27 @@ public class Scanner
         nextToken.iColPos = iTokenBeginIndex;
         nextToken.iSourceLineNr = this.iSourceLineNr;
         
+        // Check if the token is in our global symbol table
+        STEntry STEntryResult = symbolTable.getSymbol(nextToken.tokenStr);
+        
+        // Token has been pre-defined in the global symbol table
+        if(STEntryResult != null)
+        {
+            nextToken.primClassif = STEntryResult.primClassif;
+            
+            // If token is control, add its type as the subclassification
+            if (STEntryResult instanceof STControl)
+            {
+                nextToken.subClassif = ((STControl) STEntryResult).subClassif;
+            }
+            // If token is a function, add its return type as the subclassification
+            else if(STEntryResult instanceof STFunction)
+            {
+                nextToken.subClassif = ((STFunction) STEntryResult).subClassif;
+            }
+        }   	
         // Token is an operator
-        if( (charOperators.indexOf(nextToken.tokenStr) > -1) )
+        else if( (charOperators.indexOf(nextToken.tokenStr) > -1) )
         {
             // Check if the operator is a two character operator
             if( (iColPos < textCharM.length) && (textCharM[iColPos] == '=') )
@@ -336,32 +355,10 @@ public class Scanner
             {
                 nextToken.subClassif = Token.BOOLEAN;
             }
-            // Might be in hashtable otherwise it is an identifier.
+            // Otherwise token is an identifier
             else
             {
                 nextToken.subClassif = Token.IDENTIFIER;
-                // Defaulted to OPERAND IDENTIFIER -- Now we check if it needs to be reclassified.
-                // If its in hash table it will overwrite subclass.
-            	STEntry result = symbolTable.getSymbol(nextToken.tokenStr);
-            	
-            	if (result instanceof STControl) {
-                    
-                        //symbolTable.putSymbol(String string, STEntry result)
-            		symbolTable.putSymbol((((STControl) result).symbol).toString(), (STControl) result);
-                        nextToken.primClassif = result.primClassif;
-                        nextToken.subClassif = ((STControl) result).subClassif;
-                        //Prints the primary classification of the STEntry result primClassif
-       
-            	} else if (result instanceof STFunction) {
-                    
-            		symbolTable.putSymbol((((STFunction) result).symbol).toString(), (STFunction) result);
-                        nextToken.primClassif = result.primClassif;
-                        nextToken.subClassif = ((STFunction) result).subClassif;
-            	}
-                //STIdentifier still needs to be implemented properly
-            	//symbolTable.putSymbol(nextToken.tokenStr, result);
-            	
-            	
             }
         }
         return currentToken.tokenStr;
