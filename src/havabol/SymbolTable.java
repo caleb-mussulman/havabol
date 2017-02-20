@@ -1,15 +1,16 @@
 package havabol;
 
 import java.util.HashMap;
-/**
- * 
- * @author root
- */
+
 public class SymbolTable     
 {
     public String symbol;
     public HashMap<String, STEntry> htGlobal;
-    
+    /**
+     * SymbolTable constructor that will declare and initialize a new 
+     * Global HashMap for CONTROL, FUNCTION and logical OPERATOR definitions.
+     * <p>
+     */
     public SymbolTable() 
     {
         //Creating our HashMap
@@ -20,7 +21,7 @@ public class SymbolTable
     /**
      * Takes in the working Token tokenStr as a symbol and uses it
      * as a key to do a hash lookup in HashMap ht. If the symbol is found:
-     * Return A STEntry obj ref or STEntry subClasses obj ref.
+     * Return A STEntry object ref or STEntry subClasses object ref.
      * Otherwise Return null
      * <p>
      * @param symbol effectively our working tokenStr
@@ -38,18 +39,27 @@ public class SymbolTable
         //Return an actual null when we miss in the ht
         return null;
     }
-        
+    
+    /**
+     * Used to insert a (key, value) hash pair into a new SymbolTable.
+     * <p>
+     * This function is not used in Program #2 -- it will be used for it's functions
+     * in future programs
+     * @param symbol effectively our working tokenStr
+     * @param entry An STEntry object, the superclass of STControl, STFunction, STIdentifier
+     */
     void putSymbol(String symbol, STEntry entry) 
     {
-        //Insert a new 
-    	htGlobal.put(symbol, entry);
+        //Insert a new entry into a new SymbolTable?
+    	//htGlobal.put(symbol, entry);
     }
+    
     /**
      * Initializes all the keys in the HashMap ht to their corresponding values
      * <p>
-     * This is only called once in the construction of a new symbolTable.
-     * Since STControl, STFunction and STIdentifier are subClasses of STEntry
-     * we can 
+     * This method is only called putonce in the construction of a new symbolTable.
+     * initGlobal() is a private function, only allowing it 
+     * to be accessed from within SymbolTable.java
      */
     private void initGlobal()
     {
@@ -80,7 +90,6 @@ public class SymbolTable
         htGlobal.put("MAXLENGTH", new STFunction("MAXLENGTH",Token.FUNCTION,Token.INTEGER
                           , Token.BUILTIN, 1));
         
-        // RETURN TYPE IS BOOL, BUT TYPE IS DEFINIED AS INTEGER IN NOTES?
         htGlobal.put("SPACES", new STFunction("SPACE",Token.FUNCTION,Token.BOOLEAN
                        , Token.BUILTIN, 1));
         

@@ -1,31 +1,22 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package havabol;
 
-/**
- *
- * @author root
- */
 public class STControl extends STEntry
 {
-   
-    int subClassif;
-    public static final int FLOW = 1;
-    public static final int END = 2;
-    public static final int DECLARE = 3;
-    public static final int CONTROL = 4;
+    int subClassif;     //To store the subClassif of the CONTROL token
     
-    // CONSTRUCTOR
-    public STControl(String aSymbol, int aPrimClassif, int aSubclassif)
+    /**
+     * STControl constructor that will simply initialize the subClassif
+     * of the working token. 
+     * <p> 
+     * @param aSymbol working tokens tokenStr
+     * @param aPrimClassif primClassif defined by superclass STEntry
+     * @param aSubClassif the subClassif to be initalized
+     */
+    public STControl(String aSymbol, int aPrimClassif, int aSubClassif)
     {
+        //Calling STEntry's constructor
         super(aSymbol, aPrimClassif);
-
-        
         // set subClassif
-        this.subClassif = aSubclassif;
-    }
-    
+        this.subClassif = aSubClassif;
+    } 
 }

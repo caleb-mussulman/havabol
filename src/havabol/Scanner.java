@@ -264,6 +264,7 @@ public class Scanner
         nextToken.iColPos = iTokenBeginIndex;
         nextToken.iSourceLineNr = this.iSourceLineNr;
         
+        //Begin SymbolTable classifcations
         // Check if the token is in our global symbol table
         STEntry STEntryResult = symbolTable.getSymbol(nextToken.tokenStr);
         
