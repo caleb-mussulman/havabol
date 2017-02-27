@@ -12,7 +12,7 @@ Should make a new branch for each project that we make.
 > git push // Uploads committed files to github.<br />
 
 ## Creating and switching to branches
-> git branch [name]<br /> // 
-> git checkout [name]<br />
-> git branch<br />
-> git push origin [new branch]<br />
+> git branch [name] // Create a new branch<br />
+> git checkout [name] // Switch to branch<br />
+> git branch // Prints the current branch<br />
+> git push origin [new branch] // push newly created branch to github<br />
