@@ -13,11 +13,6 @@ public class Scanner
     public final static Map<Character, Character> escapeChars = Collections.unmodifiableMap(new HashMap<Character, Character>(){{
                                                                 put('"', '"'); put('\'', '\''); put('\\', '\\');
                                                                 put('n', '\n'); put('t', '\t'); put('a', (char)0x07);          }});
-    public final static Set<String> logicalOperators = Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(new String[] {"and", "or", "not", "in", "notin"})));
-    public final static Set<String> controlFlow      = Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(new String[] {"if", "else", "while", "for"})));
-    public final static Set<String> controlEnd       = Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(new String[] {"endif", "endwhile", "endfor"})));
-    public final static Set<String> controlDeclare   = Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(new String[] {"Int", "Float", "String", "Bool", "Date"})));
-    
     
     public String sourceFileNm;
     public ArrayList<String> sourceLineM;
@@ -82,7 +77,6 @@ public class Scanner
         this.getNext();
     }
 
-    
     /**
      * Returns the string of the current token for the scanner. It will also
      * prepare the following token for the next call to this function.
@@ -270,8 +264,28 @@ public class Scanner
         nextToken.iColPos = iTokenBeginIndex;
         nextToken.iSourceLineNr = this.iSourceLineNr;
         
+        //Begin SymbolTable classifcations
+        // Check if the token is in our global symbol table
+        STEntry STEntryResult = symbolTable.getSymbol(nextToken.tokenStr);
+        
+        // Token has been pre-defined in the global symbol table
+        if(STEntryResult != null)
+        {
+            nextToken.primClassif = STEntryResult.primClassif;
+            
+            // If token is control, add its type as the subclassification
+            if (STEntryResult instanceof STControl)
+            {
+                nextToken.subClassif = ((STControl) STEntryResult).subClassif;
+            }
+            // If token is a function, add its return type as the subclassification
+            else if(STEntryResult instanceof STFunction)
+            {
+                nextToken.subClassif = ((STFunction) STEntryResult).subClassif;
+            }
+        }   	
         // Token is an operator
-        if( (charOperators.indexOf(nextToken.tokenStr) > -1) || (logicalOperators.contains(nextToken.tokenStr)) )
+        else if( (charOperators.indexOf(nextToken.tokenStr) > -1) )
         {
             // Check if the operator is a two character operator
             if( (iColPos < textCharM.length) && (textCharM[iColPos] == '=') )
@@ -286,31 +300,12 @@ public class Scanner
         {
             nextToken.primClassif = Token.SEPARATOR;
         }
-        // Token is a control
-        else if(controlFlow.contains(nextToken.tokenStr) || controlEnd.contains(nextToken.tokenStr) || controlDeclare.contains(nextToken.tokenStr))
-        {
-            nextToken.primClassif = Token.CONTROL;
-            
-            // Control token has a flow subclassification
-            if(controlFlow.contains(nextToken.tokenStr))
-            {
-                nextToken.subClassif = Token.FLOW;
-            }
-            // Control token has an end subclassification
-            else if(controlEnd.contains(nextToken.tokenStr))
-            {
-                nextToken.subClassif = Token.END;
-            }
-            // Control token has a declare subclassification
-            else
-            {
-                nextToken.subClassif = Token.DECLARE;
-            }
-        }
+        // its an operand by default.
         else
         {
             nextToken.primClassif = Token.OPERAND;
-            
+
+            // NOT IN HASHTABLE
             // Determine if operand is a numeric constant. Must begin with a digit.
             if( (chTokenBegin >= '0') && (chTokenBegin <= '9') )
             {
@@ -361,7 +356,7 @@ public class Scanner
             {
                 nextToken.subClassif = Token.BOOLEAN;
             }
-            // Operand must be an identifier
+            // Otherwise token is an identifier
             else
             {
                 nextToken.subClassif = Token.IDENTIFIER;

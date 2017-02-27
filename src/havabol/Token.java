@@ -149,7 +149,6 @@ public class Token
      * </pre></blockquote><p>    
      * @param indent  the number of spaces to indent the second printed line
      * @param str     the string to print which may contain non-printable characters
-    
     */
     public void hexPrint(int indent, String str)
     {

@@ -1,6 +1,108 @@
 package havabol;
 
-public class SymbolTable
-{
+import java.util.HashMap;
 
+public class SymbolTable     
+{
+    public String symbol;
+    public HashMap<String, STEntry> htGlobal;
+    /**
+     * SymbolTable constructor that will declare and initialize a new 
+     * Global HashMap for CONTROL, FUNCTION and logical OPERATOR definitions.
+     * <p>
+     */
+    public SymbolTable() 
+    {
+        //Creating our HashMap
+	htGlobal = new HashMap<String, STEntry>();
+        //Initializing Key Values in the HashMap
+        initGlobal();
+    }
+    /**
+     * Takes in the working Token tokenStr as a symbol and uses it
+     * as a key to do a hash lookup in HashMap ht. If the symbol is found:
+     * Return A STEntry object ref or STEntry subClasses object ref.
+     * Otherwise Return null
+     * <p>
+     * @param symbol effectively our working tokenStr
+     * @return STEntry object reference or STEntry subClasses object reference 
+     *        (STControl, STFunction, or STIdentifier))
+     */
+    STEntry getSymbol(String symbol)
+    {    	
+    	// The tokenStr (symbol) is in the HashMap ht
+    	if (htGlobal.containsKey(symbol))
+        {
+            //Return the STEntry or STEntry Subclass value that is in the HashMap
+            return htGlobal.get(symbol);
+        }
+        //Return an actual null when we miss in the ht
+        return null;
+    }
+    
+    /**
+     * Used to insert a (key, value) hash pair into a new SymbolTable.
+     * <p>
+     * This function is not used in Program #2 -- it will be used for it's functions
+     * in future programs
+     * @param symbol effectively our working tokenStr
+     * @param entry An STEntry object, the superclass of STControl, STFunction, STIdentifier
+     */
+    void putSymbol(String symbol, STEntry entry) 
+    {
+        //Insert a new entry into a new SymbolTable?
+    	//htGlobal.put(symbol, entry);
+    }
+    
+    /**
+     * Initializes all the keys in the HashMap ht to their corresponding values
+     * <p>
+     * This method is only called putonce in the construction of a new symbolTable.
+     * initGlobal() is a private function, only allowing it 
+     * to be accessed from within SymbolTable.java
+     */
+    private void initGlobal()
+    {
+        //==========================CONTROL==========================
+        htGlobal.put("def", new STControl("def",Token.CONTROL, Token.FLOW));
+        htGlobal.put("if", new STControl("if",Token.CONTROL,Token.FLOW));
+        htGlobal.put("for", new STControl("for",Token.CONTROL,Token.FLOW));
+        htGlobal.put("while", new STControl("while",Token.CONTROL,Token.FLOW));
+        
+        htGlobal.put("enddef",new STControl("enddef",Token.CONTROL, Token.END));
+        htGlobal.put("endif", new STControl("if",Token.CONTROL,Token.END));
+        htGlobal.put("else", new STControl("else",Token.CONTROL,Token.END));
+        htGlobal.put("endfor", new STControl("endfor", Token.CONTROL, Token.END));
+        htGlobal.put("endwhile", new STControl("endwhile",Token.CONTROL,Token.END));
+        
+        htGlobal.put("Int", new STControl("Int",Token.CONTROL,Token.DECLARE));
+        htGlobal.put("Float", new STControl("Float",Token.CONTROL,Token.DECLARE));
+        htGlobal.put("String", new STControl("String",Token.CONTROL,Token.DECLARE));
+        htGlobal.put("Bool", new STControl("Bool",Token.CONTROL,Token.DECLARE));
+        htGlobal.put("Date", new STControl("Date",Token.CONTROL,Token.DECLARE));
+        
+        //===========================FUNCTIONS=======================
+        htGlobal.put("print", new STFunction("print",Token.FUNCTION,Token.VOID
+                      , Token.BUILTIN, STFunction.VAR_ARGS));
+        
+        htGlobal.put("LENGTH", new STFunction("LENGTH",Token.FUNCTION,Token.INTEGER
+                       , Token.BUILTIN, 1));
+        htGlobal.put("MAXLENGTH", new STFunction("MAXLENGTH",Token.FUNCTION,Token.INTEGER
+                          , Token.BUILTIN, 1));
+        
+        htGlobal.put("SPACES", new STFunction("SPACE",Token.FUNCTION,Token.BOOLEAN
+                       , Token.BUILTIN, 1));
+        
+        htGlobal.put("ELEM", new STFunction("ELEM",Token.FUNCTION,Token.INTEGER
+                     , Token.BUILTIN, 1));
+        htGlobal.put("MAXELEM", new STFunction("MAXELEM",Token.FUNCTION,Token.INTEGER
+                        , Token.BUILTIN, 1));
+        
+        //==========================OPERATORS========================
+        htGlobal.put("and", new STEntry("and",Token.OPERATOR));
+        htGlobal.put("or", new STEntry("or",Token.OPERATOR));
+        htGlobal.put("not", new STEntry("not",Token.OPERATOR));
+        htGlobal.put("in", new STEntry("in",Token.OPERATOR));
+        htGlobal.put("notin", new STEntry("notin",Token.OPERATOR));
+    }
 }
