@@ -33,11 +33,9 @@ public class Havabol
                     , "tokenStr");
             
             Scanner scan = new Scanner(args[0], symbolTable);
-            while (! scan.getNext().isEmpty())
-            {
-                // Print the final token result in table format
-                scan.currentToken.printToken();
-            }
+            Parser parser = new Parser(scan, symbolTable);
+            parser.parse();
+            
         }
         catch (Exception e)
         {
