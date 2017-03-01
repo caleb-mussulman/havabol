@@ -12,6 +12,7 @@ public class Parser
         this.symbolTable = symbolTable;
     }
     
+    // This is a temporary method so we can still see the token output
     public void parse()
     {
         try
@@ -27,5 +28,6 @@ public class Parser
             e.printStackTrace();
         }
     }
+    
     
 }

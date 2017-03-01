@@ -8,13 +8,13 @@ public class Token
     public int iSourceLineNr = 0;
     public int iColPos = 0;
     // Constants for primClassif
-    public static final int OPERAND = 1;    // constants, identifier
-    public static final int OPERATOR = 2;   // + - * / < > = ! 
-    public static final int SEPARATOR = 3;  // ( ) , : ; [ ]
-    public static final int FUNCTION = 4;   // TBD
-    public static final int CONTROL = 5;    // TBD
-    public static final int EOF = 6;        // EOF encountered
-    public static final int RT_PAREN = 7;   // TBD
+    public static final int OPERAND    = 1; // constants, identifier
+    public static final int OPERATOR   = 2; // + - * / < > = ! 
+    public static final int SEPARATOR  = 3; // ( ) , : ; [ ]
+    public static final int FUNCTION   = 4; // TBD
+    public static final int CONTROL    = 5; // TBD
+    public static final int EOF        = 6; // EOF encountered
+    public static final int RT_PAREN   = 7; // TBD
     // Constants for OPERAND's subClassif
     public static final int IDENTIFIER = 1;
     public static final int INTEGER    = 2; // integer constant
