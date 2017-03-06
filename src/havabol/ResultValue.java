@@ -53,7 +53,7 @@ public class ResultValue
      * CLASS METHODS
      */
     public void initialize() {
-    	 // Initialize with dummy values
+    	// Initialize with dummy values
         type = -1;
         value = "";
         structure = -1;
