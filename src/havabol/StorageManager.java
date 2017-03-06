@@ -13,6 +13,9 @@ public class StorageManager
     */
     public HashMap<String,ResultValue> sm;
     
+    
+    
+    
     /**
      * Simply creates HashMap that will effectively be our
      * StorageManager.
@@ -54,19 +57,19 @@ public class StorageManager
      */
     ResultValue getVariableValue(Parser errParse, String symbol)
     {
-        
         ResultValue resValue;
-        
         resValue = sm.get(symbol);
         //We need to check if our symbol is in the StorageManager
         if (resValue == null){
             //There is no value associated with that (valid) key
             //Call parser.error to call the ParserException
             
-            
-            
-        } 
-        return resValue;
+        }else {
+            //The value exists
+            return resValue;
+        }
+        //This will never be reached
+        return null;
     }
     
 }
