@@ -13,9 +13,6 @@ public class StorageManager
     */
     public HashMap<String,ResultValue> sm;
     
-    
-    
-    
     /**
      * Simply creates HashMap that will effectively be our
      * StorageManager.
@@ -35,13 +32,10 @@ public class StorageManager
      * @param symbol
      * @param value 
      */
-    void storeVariableValue(Parser errParse, String symbol, ResultValue value)
+    void putVariableValue(Parser errParse, String symbol, ResultValue value)
     {
-        //TODO : Error Checking on both symbol and ResultValue
-        
         //Need to be able to test this... not sure if works as intended...
         sm.put(symbol,value);
-        
     }
     
     /**
@@ -55,7 +49,7 @@ public class StorageManager
      * @param symbol
      * @return ResultValue
      */
-    ResultValue getVariableValue(Parser errParse, String symbol)
+    ResultValue getVariableValue(Parser errParse, String symbol) throws Exception
     {
         ResultValue resValue;
         resValue = sm.get(symbol);
@@ -63,7 +57,7 @@ public class StorageManager
         if (resValue == null){
             //There is no value associated with that (valid) key
             //Call parser.error to call the ParserException
-            
+            errParse.error("Uninitialized value for Variable: '%s'", symbol);
         }else {
             //The value exists
             return resValue;

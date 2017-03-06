@@ -19,7 +19,7 @@ public class SymbolTable
         //Creating our HashMap
         ht = new HashMap<String, STEntry>();
         storageManager = new StorageManager();
-        //Initializing Key Values in the HashMap
+        //Initializing Definition Values in the HashMap
         initGlobal();
     }
     
@@ -29,33 +29,72 @@ public class SymbolTable
      * Return A STEntry object ref or STEntry subClasses object ref.
      * Otherwise Return null
      * <p>
-     * @param symbol effectively our working tokenStr
-     * @return STEntry object reference or STEntry subClasses object reference 
-     *        (STControl, STFunction, or STIdentifier))
+     * @param symbol    - Effectively our working tokenStr
+     * @return STEntry  - Object reference or STEntry subClasses object reference 
+     *                    (STControl, STFunction, or STIdentifier))
      */
     STEntry getSymbol(String symbol)
     {    	
     	// The tokenStr (symbol) is in the HashMap ht
     	if (ht.containsKey(symbol))
         {
-            //Return the STEntry or STEntry Subclass value that is in the HashMap
+            //Return STEntry or STEntry Subclass value thats in ht
             return ht.get(symbol);
         }
-        //Return an actual null when we miss in the ht
+        //Return an actual null upon miss in ht
         return null;
     }
     
     /**
-     * Used to insert a (key, value) hash pair into a new SymbolTable.
+     * Used to insert a (key, value) pair into a new SymbolTable.
      * <p>
-     * This function is not used in Program #2 -- it will be used for it's functions
      * in future programs
-     * @param symbol effectively our working tokenStr
-     * @param entry An STEntry object, the superclass of STControl, STFunction, STIdentifier
+     * @param symbol  - Effectively our working tokenStr
+     * @param entry   - An STEntry object, 
+     *                  the superclass of STControl, STFunction, STIdentifier
      */
     void putSymbol(String symbol, STEntry entry) 
     {
     	ht.put(symbol, entry);
+    }
+    
+    /**
+     * Recieves a symbol so it can call storageManager's function 
+     * getVariableValue and return a ResultValue to where ever 
+     * the value associated with that symbol is needed.
+     * <p>
+     * @param errParse   - The Parser so we can use it's error() method
+     * @param symbol     - The variable name
+     * @return resVal    - ResultValue variable to where ever that value is needed.
+     * @throws Exception
+     */
+    ResultValue retrieveVariableValue(Parser errParse, String symbol) throws Exception{
+        //All Error checking is done in storageManager.getVariableValue
+        ResultValue resVal = storageManager.getVariableValue(errParse, symbol);
+        return resVal;
+    }
+    
+    /**
+     * Stores value into the storageManager HashMap.
+     * <p>
+     * @param errParse - The Parser so we can use it's error() method
+     * @param symbol   - The variable name
+     * @param value    - The value from 
+     */
+    void storeVariableValue(Parser errParse, String symbol, ResultValue value) throws Exception{
+        //Check if the symbol is already declared.
+        if(ht.containsKey(symbol)){
+            //Check if the ResultValue's type matches the type
+            int symbolType = ((STIdentifier)ht.get(symbol)).dclType;
+            if(value.type ==  symbolType){
+                storageManager.putVariableValue(errParse, symbol, value);
+            }else {
+                errParse.error("Variable '%s' of type '%s' can not be assigned value '%s' of type '%s'"
+                        ,symbol, symbolType ,value.value, value.type); 
+            }
+        }else {
+            errParse.error("Variable: '%s' has not been declared", symbol);
+        }
     }
     
     /**
