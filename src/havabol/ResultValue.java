@@ -1,8 +1,23 @@
-    package havabol;
+package havabol;
+
+/**
+ * @desc
+ * Creates a ResultValue object and initializes it with dummy values
+ * <p>
+ * ResultValue will be the result of many subroutines for the
+ * recursive descent parser. The dummy values are to help catch
+ * programming mistakes when making a ResultValue object in other
+ * subroutines (i.e. comparing the result type without initializing
+ * it first). 
+ *
+ * @authors Taylor Brauer,
+ */
 
 public class ResultValue
 {
-    
+    /*
+     * CLASS VARIABLES
+     */
     int type;              // data type of the result
     String value;          // value of the result
     int structure;         // primitive, fixed array, unbounded array
@@ -25,17 +40,20 @@ public class ResultValue
      * public static final int FIXED_ARRAY     = 16; // fixed size array structure
      * public static final int UNBOUNDED_ARRAY = 17; // unbounded array structure
      */
-    /**
-     * Creates a ResultValue object and initializes it with dummy values
-     * <p>
-     * ResultValue will be the result of many subroutines for the
-     * recursive descent parser. The dummy values are to help catch
-     * programming mistakes when making a ResultValue object in other
-     * subroutines (i.e. comparing the result type without initializing
-     * it first).
+
+    
+    /*
+     * CONTRUCTOR
      */
-    ResultValue(){
-        // Initialize with dummy values
+    public ResultValue() {
+       initialize();
+    }
+    
+    /*
+     * CLASS METHODS
+     */
+    public void initialize() {
+    	 // Initialize with dummy values
         type = -1;
         value = "";
         structure = -1;
