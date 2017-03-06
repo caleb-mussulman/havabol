@@ -12,7 +12,7 @@ public class StorageManager
     String symbol;
     ResultValue value;
     
-    public HashMap<String,String> sm;      //Declare the hashmap
+    public HashMap<String,ResultValue> sm;      //Declare the hashmap
     
     /**
      * Simply creates HashMap that will effectively be our
@@ -22,7 +22,7 @@ public class StorageManager
     StorageManager()
     {
         //Create a new HashMap -- Empty
-        sm = new HashMap<String,String>();
+        sm = new HashMap<String,ResultValue>();
     }
     
     /**
@@ -33,7 +33,7 @@ public class StorageManager
      * @param symbol
      * @param value 
      */
-    void storeVariableValue(String symbol, String value){
+    void storeVariableValue(String symbol, ResultValue value){
         
     }
     
@@ -48,8 +48,8 @@ public class StorageManager
      * @param symbol
      * @return ResultValue
      */
-    String getVariableValue(String symbol){
-        String value;
+    ResultValue getVariableValue(String symbol){
+        ResultValue value;
         value = sm.get(symbol);    
         return value;
     }
