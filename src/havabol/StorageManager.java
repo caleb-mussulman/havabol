@@ -3,16 +3,15 @@ package havabol;
 import java.util.HashMap;
 /**
  * 
- * <p>
  * 
  */
 public class StorageManager
 {
-    
-    String symbol;
-    ResultValue value;
-    
-    public HashMap<String,ResultValue> sm;      //Declare the hashmap
+    /* This class should NOT need fields for
+    *  symbol and ResultValue because those variables
+    *  are stored in the hashtable, not in an instance of StorageManager
+    */
+    public HashMap<String,ResultValue> sm;
     
     /**
      * Simply creates HashMap that will effectively be our
@@ -33,7 +32,12 @@ public class StorageManager
      * @param symbol
      * @param value 
      */
-    void storeVariableValue(String symbol, ResultValue value){
+    void storeVariableValue(Parser errParse, String symbol, ResultValue value)
+    {
+        //TODO : Error Checking on both symbol and ResultValue
+        
+        //Need to be able to test this... not sure if works as intended...
+        sm.put(symbol,value);
         
     }
     
@@ -48,10 +52,21 @@ public class StorageManager
      * @param symbol
      * @return ResultValue
      */
-    ResultValue getVariableValue(String symbol){
-        ResultValue value;
-        value = sm.get(symbol);    
-        return value;
+    ResultValue getVariableValue(Parser errParse, String symbol)
+    {
+        
+        ResultValue resValue;
+        
+        resValue = sm.get(symbol);
+        //We need to check if our symbol is in the StorageManager
+        if (resValue == null){
+            //There is no value associated with that (valid) key
+            //Call parser.error to call the ParserException
+            
+            
+            
+        } 
+        return resValue;
     }
     
 }

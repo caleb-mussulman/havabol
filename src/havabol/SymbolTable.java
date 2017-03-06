@@ -5,6 +5,7 @@ import java.util.HashMap;
 public class SymbolTable     
 {
     public HashMap<String, STEntry> ht;
+    public StorageManager storageManager;
     
     /**
      * SymbolTable constructor that will initialize a hash map to
@@ -13,13 +14,15 @@ public class SymbolTable
      * The hashmap will first be initialized with language defined
      * symbols first
      */
-    public SymbolTable() 
+    public SymbolTable()
     {
         //Creating our HashMap
         ht = new HashMap<String, STEntry>();
+        storageManager = new StorageManager();
         //Initializing Key Values in the HashMap
         initGlobal();
     }
+    
     /**
      * Takes in the working Token tokenStr as a symbol and uses it
      * as a key to do a hash lookup in HashMap ht. If the symbol is found:
