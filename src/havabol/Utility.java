@@ -1,14 +1,44 @@
 package havabol;
 
 /**
+ * @desc Performs an operation on two numerics, stores the result as a ResultValue,
+ * and returns it to whatever called it.
  *
- * @author root
+ * @authors Taylor Brauer
  */
 public class Utility {
-	// CONSTRUCTOR
+	/*
+	 * CLASS VARIABLES
+	 */
+	
+	/*
+	 *  CONSTRUCTOR
+	 */
     public Utility() {
     	
     }
     
-    // METHODS
+    /*
+     * CLASS METHODS
+     */
+    public ResultValue subtract(Parser parser, Numeric nop1, Numeric nop2) {
+    	ResultValue res = null;
+    	
+		return res;
+    }
+    public ResultValue add(Parser parser, Numeric nop1, Numeric nop2) {
+    	ResultValue res = null;
+    	
+		return res;
+    }
+    public ResultValue mulitply(Parser parser, Numeric nop1, Numeric nop2) {
+    	ResultValue res = null;
+    	
+		return res;
+    }
+    public ResultValue divide(Parser parser, Numeric nop1, Numeric nop2) {
+    	ResultValue res = null;
+    	
+		return res;
+    }
 }
