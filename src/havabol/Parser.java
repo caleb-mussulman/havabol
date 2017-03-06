@@ -68,17 +68,17 @@ public class Parser
         // Current token is start of if statement
         if(scan.currentToken.tokenStr.equals("if"))
         {
-            // return ifStmts();
+            // return ifStmt();
         }
         // Current token is start of while statement
         else if(scan.currentToken.tokenStr.equals("while"))
         {
-            // return whileStmts();
+            // return whileStmt();
         }
         // Current token is start of assignment statement
         else if((scan.currentToken.primClassif == Token.OPERAND) && (scan.currentToken.subClassif == Token.IDENTIFIER))
         {
-            // return assignStmts();
+            // return assignStmt();
         }
         // Current token is start of undefined statement
         else
@@ -86,5 +86,126 @@ public class Parser
             error("unknown statement type: '%s'", scan.currentToken.tokenStr);
         }
         return null; // This will never be reached  
+    }
+    
+    public ResultValue ifStmt(boolean bExec)
+    {
+        ResultValue resTrueStmts;  // block of code after the 'if'
+        ResultValue resFalseStmts; // block of code after the 'else'
+        
+        // Do we need to evaluate the condition?
+        if(bExec)
+        {
+            // We are executing (not ignoring)
+            ResultValue resCond = expr();
+            // Did the condition return true?
+            if(resCond.value.equals("T"))
+            {
+                // Cond returned true, execute the statements after the 'if'
+                resTrueStmts = statements(true);
+                // What ended the statements after the true part? 'else:' or 'endif;'
+                // If it is an 'else', ignore the statements after the 'else'
+                if(resTrueStmts.terminatingStr.equals("else"))
+                {
+                    // Has an else so ignore statements after the else
+                    
+                    // 'else' must be followed by a ':'
+                    if(! scan.getNext().equals(":"))
+                    {
+                        errorWithCurrent("Expected ':' after 'else'");
+                    }
+                    resFalseStmts = statements(false);
+                    
+                    // 'if' control block must end with 'endif'
+                    if(! resFalseStmts.terminatingStr.equals("endif"))
+                    {
+                        errorWithCurrent("Expected 'endif'");
+                    }
+                }
+                // If it is not an 'else', then it must be an 'endif'
+                else if(! resTrueStmts.terminatingStr.equals("endif"))
+                {
+                    errorWithCurrent("Expected 'endif'");
+                }
+                // 'endif' must be followed by a ';'
+                if(! scan.getNext().equals(";"))
+                {
+                    errorWithCurrent("Expected ';' after 'endif'");
+                }
+            }
+            else
+            {
+                // Cond returned false, ignore the statements after the 'if'
+                resTrueStmts = statements(false);
+                // What ended the statements after the true part? 'else:' or 'endif;'
+                // If it is an 'else', execute the statements after the 'else'
+                if(resTrueStmts.terminatingStr.equals("else"))
+                {
+                    // Has an else so execute statements after the else
+                    
+                    // 'else' must be followed by a ':'
+                    if(! scan.getNext().equals(":"))
+                    {
+                        errorWithCurrent("Expected ':' after 'else'");
+                    }
+                    resFalseStmts = statements(true);
+                    
+                    // 'if' control block must end with 'endif'
+                    if(! resFalseStmts.terminatingStr.equals("endif"))
+                    {
+                        errorWithCurrent("Expected 'endif'");
+                    }
+                }
+                // If it is not an 'else', then it must be an 'endif'
+                else if(! resTrueStmts.terminatingStr.equals("endif"))
+                {
+                    errorWithCurrent("Expected 'endif'");
+                }
+                // 'endif' must be followed by a ';'
+                if(! scan.getNext().equals(";"))
+                {
+                    errorWithCurrent("Expected ';' after 'endif'");
+                }
+            }
+        }
+        else
+        {
+            // We are ignoring execution
+            
+            // Skip the 'if' condition
+            skipTo("if", ":");
+            
+            // Ignore the true part
+            resTrueStmts = statements(false);
+            // What ended the statements after the true part? 'else:' or 'endif;'
+            // If it is an 'else', ignore the statements after the 'else'
+            if(resTrueStmts.terminatingStr.equals("else"))
+            {
+                // Has an else so ignore statements after the else
+                
+                // 'else' must be followed by a ':'
+                if(! scan.getNext().equals(":"))
+                {
+                    errorWithCurrent("Expected ':' after 'else'");
+                }
+                resFalseStmts = statements(false);
+                
+                // 'if' control block must end with 'endif'
+                if(! resFalseStmts.terminatingStr.equals("endif"))
+                {
+                    errorWithCurrent("Expected 'endif'");
+                }
+            }
+            // If it is not an 'else', then it must be an 'endif'
+            else if(! resTrueStmts.terminatingStr.equals("endif"))
+            {
+                errorWithCurrent("Expected 'endif'");
+            }
+            // 'endif' must be followed by a ';'
+            if(! scan.getNext().equals(";"))
+            {
+                errorWithCurrent("Expected ';' after 'endif'");
+            }
+        }
     }
 }
