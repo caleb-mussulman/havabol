@@ -15,6 +15,7 @@ public class Token
     public static final int CONTROL    = 5; // TBD
     public static final int EOF        = 6; // EOF encountered
     public static final int RT_PAREN   = 7; // TBD
+    public static final int U_MINUS    = 8; // - unary operator
     // Constants for OPERAND's subClassif
     public static final int IDENTIFIER = 1;
     public static final int INTEGER    = 2; // integer constant
