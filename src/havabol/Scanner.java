@@ -287,13 +287,24 @@ public class Scanner
         // Token is an operator
         else if( (charOperators.indexOf(nextToken.tokenStr) > -1) )
         {
+            nextToken.primClassif = Token.OPERATOR;
+            
             // Check if the operator is a two character operator
             if( (iColPos < textCharM.length) && (textCharM[iColPos] == '=') )
             {
                 nextToken.tokenStr += "=";
                 iColPos++;
             }
-            nextToken.primClassif = Token.OPERATOR;
+            // Check if the operator is minus sign
+            else if(nextToken.tokenStr.equals("-"))
+            {
+                // Determine if the minus sign is a unary minus
+                if(Arrays.asList("=", "-=", "+=", "+", "-", "*", "/", "^", ">", "<", ">=", "<=", "!=", "#", "and"
+                                    , "or", "not", "if", "select", "while", "when", "(", ",").contains(currentToken.tokenStr))
+                {
+                    nextToken.primClassif = Token.U_MINUS;
+                }
+            }
         }
         // Token is a separator
         else if(separators.indexOf(nextToken.tokenStr) > -1)
@@ -365,3 +376,4 @@ public class Scanner
         return currentToken.tokenStr;
     }
 }
+
