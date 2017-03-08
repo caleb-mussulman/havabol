@@ -44,11 +44,11 @@ public class Token
             , "CONTROL"     // 5
             , "EOF"         // 6
         };
-    public static final int PRIM_CLASS_MAX = 8;
+    public static final int PRIM_CLASS_MAX = 6;
     // array of subClassif string values for the constants
     public static final String[] strSubClassifM = 
         {"Undefined"
-            , "IDENTIFIER"   // 1
+            , "IDENTIFIER"  // 1
             , "INTEGER"     // 2
             , "FLOAT"       // 3
             , "BOOLEAN"     // 4

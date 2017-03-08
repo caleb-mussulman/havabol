@@ -97,17 +97,11 @@ public class Parser
                 return resValue;
             }
             
-            STEntryResult = symbolTable.getSymbol(scan.currentToken.tokenStr);
-            
             // Check if the current token is a end of flow token
-            if((STEntryResult != null) && (STEntryResult instanceof STControl))
+            if((scan.currentToken.primClassif == Token.FLOW) && (scan.currentToken.subClassif == Token.END))
             {
-                // If it is an end of flow, then return the string
-                if(((STControl) STEntryResult).subClassif == Token.END)
-                {
-                    resValue.terminatingStr = scan.currentToken.tokenStr;
-                    return resValue;
-                }
+                resValue.terminatingStr = scan.currentToken.tokenStr;
+                return resValue;
             }
         
             // Current token is start of if statement
@@ -271,6 +265,42 @@ public class Parser
             {
                 error("Expected ';' after 'endif'");
             }
+        }
+    }
+    
+    // TODO going to wait until he covers this in Flow lecture
+    public void whileStmt(boolean bExec) throws Exception
+    {
+        int iWhileLineNr; // line number that the while statement starts on
+        
+        iWhileLineNr = scan.currentToken.iSourceLineNr;
+        
+        // Do we need to evaluate the condition?
+        if(bExec)
+        {
+            // We are executing (not ignoring)
+            ResultValue resCond = expr();
+        }
+    }
+    /**
+     * Executes an assignment statement
+     * Assumption: current token is on an OPERAND IDENTIFIER
+     * <p>
+     * 
+     * @param bExec
+     * @throws Exception
+     */
+    public void assignStmt(boolean bExec) throws Exception
+    {
+        int iAssignLineNr; // line number for beginning of assignment statement
+        
+        iAssignLineNr = scan.currentToken.iSourceLineNr;
+        
+        // Do we need to execute the assignment?
+        if(bExec)
+        {
+            // We are executing (not ignoring)
+            
         }
     }
     
