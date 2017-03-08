@@ -11,7 +11,7 @@ public class SymbolTable
      * SymbolTable constructor that will initialize a hash map to
      * act as the symbol table to store the symbols
      * <p>
-     * The hashmap will first be initialized with language defined
+     * The hash map will first be initialized with language defined
      * symbols first
      */
     public SymbolTable()
@@ -29,6 +29,8 @@ public class SymbolTable
      * Return A STEntry object ref or STEntry subClasses object ref.
      * Otherwise Return null
      * <p>
+     * Important to call this function with caution by making sure
+     * the subClassif == IDENTIFIER 
      * @param symbol    - Effectively our working tokenStr
      * @return STEntry  - Object reference or STEntry subClasses object reference 
      *                    (STControl, STFunction, or STIdentifier))
@@ -59,7 +61,7 @@ public class SymbolTable
     }
     
     /**
-     * Recieves a symbol so it can call storageManager's function 
+     * Receives a symbol so it can call storageManager's function 
      * getVariableValue and return a ResultValue to where ever 
      * the value associated with that symbol is needed.
      * <p>
@@ -85,12 +87,12 @@ public class SymbolTable
         //Check if the symbol is already declared.
         if(ht.containsKey(symbol)){
             //Check if the ResultValue's type matches the type
-            int symbolType = ((STIdentifier)ht.get(symbol)).dclType;
+            int symbolType = ((STIdentifier) ht.get(symbol)).dclType;
             if(value.type ==  symbolType){
                 storageManager.putVariableValue(errParse, symbol, value);
             }else {
                 errParse.error("Variable '%s' of type '%s' can not be assigned value '%s' of type '%s'"
-                        ,symbol, symbolType ,value.value, value.type); 
+                              ,symbol, symbolType ,value.value, value.type); 
             }
         }else {
             errParse.error("Variable: '%s' has not been declared", symbol);
