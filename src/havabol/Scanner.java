@@ -103,13 +103,7 @@ public class Scanner
         int iTokenBeginIndex;
         int iTokenLength;
         String error;
-        
-        // Covers the case when the file is empty.
-        if(sourceLineM.isEmpty())
-        {
-            return "";
-        }
-        
+                
         // If the line numbers between tokens are different, print new line of input.
         if(currentToken.iSourceLineNr != nextToken.iSourceLineNr)
         {
@@ -126,6 +120,12 @@ public class Scanner
         
         currentToken = nextToken;
         nextToken = new Token();
+        
+        // Covers the case when the file is empty.
+        if(currentToken.primClassif == Token.EOF)
+        {
+            return currentToken.tokenStr;
+        }
         
         // Go through whitespace and comments until at a token or at the end of the file.
         while(true)
@@ -288,6 +288,7 @@ public class Scanner
         else if( (charOperators.indexOf(nextToken.tokenStr) > -1) )
         {
             nextToken.primClassif = Token.OPERATOR;
+            nextToken.subClassif  = Token.BINARY;
             
             // Check if the operator is a two character operator
             if( (iColPos < textCharM.length) && (textCharM[iColPos] == '=') )
@@ -298,11 +299,11 @@ public class Scanner
             // Check if the operator is minus sign
             else if(nextToken.tokenStr.equals("-"))
             {
-                // Determine if the minus sign is a unary minus
+                // Determine if the minus sign is a unary minus by checking what token precedes it
                 if(Arrays.asList("=", "-=", "+=", "+", "-", "*", "/", "^", ">", "<", ">=", "<=", "!=", "#", "and"
                                     , "or", "not", "if", "select", "while", "when", "(", ",").contains(currentToken.tokenStr))
                 {
-                    nextToken.primClassif = Token.U_MINUS;
+                    nextToken.subClassif = Token.UNARY;
                 }
             }
         }

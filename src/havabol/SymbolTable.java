@@ -115,7 +115,7 @@ public class SymbolTable
         ht.put("while", new STControl("while",Token.CONTROL,Token.FLOW));
         
         ht.put("enddef",new STControl("enddef",Token.CONTROL, Token.END));
-        ht.put("endif", new STControl("if",Token.CONTROL,Token.END));
+        ht.put("endif", new STControl("endif",Token.CONTROL,Token.END));
         ht.put("else", new STControl("else",Token.CONTROL,Token.END));
         ht.put("endfor", new STControl("endfor", Token.CONTROL, Token.END));
         ht.put("endwhile", new STControl("endwhile",Token.CONTROL,Token.END));
@@ -129,15 +129,10 @@ public class SymbolTable
         //===========================FUNCTIONS=======================
         ht.put("print", new STFunction("print",Token.FUNCTION,Token.VOID
                       , Token.BUILTIN, STFunction.VAR_ARGS));
-        
         ht.put("LENGTH", new STFunction("LENGTH",Token.FUNCTION,Token.INTEGER
+                       , Token.BUILTIN, 1));        
+        ht.put("SPACES", new STFunction("SPACES",Token.FUNCTION,Token.BOOLEAN
                        , Token.BUILTIN, 1));
-        ht.put("MAXLENGTH", new STFunction("MAXLENGTH",Token.FUNCTION,Token.INTEGER
-                          , Token.BUILTIN, 1));
-        
-        ht.put("SPACES", new STFunction("SPACE",Token.FUNCTION,Token.BOOLEAN
-                       , Token.BUILTIN, 1));
-        
         ht.put("ELEM", new STFunction("ELEM",Token.FUNCTION,Token.INTEGER
                      , Token.BUILTIN, 1));
         ht.put("MAXELEM", new STFunction("MAXELEM",Token.FUNCTION,Token.INTEGER

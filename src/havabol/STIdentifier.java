@@ -17,9 +17,9 @@ public class STIdentifier extends STEntry
     */
    
    // Constants for parameter passing type
-   public static final int BY_REFERENCE     = 15; // by reference parameter
-   public static final int BY_VALUE         = 16; // by value parameter
-   public static final int NOT_A_PARAMETER  = 17; // not a parameter
+   public static final int BY_REFERENCE     = 21; // by reference parameter
+   public static final int BY_VALUE         = 22; // by value parameter
+   public static final int NOT_A_PARAMETER  = 23; // not a parameter
    
    // Constants for scope if local or global
    public static final int LOCAL            = 0;  // local scope

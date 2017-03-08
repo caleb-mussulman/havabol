@@ -15,7 +15,6 @@ public class Token
     public static final int CONTROL    = 5; // TBD
     public static final int EOF        = 6; // EOF encountered
     public static final int RT_PAREN   = 7; // TBD
-    public static final int U_MINUS    = 8; // - unary operator
     // Constants for OPERAND's subClassif
     public static final int IDENTIFIER = 1;
     public static final int INTEGER    = 2; // integer constant
@@ -31,6 +30,9 @@ public class Token
     // Constants for FUNCTION's subClassif (definedby)
     public static final int BUILTIN    = 13;// builtin function (e.g., print)
     public static final int USER       = 14;// user defined
+    // Constants for OPERAND's subclassif (number of operators)
+    public static final int UNARY      = 15;
+    public static final int BINARY     = 16;
     
     // array of primClassif string values for the constants
     public static final String[] strPrimClassifM = 
@@ -42,11 +44,11 @@ public class Token
             , "CONTROL"     // 5
             , "EOF"         // 6
         };
-    public static final int PRIM_CLASS_MAX = 6;
+    public static final int PRIM_CLASS_MAX = 8;
     // array of subClassif string values for the constants
     public static final String[] strSubClassifM = 
         {"Undefined"
-            , "IDENTFIER"   // 1
+            , "IDENTIFIER"   // 1
             , "INTEGER"     // 2
             , "FLOAT"       // 3
             , "BOOLEAN"     // 4
@@ -109,7 +111,13 @@ public class Token
                     subClassifStr = "USER";
                 else
                     subClassifStr = "**garbage**";
-                break;    
+                break;
+            case Token.OPERATOR:
+                if(subClassif == UNARY || tokenStr.equals("not"))
+                    subClassifStr = "UNARY";
+                else
+                    subClassifStr = "BINARY";
+                break;
             default:
                 subClassifStr = "-";
         }
