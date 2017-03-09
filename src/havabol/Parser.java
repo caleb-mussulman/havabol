@@ -141,7 +141,7 @@ public class Parser
      * expression and executes the code depending on the result. If
      * the code is not to be executed, it will skip through the code
      * until it gets to the matching 'endif'
-     * @param  bExec     indicates whether the code should be executed or not
+     * @param  bExec     indicates whether the code should be executed or ignored
      * @throws Exception if the 'if' statement is not ended with an 'endif'
      */
     public void ifStmt(boolean bExec) throws Exception
@@ -286,21 +286,90 @@ public class Parser
      * Executes an assignment statement
      * Assumption: current token is on an OPERAND IDENTIFIER
      * <p>
-     * 
-     * @param bExec
-     * @throws Exception
+     * An assignment statement is of the form:
+     *     variable assignmentOperator expression
+     * This method will take the result of expression and assign
+     * its value to variable. Currently can execute assignments
+     * with operators "=", "-=", and "+=". A misspelled beginning
+     * of a statement will usually error out here as the scanner will
+     * default the first token to a variable token if it had not
+     * matched anything else (this is documented below).
+     * @param bExec      indicates whether the code should be executed or ignored
+     * @throws Exception the first token is not a variable
+     *                   missing a valid assignment operator after the variable
+     *                   the statement is invalid
+     *                   
      */
     public void assignStmt(boolean bExec) throws Exception
     {
         int iAssignLineNr; // line number for beginning of assignment statement
-        
         iAssignLineNr = scan.currentToken.iSourceLineNr;
         
-        // Do we need to execute the assignment?
-        if(bExec)
+        // Do we need to ignore execution of the assignment?
+        if(! bExec)
         {
-            // We are executing (not ignoring)
-            
+            // We are ignoring execution
+            // Skip to the end of the assignment statement
+            skipTo(iAssignLineNr, "assignment", ";");
+        }
+        // Otherwise, we are executing the assignment
+        
+        if((scan.currentToken.primClassif != Token.OPERAND) || (scan.currentToken.subClassif != Token.IDENTIFIER))
+        {
+            error("Expected a variable for the target of an assignment");
+        }
+        String variableStr = scan.currentToken.tokenStr;
+        
+        // Get the assignment operator and check it
+        scan.getNext();
+        if(scan.currentToken.primClassif != Token.OPERATOR)
+        {
+            /*
+             *  Since the scanner's base case for classification is OPERAND IDENTIFIER,
+             *  it may classify a misspelled token as a variable. For example, if a user
+             *  accidentally types "printf" instead of "print", the scanner would see the
+             *  token as a variable and the parser would see it as the first token of the
+             *  statement and call this function. In this case the error would occur here,
+             *  and may not necessarily be an error with a missing assignment operator
+             */
+            error("Either undefined statement or missing assignment operator, found '%s'", scan.currentToken.tokenStr);
+        }
+        
+        String operatorStr = scan.currentToken.tokenStr;
+        ResultValue res02; // Result value of second operand
+        ResultValue res01; // Result value of first operand
+        Numeric nOp2;      // Numeric value of second operand
+        Numeric nOp1;      // Numeric value of first operand
+        switch(operatorStr)
+        {
+            case "=":
+                res02 = expr();
+                symbolTable.storeVariableValue(this, variableStr, res02);
+                break;
+            case "-=":
+                res02 = expr();
+                // Expression must be numeric, raise exception if not
+                nOp2 = new Numeric(this, res02, "-=", "2nd operand");
+                // Since it is numeric, get the value of the target variable
+                res01 = symbolTable.retrieveVariableValue(this, variableStr);
+                // Target variable must also be numeric
+                nOp1 = new Numeric(this, res01, "-=", "1st operand");
+                // Subtract second operand from first operand and assign the result to the variable
+                symbolTable.storeVariableValue(this, variableStr, Utility.subtract(this, nOp1, nOp2));
+                break;
+            case "+=":
+                res02 = expr();
+                // Expression must be numeric, raise exception if not
+                nOp2 = new Numeric(this, res02, "+=", "2nd operand");
+                // Since it is numeric, get the value of the target variable
+                res01 = symbolTable.retrieveVariableValue(this, variableStr);
+                // Target variable must also be numeric
+                nOp1 = new Numeric(this, res01, "+=", "1st operand");
+                // Add both operands and assign the result to the variable
+                symbolTable.storeVariableValue(this, variableStr, Utility.add(this, nOp1, nOp2));
+                break;
+            default:
+                error("Expected assignment operator, found '%s'", operatorStr);
         }
     }
     

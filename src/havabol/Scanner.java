@@ -13,7 +13,9 @@ public class Scanner
     public final static Map<Character, Character> escapeChars = Collections.unmodifiableMap(new HashMap<Character, Character>(){{
                                                                 put('"', '"'); put('\'', '\''); put('\\', '\\');
                                                                 put('n', '\n'); put('t', '\t'); put('a', (char)0x07);          }});
-    
+    public final static List<String> tokensPrecedingUnaryMinus = Collections.unmodifiableList(Arrays.asList("=", "-=", "+=", "+"
+                                                                 , "-", "*", "/", "^", ">", "<", ">=", "<=", "!=", "#", "and"
+                                                                 , "or", "not", "if", "select", "while", "when", "(", ","));
     public String sourceFileNm;
     public ArrayList<String> sourceLineM;
     public SymbolTable symbolTable;
@@ -300,8 +302,7 @@ public class Scanner
             else if(nextToken.tokenStr.equals("-"))
             {
                 // Determine if the minus sign is a unary minus by checking what token precedes it
-                if(Arrays.asList("=", "-=", "+=", "+", "-", "*", "/", "^", ">", "<", ">=", "<=", "!=", "#", "and"
-                                    , "or", "not", "if", "select", "while", "when", "(", ",").contains(currentToken.tokenStr))
+                if(tokensPrecedingUnaryMinus.contains(currentToken.tokenStr))
                 {
                     nextToken.subClassif = Token.UNARY;
                 }
