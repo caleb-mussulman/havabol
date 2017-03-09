@@ -82,7 +82,6 @@ public class Parser
     public ResultValue statements(boolean bExec) throws Exception
     {
         ResultValue resValue = new ResultValue();
-        STEntry STEntryResult;
         
         // Keep executing statements until EOF or FLOW END
         while(true){
@@ -117,12 +116,12 @@ public class Parser
             // Current token is start of assignment statement
             else if((scan.currentToken.primClassif == Token.OPERAND) && (scan.currentToken.subClassif == Token.IDENTIFIER))
             {
-                // return assignStmt();
+                assignStmt(bExec);
             }
             // Current token is start of declaration statement
             else if((scan.currentToken.primClassif == Token.CONTROL) && (scan.currentToken.subClassif == Token.DECLARE))
             {
-                // declareStmt();
+                declareStmt(bExec);
             }
             // Current token is start of undefined statement
             else
@@ -282,12 +281,14 @@ public class Parser
             ResultValue resCond = expr();
         }
     }
+    
     /**
      * Executes an assignment statement
      * Assumption: current token is on an OPERAND IDENTIFIER
      * <p>
      * An assignment statement is of the form:
-     *     variable assignmentOperator expression
+     *     assignStmt := variable assignmentOperator expression
+     *     
      * This method will take the result of expression and assign
      * its value to variable. Currently can execute assignments
      * with operators "=", "-=", and "+=". A misspelled beginning
@@ -314,9 +315,10 @@ public class Parser
         }
         // Otherwise, we are executing the assignment
         
+        // A check to make sure this method was called with the correct current token
         if((scan.currentToken.primClassif != Token.OPERAND) || (scan.currentToken.subClassif != Token.IDENTIFIER))
         {
-            error("Expected a variable for the target of an assignment");
+            error("Expected a variable for the target of an assignment, found '%s'", scan.currentToken.tokenStr);
         }
         String variableStr = scan.currentToken.tokenStr;
         
@@ -370,6 +372,108 @@ public class Parser
                 break;
             default:
                 error("Expected assignment operator, found '%s'", operatorStr);
+        }
+    }
+    
+    /**
+     * Executes a declaration statement
+     * Assumption: current token is on a CONTROL DECLARE
+     * <p>
+     * A declare statement is of the form:
+     *     declareStmt := declare variable ';'
+     *                  | declare variable assignStmt
+     * 
+     * This method will take the variable of type declare and 
+     * create an instance of it in the symbol table, signifying
+     * that it has been declared. The declaration may or may not 
+     * be followed by an assignment as follows:
+     *    Int x;
+     *    Int y = 5;
+     * NOTE: Unless/until user-defined functions are implemented,
+     * each variable will be declared with LOCAL scope and
+     * NOT_A_PARAMETER for its parameter passing type
+     * -------------------------------------------------------------
+     * PROGRAM 3 ONLY: all variables are declared with primitive type
+     * TODO NEED TO CHANGE FOR PROGRAM 4
+     * -------------------------------------------------------------
+     * @param bExec      indicates whether the code should be executed or ignored
+     * @throws Exception the first token is not a declaration type
+     *                   the token after the declaration type is not a variable
+     *                   the declaration type is not valid
+     *                   missing ';' after declaration
+     */
+    public void declareStmt(boolean bExec) throws Exception
+    {
+        int iDeclareLineNr; // line number for beginning of declare statement
+        iDeclareLineNr = scan.currentToken.iSourceLineNr;
+        
+        // Do we need to ignore execution of the declaration?
+        if(! bExec)
+        {
+            // We are ignoring execution
+            // Skip to the end of the declare statement
+            skipTo(iDeclareLineNr, "declare", ";");
+        }
+        // Otherwise, we are executing the declaration
+        
+        // A check to make sure this method was called with the correct current token
+        if((scan.currentToken.primClassif != Token.CONTROL) || (scan.currentToken.subClassif != Token.DECLARE))
+        {
+            error("Expected a declaration type for the beginning of a declare statement, found '%s'", scan.currentToken.tokenStr);
+        }
+        
+        String declareStr = scan.currentToken.tokenStr;
+        
+        // Get the variable to be declared and check it
+        scan.getNext();
+        if((scan.currentToken.primClassif != Token.OPERAND) || (scan.currentToken.subClassif != Token.IDENTIFIER))
+        {
+            error("Expected a variable for the target of an declaration");
+        }
+        
+        String variableStr = scan.currentToken.tokenStr;
+        
+        // Get the declaration type's constant
+        int declareType;
+        switch(declareStr)
+        {
+            case "Int":
+                declareType = Token.INTEGER;
+                break;
+            case "Float":
+                declareType = Token.FLOAT;
+                break;
+            case "String":
+                declareType = Token.STRING;
+                break;
+            case "Bool":
+                declareType = Token.BOOLEAN;
+                break;
+            case "Date":
+                declareType = Token.DATE;
+                break;
+            default:
+                declareType = -1; // This is to get rid of error saying the variable
+                                  // may be uninitialized when putting in the symbol table
+                error("Unknown declaration type, found '%s'", declareStr);
+        }
+        
+        // Put the declared variable in the symbol table
+        STIdentifier STVariable = new STIdentifier(variableStr, Token.OPERAND, declareType, STIdentifier.NOT_A_PARAMETER
+                                                              , STIdentifier.PRIMITVE, STIdentifier.LOCAL);
+        symbolTable.putSymbol(variableStr, STVariable);
+        
+        // Check if the declaration also contains an assignment
+        if(scan.nextToken.primClassif == Token.OPERATOR)
+        {
+            assignStmt(bExec);
+            return;
+        }
+        
+        // There was no assignment, so declare statement must be followed by ';'
+        if(! scan.getNext().equals(";"))
+        {
+            error("Expected ';' after declaration statement");
         }
     }
     
