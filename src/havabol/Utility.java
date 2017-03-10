@@ -22,46 +22,49 @@ public class Utility {
      * CLASS METHODS
      */
     // Takes Numeric params
-    public ResultValue subtract(Parser parser, Numeric nop1, Numeric nop2) {
+    public static ResultValue subtract(Parser parser, Numeric nop1, Numeric nop2) {
     	ResultValue res = null;
     	
 		return res;
     }
-    public ResultValue add(Parser parser, Numeric nop1, Numeric nop2) {
+    public static ResultValue add(Parser parser, Numeric nop1, Numeric nop2) {
     	ResultValue res = null;
     	
 		return res;
     }
-    public ResultValue mulitply(Parser parser, Numeric nop1, Numeric nop2) {
+    public static ResultValue mulitply(Parser parser, Numeric nop1, Numeric nop2) {
     	ResultValue res = null;
     	
 		return res;
     }
-    public ResultValue divide(Parser parser, Numeric nop1, Numeric nop2) {
+    public static ResultValue divide(Parser parser, Numeric nop1, Numeric nop2) {
     	ResultValue res = null;
     	
 		return res;
     }
     
+    /**
+     * These may not be used.
+     */
     // Takes ResultValue params
-    public ResultValue subtract(Parser parser, ResultValue resval1, ResultValue resval2) {
-    	ResultValue res = null;
-    	
-		return res;
-    }
-    public ResultValue add(Parser parser, ResultValue resval1, ResultValue resval2) {
-    	ResultValue res = null;
-    	
-		return res;
-    }
-    public ResultValue mulitply(Parser parser, ResultValue resval1, ResultValue resval2) {
-    	ResultValue res = null;
-    	
-		return res;
-    }
-    public ResultValue divide(Parser parser, ResultValue resval1, ResultValue resval2) {
-    	ResultValue res = null;
-    	
-		return res;
-    }
+//    public ResultValue subtract(Parser parser, ResultValue resval1, ResultValue resval2) {
+//    	ResultValue res = null;
+//    	
+//		return res;
+//    }
+//    public ResultValue add(Parser parser, ResultValue resval1, ResultValue resval2) {
+//    	ResultValue res = null;
+//    	
+//		return res;
+//    }
+//    public ResultValue mulitply(Parser parser, ResultValue resval1, ResultValue resval2) {
+//    	ResultValue res = null;
+//    	
+//		return res;
+//    }
+//    public ResultValue divide(Parser parser, ResultValue resval1, ResultValue resval2) {
+//    	ResultValue res = null;
+//    	
+//		return res;
+//    }
 }
