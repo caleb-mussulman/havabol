@@ -17,9 +17,14 @@ public class Parser
     public void parse()
     {
         try
-        {
+        {   /* Previous invocation of havabol
             while (true)
             {
+                // Print a column heading 
+                System.out.printf("%-11s %-12s %s\n"
+                        , "primClassif"
+                        , "subClassif"
+                        , "tokenStr");
                 scan.getNext();
                 if(scan.currentToken.primClassif == Token.EOF)
                 {
@@ -28,7 +33,8 @@ public class Parser
                 // Print the final token result in table format
                 scan.currentToken.printToken();
             }
-            //statements(true);
+            */
+            statements(true);
         }
         catch (Exception e)
         {
@@ -97,7 +103,7 @@ public class Parser
             }
             
             // Check if the current token is a end of flow token
-            if((scan.currentToken.primClassif == Token.FLOW) && (scan.currentToken.subClassif == Token.END))
+            if((scan.currentToken.primClassif == Token.CONTROL) && (scan.currentToken.subClassif == Token.END))
             {
                 resValue.terminatingStr = scan.currentToken.tokenStr;
                 return resValue;
@@ -111,7 +117,7 @@ public class Parser
             // Current token is start of while statement
             else if(scan.currentToken.tokenStr.equals("while"))
             {
-                // return whileStmt();
+                whileStmt(bExec);
             }
             // Current token is start of assignment statement
             else if((scan.currentToken.primClassif == Token.OPERAND) && (scan.currentToken.subClassif == Token.IDENTIFIER))
@@ -132,16 +138,17 @@ public class Parser
     }
     
     /**
+     * Parses an 'if' control block
      * Assumption: current token is on an 'if'
-     * Parses an if statement
      * <p>
-     * Called with a value, determining whether the code executed or
+     * Called with a value, determining whether the code is executed or
      * not. If the code is to be executed, evaluates the conditional
-     * expression and executes the code depending on the result. If
+     * expression and executes the code if the result is 'true'. If
      * the code is not to be executed, it will skip through the code
      * until it gets to the matching 'endif'
      * @param  bExec     indicates whether the code should be executed or ignored
      * @throws Exception if the 'if' statement is not ended with an 'endif'
+     *                   missing ';' after the 'endif'
      */
     public void ifStmt(boolean bExec) throws Exception
     {
@@ -267,18 +274,82 @@ public class Parser
         }
     }
     
-    // TODO going to wait until he covers this in Flow lecture
+    /**
+     * Parses a 'while' control block
+     * Assumption: current token is on a 'while'
+     * <p>
+     * Called with a value, determining whether the code is executed or
+     * not. If the code is to be executed, evaluates the conditional
+     * expression and executes the code if the result is 'true'. It
+     * will keep executing the code after the while statement as long as
+     * the expression evaluates to 'true'. If the code is not to be
+     * executed, it will skip through the code until it gets to the
+     * matching 'endwhile'
+     * expression
+     * @param bExec      indicates whether the code should be executed or ignored
+     * @throws Exception if the 'while' block is not ended with an 'endwhile'
+     *                   missing ';' after the 'endwhile'
+     */
     public void whileStmt(boolean bExec) throws Exception
     {
-        int iWhileLineNr; // line number that the while statement starts on
+        ResultValue resStmts;
+        Token whileToken;
         
-        iWhileLineNr = scan.currentToken.iSourceLineNr;
+        // Save the 'while' token
+        whileToken = scan.currentToken;
         
         // Do we need to evaluate the condition?
         if(bExec)
         {
             // We are executing (not ignoring)
             ResultValue resCond = expr();
+            
+            // Continue in the while loop as long as the expression evaluates to true
+            while(resCond.value.equals("T"))
+            {
+                // Execute the statements after the 'while'
+                resStmts = statements(true);
+                // 'while' control block must end with 'endwhile'
+                if(! resStmts.terminatingStr.equals("endwhile"))
+                {
+                    error("Expected 'endwhile' for 'while' beginning on line %d", whileToken.iSourceLineNr);
+                }
+                // 'endwhile' must be followed by a ';'
+                if(! scan.getNext().equals(";"))
+                {
+                    error("Expected ';' after 'endwhile'");
+                }
+                // Go back to the top of the while loop
+                scan.setPosition(whileToken);
+                // Call 'getNext' twice so that 'while' is the current token
+                scan.getNext();
+                scan.getNext();
+                //Re-evaluate the expression
+                resCond = expr();
+            }
+            
+            // The expression was false so go to the 'endwhile'
+            resStmts = statements(false);
+        }
+        else
+        {
+            // We are ignoring execution
+            
+            // Skip the 'while' condition
+            skipTo(whileToken.iSourceLineNr, "while", ":");
+            // Ignore the statements after the while
+            resStmts = statements(false);
+        }
+        
+        // 'while' control block must end with 'endwhile'
+        if(! resStmts.terminatingStr.equals("endwhile"))
+        {
+            error("Expected 'endwhile' for 'while' beginning on line %d", whileToken.iSourceLineNr);
+        }
+        // 'endwhile' must be followed by a ';'
+        if(! scan.getNext().equals(";"))
+        {
+            error("Expected ';' after 'endwhile'");
         }
     }
     
@@ -312,6 +383,7 @@ public class Parser
             // We are ignoring execution
             // Skip to the end of the assignment statement
             skipTo(iAssignLineNr, "assignment", ";");
+            return;
         }
         // Otherwise, we are executing the assignment
         
@@ -413,6 +485,7 @@ public class Parser
             // We are ignoring execution
             // Skip to the end of the declare statement
             skipTo(iDeclareLineNr, "declare", ";");
+            return;
         }
         // Otherwise, we are executing the declaration
         
@@ -483,7 +556,7 @@ public class Parser
         // TEMPORARY!!!
         skipTo(0,"expr",":");
         ResultValue tempRes = new ResultValue();
-        tempRes.value = "F";
+        tempRes.value = "T";
         return tempRes;
     }
     

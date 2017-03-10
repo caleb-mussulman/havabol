@@ -78,6 +78,22 @@ public class Scanner
         
         this.getNext();
     }
+    
+    /**
+     * Sets the scanner's current scanning position
+     * <p>
+     * Takes a token and uses its line number and column position
+     * to set the character array to where the scanner should start
+     * scanning on that line on the next call to 'getnext()'. These
+     * values would have been set in the token when it was scanned.
+     * @param positionToken  the token to be used to set the position
+     */
+    public void setPosition(Token positionToken)
+    {
+        this.iSourceLineNr = positionToken.iSourceLineNr;
+        this.iColPos = positionToken.iColPos;
+        textCharM = sourceLineM.get(iSourceLineNr).toCharArray();
+    }
 
     /**
      * Returns the string of the current token for the scanner. It will also
@@ -105,21 +121,22 @@ public class Scanner
         int iTokenBeginIndex;
         int iTokenLength;
         String error;
-                
+        
+        /*
         // If the line numbers between tokens are different, print new line of input.
         if(currentToken.iSourceLineNr != nextToken.iSourceLineNr)
         {
             iPrintLineNr = currentToken.iSourceLineNr;
             
             // Print all lines of input between the two tokens (possible blank lines).
-            while(iPrintLineNr != nextToken.iSourceLineNr && nextToken.primClassif != Token.EOF)
+            while(iPrintLineNr <= nextToken.iSourceLineNr && nextToken.primClassif != Token.EOF)
             {
                 System.out.printf("%3d %s\n", iPrintLineNr + 2, sourceLineM.get(iPrintLineNr + 1));
                 iPrintLineNr++;
             }
             
         }
-        
+        */
         currentToken = nextToken;
         nextToken = new Token();
         
