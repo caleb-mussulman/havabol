@@ -1,7 +1,7 @@
 package havabol;
 
 /**
- * @desc Converts a ResultValue into a Numberic so that arithmetic operations
+ * @desc Converts a ResultValue into a Numeric so that arithmetic operations
  * can be performed on the result.
  *
  * @authors Taylor Brauer
@@ -33,6 +33,5 @@ public class Numeric {
 	/*
 	 *  METHODS
 	 */
-	// Convert a result object into a Numeric object.
 	
 }
