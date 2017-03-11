@@ -27,22 +27,32 @@ public class Utility {
     	
     	// Is a floating point value.
     	if (nop1.resval.value.matches("[+-]?([0-9]*[.])?[0-9]+")) {
-    		Double n1 = Double.parseDouble(nop1.resval.value);
-    		Double n2 = Double.parseDouble(nop2.resval.value);
+    		nop1.type = 1;
+    		nop2.type = 1;
     		
-    		Double subValue = n1 - n2;
+    		nop1.doubleValue = Double.parseDouble(nop1.resval.value);
+    		nop2.doubleValue = Double.parseDouble(nop2.resval.value);
     		
-    		String valString = subValue.toString();
-    		res.value = valString.format("%0.2s", valString);
+    		Double tempValue = nop1.doubleValue - nop2.doubleValue;
+    		
+    		// The updated value gets stored in nop1 because it is of form -=
+    		nop1.strValue = tempValue.toString();
+    		
+    		res.value = nop1.strValue.format("%0.2s", nop1.strValue);
     	// It is an integer value.
     	} else if (nop1.resval.value.matches("\\d+")) {
-    		int n1 = Integer.parseInt(nop1.resval.value);
-    		int n2 = Integer.parseInt(nop2.resval.value);
+    		nop1.type = 0;
+    		nop2.type = 0;
     		
-    		int subValue = n1 - n2;
+    		nop1.integerValue = Integer.parseInt(nop1.resval.value);
+    		nop2.integerValue = Integer.parseInt(nop2.resval.value);
     		
-    		String valString = String.valueOf(subValue);
-    		res.value = valString.format("%0.2s", valString);
+    		int subValue = nop1.integerValue - nop2.integerValue;
+    		
+    		// The updated value gets stored in nop1 because it is of form -=
+    		nop1.strValue = String.valueOf(subValue);
+    		
+    		res.value = nop1.strValue.format("%0.2s", nop1.strValue);
     	}
     	
 		return res;
@@ -52,22 +62,32 @@ public class Utility {
     	
     	// Is a floating point value.
     	if (nop1.resval.value.matches("[+-]?([0-9]*[.])?[0-9]+")) {
-    		Double n1 = Double.parseDouble(nop1.resval.value);
-    		Double n2 = Double.parseDouble(nop2.resval.value);
+    		nop1.type = 1;
+    		nop2.type = 1;
     		
-    		Double subValue = n1 + n2;
+    		nop1.doubleValue = Double.parseDouble(nop1.resval.value);
+    		nop2.doubleValue = Double.parseDouble(nop2.resval.value);
     		
-    		String valString = subValue.toString();
-    		res.value = valString.format("%0.2s", valString);
+    		Double tempValue = nop1.doubleValue + nop2.doubleValue;
+    		
+    		// The updated value gets stored in nop1 because it is of form +=
+    		nop1.strValue = tempValue.toString();
+    		
+    		res.value = nop1.strValue.format("%0.2s", nop1.strValue);
     	// It is an integer value.
     	} else if (nop1.resval.value.matches("\\d+")) {
-    		int n1 = Integer.parseInt(nop1.resval.value);
-    		int n2 = Integer.parseInt(nop2.resval.value);
+    		nop1.type = 0;
+    		nop2.type = 0;
     		
-    		int subValue = n1 + n2;
+    		nop1.integerValue = Integer.parseInt(nop1.resval.value);
+    		nop2.integerValue = Integer.parseInt(nop2.resval.value);
     		
-    		String valString = String.valueOf(subValue);
-    		res.value = valString.format("%0.2s", valString);
+    		int subValue = nop1.integerValue + nop2.integerValue;
+    		
+    		// The updated value gets stored in nop1 because it is of form +=
+    		nop1.strValue = String.valueOf(subValue);
+    		
+    		res.value = nop1.strValue.format("%0.2s", nop1.strValue);
     	}
     	
 		return res;
@@ -77,22 +97,32 @@ public class Utility {
     	
     	// Is a floating point value.
     	if (nop1.resval.value.matches("[+-]?([0-9]*[.])?[0-9]+")) {
-    		Double n1 = Double.parseDouble(nop1.resval.value);
-    		Double n2 = Double.parseDouble(nop2.resval.value);
+    		nop1.type = 1;
+    		nop2.type = 1;
     		
-    		Double subValue = n1 * n2;
+    		nop1.doubleValue = Double.parseDouble(nop1.resval.value);
+    		nop2.doubleValue = Double.parseDouble(nop2.resval.value);
     		
-    		String valString = subValue.toString();
-    		res.value = valString.format("%0.2s", valString);
+    		Double tempValue = nop1.doubleValue * nop2.doubleValue;
+    		
+    		// The updated value gets stored in nop1 because it is of form *=
+    		nop1.strValue = tempValue.toString();
+    		
+    		res.value = nop1.strValue.format("%0.2s", nop1.strValue);
     	// It is an integer value.
     	} else if (nop1.resval.value.matches("\\d+")) {
-    		int n1 = Integer.parseInt(nop1.resval.value);
-    		int n2 = Integer.parseInt(nop2.resval.value);
+    		nop1.type = 0;
+    		nop2.type = 0;
     		
-    		int subValue = n1 * n2;
+    		nop1.integerValue = Integer.parseInt(nop1.resval.value);
+    		nop2.integerValue = Integer.parseInt(nop2.resval.value);
     		
-    		String valString = String.valueOf(subValue);
-    		res.value = valString.format("%0.2s", valString);
+    		int subValue = nop1.integerValue * nop2.integerValue;
+    		
+    		// The updated value gets stored in nop1 because it is of form *=
+    		nop1.strValue = String.valueOf(subValue);
+    		
+    		res.value = nop1.strValue.format("%0.2s", nop1.strValue);
     	}
     	
 		return res;
@@ -102,22 +132,32 @@ public class Utility {
     	
     	// Is a floating point value.
     	if (nop1.resval.value.matches("[+-]?([0-9]*[.])?[0-9]+")) {
-    		Double n1 = Double.parseDouble(nop1.resval.value);
-    		Double n2 = Double.parseDouble(nop2.resval.value);
+    		nop1.type = 1;
+    		nop2.type = 1;
     		
-    		Double subValue = n1 / n2;
+    		nop1.doubleValue = Double.parseDouble(nop1.resval.value);
+    		nop2.doubleValue = Double.parseDouble(nop2.resval.value);
     		
-    		String valString = subValue.toString();
-    		res.value = valString.format("%0.2s", valString);
+    		Double tempValue = nop1.doubleValue / nop2.doubleValue;
+    		
+    		// The updated value gets stored in nop1 because it is of form /=
+    		nop1.strValue = tempValue.toString();
+    		
+    		res.value = nop1.strValue.format("%0.2s", nop1.strValue);
     	// It is an integer value.
     	} else if (nop1.resval.value.matches("\\d+")) {
-    		int n1 = Integer.parseInt(nop1.resval.value);
-    		int n2 = Integer.parseInt(nop2.resval.value);
+    		nop1.type = 0;
+    		nop2.type = 0;
     		
-    		int subValue = n1 / n2;
+    		nop1.integerValue = Integer.parseInt(nop1.resval.value);
+    		nop2.integerValue = Integer.parseInt(nop2.resval.value);
     		
-    		String valString = String.valueOf(subValue);
-    		res.value = valString.format("%0.2s", valString);
+    		int subValue = nop1.integerValue / nop2.integerValue;
+    		
+    		// The updated value gets stored in nop1 because it is of form /=
+    		nop1.strValue = String.valueOf(subValue);
+    		
+    		res.value = nop1.strValue.format("%0.2s", nop1.strValue);
     	}
     	
 		return res;
