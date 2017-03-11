@@ -27,10 +27,10 @@ public class Utility {
     	
     	// Is a floating point value.
     	if (nop1.resval.value.matches("[+-]?([0-9]*[.])?[0-9]+")) {
-    		Float n1 = Float.parseFloat(nop1.resval.value);
-    		Float n2 = Float.parseFloat(nop2.resval.value);
+    		Double n1 = Double.parseDouble(nop1.resval.value);
+    		Double n2 = Double.parseDouble(nop2.resval.value);
     		
-    		Float subValue = n1 - n2;
+    		Double subValue = n1 - n2;
     		
     		String valString = subValue.toString();
     		res.value = valString.format("%0.2s", valString);
@@ -52,10 +52,10 @@ public class Utility {
     	
     	// Is a floating point value.
     	if (nop1.resval.value.matches("[+-]?([0-9]*[.])?[0-9]+")) {
-    		Float n1 = Float.parseFloat(nop1.resval.value);
-    		Float n2 = Float.parseFloat(nop2.resval.value);
+    		Double n1 = Double.parseDouble(nop1.resval.value);
+    		Double n2 = Double.parseDouble(nop2.resval.value);
     		
-    		Float subValue = n1 + n2;
+    		Double subValue = n1 + n2;
     		
     		String valString = subValue.toString();
     		res.value = valString.format("%0.2s", valString);
@@ -77,10 +77,10 @@ public class Utility {
     	
     	// Is a floating point value.
     	if (nop1.resval.value.matches("[+-]?([0-9]*[.])?[0-9]+")) {
-    		Float n1 = Float.parseFloat(nop1.resval.value);
-    		Float n2 = Float.parseFloat(nop2.resval.value);
+    		Double n1 = Double.parseDouble(nop1.resval.value);
+    		Double n2 = Double.parseDouble(nop2.resval.value);
     		
-    		Float subValue = n1 * n2;
+    		Double subValue = n1 * n2;
     		
     		String valString = subValue.toString();
     		res.value = valString.format("%0.2s", valString);
@@ -102,10 +102,10 @@ public class Utility {
     	
     	// Is a floating point value.
     	if (nop1.resval.value.matches("[+-]?([0-9]*[.])?[0-9]+")) {
-    		Float n1 = Float.parseFloat(nop1.resval.value);
-    		Float n2 = Float.parseFloat(nop2.resval.value);
+    		Double n1 = Double.parseDouble(nop1.resval.value);
+    		Double n2 = Double.parseDouble(nop2.resval.value);
     		
-    		Float subValue = n1 / n2;
+    		Double subValue = n1 / n2;
     		
     		String valString = subValue.toString();
     		res.value = valString.format("%0.2s", valString);
