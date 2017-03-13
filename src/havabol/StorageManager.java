@@ -1,10 +1,6 @@
 package havabol;
-
 import java.util.HashMap;
-/**
- * 
- * 
- */
+
 public class StorageManager
 {
     /* This class should NOT need fields for
@@ -54,11 +50,14 @@ public class StorageManager
         ResultValue resValue;
         resValue = sm.get(symbol);
         //We need to check if our symbol is in the StorageManager
-        if (resValue == null){
+        if (resValue == null)
+        {
             //There is no value associated with that (valid) key
             //Call parser.error to call the ParserException
             errParse.error("Uninitialized value for Variable: '%s'", symbol);
-        }else {
+        }
+        else
+        {
             //The value exists
             return resValue;
         }

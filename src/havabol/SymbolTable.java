@@ -70,7 +70,8 @@ public class SymbolTable
      * @return resVal    - ResultValue variable to where ever that value is needed.
      * @throws Exception
      */
-    ResultValue retrieveVariableValue(Parser errParse, String symbol) throws Exception{
+    ResultValue retrieveVariableValue(Parser errParse, String symbol) throws Exception
+    {
         //All Error checking is done in storageManager.getVariableValue
         ResultValue resVal = storageManager.getVariableValue(errParse, symbol);
         return resVal;
@@ -83,18 +84,25 @@ public class SymbolTable
      * @param symbol   - The variable name
      * @param value    - The value from 
      */
-    void storeVariableValue(Parser errParse, String symbol, ResultValue value) throws Exception{
+    void storeVariableValue(Parser errParse, String symbol, ResultValue value) throws Exception
+    {
         //Check if the symbol is already declared.
-        if(ht.containsKey(symbol)){
+        if(ht.containsKey(symbol))
+        {
             //Check if the ResultValue's type matches the type
             int symbolType = ((STIdentifier) ht.get(symbol)).dclType;
-            if(value.type ==  symbolType){
+            if(value.type ==  symbolType)
+            {
                 storageManager.putVariableValue(errParse, symbol, value);
-            }else {
+            }
+            else
+            {
                 errParse.error("Variable '%s' of type '%s' can not be assigned value '%s' of type '%s'"
                               ,symbol, symbolType ,value.value, value.type); 
             }
-        }else {
+        }
+        else
+        {
             errParse.error("Variable: '%s' has not been declared", symbol);
         }
     }
