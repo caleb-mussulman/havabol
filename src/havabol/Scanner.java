@@ -182,10 +182,9 @@ public class Scanner
                 // Check if at the beginning of comment
                 else if( ((iColPos + 1) < textCharM.length) && (textCharM[iColPos] == '/') && (textCharM[iColPos + 1] == '/') )
                 {
-                    // Skip the rest of the comment by getting the next line and resetting the column position.
-                    iSourceLineNr++;
-                    textCharM = sourceLineM.get(iSourceLineNr).toCharArray();
-                    iColPos = 0;
+                    // Skip the rest of the comment by setting the column position past the end of the line.
+                    // Next iteration of the loop will get the next line, if it exists
+                    iColPos = textCharM.length;
                 }
                 // On a token
                 else
@@ -301,6 +300,12 @@ public class Scanner
             else if(STEntryResult instanceof STFunction)
             {
                 nextToken.subClassif = ((STFunction) STEntryResult).subClassif;
+            }
+            // If token is an identifier, then it is an OPERAND IDENTIFIER that has
+            // already been declared (i.e., it is currently in the symbol table)
+            else if(STEntryResult instanceof STIdentifier)
+            {
+                nextToken.subClassif = Token.IDENTIFIER;
             }
         }   	
         // Token is an operator

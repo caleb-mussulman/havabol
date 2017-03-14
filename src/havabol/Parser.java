@@ -1,5 +1,7 @@
 package havabol;
 
+import java.util.*;
+
 public class Parser
 {
     public String sourceFileNm;
@@ -32,8 +34,8 @@ public class Parser
                 }
                 // Print the final token result in table format
                 scan.currentToken.printToken();
-            }
-            */
+            }*/
+            
             statements(true);
         }
         catch (Exception e)
@@ -59,7 +61,7 @@ public class Parser
     public void errorLineNr(int iLineNr, String format, Object... varArgs) throws Exception
     {
         String diagnosticTxt = String.format(format, varArgs);
-        throw new ParserException(iLineNr, diagnosticTxt, this.sourceFileNm);
+        throw new ParserException(iLineNr + 1, diagnosticTxt, this.sourceFileNm);
     }
     
     /**
@@ -76,7 +78,6 @@ public class Parser
     {
         errorLineNr(scan.currentToken.iSourceLineNr, format, varArgs);
     }
-    
     /**
      * Determines the type of statement and invokes the corresponding subroutine
      * <p>
@@ -91,7 +92,6 @@ public class Parser
         
         // Keep executing statements until EOF or FLOW END
         while(true){
-            
             // Get the next token
             scan.getNext();
             
@@ -550,14 +550,105 @@ public class Parser
         }
     }
     
-    // TODO
     public ResultValue expr() throws Exception
     {
-        // TEMPORARY!!!
-        skipTo(0,"expr",":");
-        ResultValue tempRes = new ResultValue();
-        tempRes.value = "T";
-        return tempRes;
+        ArrayList<Token> outList = new ArrayList<Token>(); // List to hold prefix expr
+        Stack<Token> postfixStack = new Stack<Token>(); // List to hold the tokens as they are added to prefix expr
+        Stack<ResultValue> resultStack = new Stack<ResultValue>();
+        
+        // Get the next token
+        scan.getNext();
+        // TODO For now, the delimiter for an expression is only "," ";" or ":"
+        // Get the next token as long as it isn't "," ":" or ";"
+        while(",:;".indexOf(scan.currentToken.tokenStr) < 0)
+        {
+            Token token = scan.currentToken;
+            switch(token.primClassif)
+            {
+                case Token.OPERAND:
+                    outList.add(scan.currentToken);
+                    break;
+                case Token.OPERATOR:
+                    // Pop tokens off the stack while they have a precedence greater than or equal to the current operator token
+                    while(! postfixStack.isEmpty())
+                    {
+                        if(token.precedence() > postfixStack.peek().stkPrecedence())
+                        {
+                            break;
+                        }
+                        //If current tokens precedence is less than or equal stk precedence
+                        outList.add(postfixStack.pop());
+                    }
+                    postfixStack.push(token);
+                    break;
+                case Token.SEPARATOR:
+                    switch(token.tokenStr)
+                    {
+                        case "(":
+                            postfixStack.push(token);
+                            break;
+                        case ")":
+                            boolean bFoundParen = false;// Signifies if we found the matching left parenthesis
+                            // Remove from the stack until the matching parenthesis is found
+                            while(! postfixStack.isEmpty())
+                            {
+                                Token popped = postfixStack.pop();
+                                // Found matching parenthesis
+                                if(popped.tokenStr.equals("("))
+                                {
+                                    bFoundParen = true;
+                                    break;
+                                }
+                                outList.add(popped);
+                            }
+                            
+                            // TODO may change
+                            if(! bFoundParen)
+                            {
+                                error("Could not find matching '('");
+                            }
+                            break;
+                        default:
+                            error("Invalid separator, found '%s'", token.tokenStr);
+                    }
+                default:
+                    error("Unrecognized argument for expression, found '%s'. May be missing ';' or ':'?", token.tokenStr);
+            }
+            scan.getNext();
+        }
+        
+        // Put the rest of expression's input stack to the postfix expression
+        while(! postfixStack.isEmpty())
+        {
+            Token popped = postfixStack.pop();
+            // Should not have any left parenthesis
+            if(popped.tokenStr.equals("("))
+            {
+                error("Missing ')'");
+            }
+            outList.add(popped);
+        }
+        
+        for(Token outToken : outList)
+        {
+            switch(outToken.primClassif)
+            {
+                case Token.OPERAND:
+                    resultStack.push(outToken.toResultValue());
+                    break;
+                case Token.OPERATOR:
+                    break;
+            }
+        }
+        
+        for(Token current: outList)
+        {
+            System.out.println(current.tokenStr);
+        }
+        //-----------TEMPORARY------------------
+        ResultValue TEMPRES = new ResultValue();
+        return TEMPRES;
+        //--------------------------------------
     }
     
     /**

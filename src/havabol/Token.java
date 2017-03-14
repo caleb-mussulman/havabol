@@ -30,7 +30,7 @@ public class Token
     // Constants for FUNCTION's subClassif (definedby)
     public static final int BUILTIN    = 13;// builtin function (e.g., print)
     public static final int USER       = 14;// user defined
-    // Constants for OPERAND's subclassif (number of operators)
+    // Constants for OPERATOR's subclassif (number of operands)
     public static final int UNARY      = 15;
     public static final int BINARY     = 16;
     
@@ -193,4 +193,169 @@ public class Token
         System.out.printf("\n");
     }
 
+    /**
+     * Returns the precedence for the token if the token is
+     * not yet in the post-fix stack
+     * <p>
+     * See Token.getPrecedence for more information
+     * @return                  the precedence value
+     * @throws ParserException  if this method was called with an invalid token
+     */
+    public int precedence() throws ParserException
+    {
+        return getPrecedence(false);
+    }
+    
+    /**
+     * Returns the precedence for the token if the token is
+     * already in the post-fix stack
+     * <p>
+     * See Token.getPrecedence for more information
+     * @return                  the precedence value
+     * @throws ParserException  if this method was called with an invalid token
+     */
+    public int stkPrecedence() throws ParserException
+    {
+        return getPrecedence(true);
+    }
+    
+    /**
+     * Determines the precedence of the given operator
+     * <p>
+     * This method is used by Parser.expr() to determine the precedence of
+     * an operator/separator. When evaluating an infix expression, the expression
+     * is converted to a post-fix stack first. In order to properly parse the
+     * infix expression, the tokens may have different precedence values
+     * depending on whether they are already on the post-fix stack or not.
+     * If the boolean 'stackPrecedence' is passed in with 'true', then return
+     * the precedence value for the token as if it were already on the post-fix
+     * stack; otherwise, return its other precedence value. The list of
+     * precedences are as follows:
+     * <p>
+     * -----------------------------------------------------
+     *      Symbol      Token Precedence    Stack Precedence
+     * -----------------------------------------------------
+     *      (           15                  2
+     *      u-          12                  12
+     *      ^           11                  10
+     *      * /         9                   9
+     *      + -         8                   8
+     *      #           7                   7
+     *      < > <= >=   6                   6
+     *      == !=       6                   6
+     *      in notin    6                   6
+     *      not         5                   5
+     *      and or      4                   4
+     * -----------------------------------------------------
+     * @param stackPrecedence   boolean to determine if the precedence is for
+     *                          the token on the post-fix stack 
+     * @return                  the precedence value
+     * @throws ParserException  if this method was called with an invalid token
+     */
+    private int getPrecedence(boolean stackPrecedence) throws ParserException
+    {
+        // We should only call this method if the token is an operator or separator
+        if(! ((this.primClassif == Token.OPERATOR) || (this.primClassif == Token.SEPARATOR)) )
+        {
+            // User's havabol code should NEVER get this error. This error is for debugging and
+            // if it occurs, it is because we wrote an improper call to this method
+            String diagnosticTxt = String.format("Improper call to 'Token.precedence' for token '%s' that has primary"
+                    + "classification '%s'", this.tokenStr, Token.strPrimClassifM[this.primClassif]);
+            throw new ParserException(this.iSourceLineNr + 1, diagnosticTxt, "");
+        }
+        // Determine which operator the token is, and return its corresponding precedence value
+        switch(this.tokenStr)
+        {
+            case "(":
+                // Precedence if '(' is already in post-fix stack
+                if(stackPrecedence)
+                {
+                    return 2;
+                }
+                // Precedence if '(' is not yet in post-fix stack
+                else
+                {
+                    return 15;
+                }
+            case "-":
+                // Unary minus
+                if(this.subClassif == Token.UNARY)
+                {
+                    return 12;
+                }
+                // Binary minus
+                else
+                {
+                    return 8;
+                }
+            case "^":
+                // Precedence if '^' is already in post-fix stack
+                if(stackPrecedence)
+                {
+                    return 10;
+                }
+                // Precedence if '^' is not yet in post-fix stack
+                else
+                {
+                    return 11;
+                }
+            case "*":
+            case "/":
+                return 9;
+            case "+":
+                return 8;
+            case "#":
+                return 7;
+            case "<":
+            case ">":
+            case "<=":
+            case ">=":
+            case "==":
+            case "!=":
+            case "in":
+            case "notin":
+                return 6;
+            case "not":
+                return 5;
+            case "and":
+            case "or":
+                return 4;
+            default:
+                // This should really never be reached. If it is, we have improperly called this function
+                String diagnosticTxt = String.format("Invalid operator/separator on call to Token.getPrecedence, found '%s'", this.tokenStr);
+                throw new ParserException(this.iSourceLineNr + 1, diagnosticTxt, "");
+        }
+    }
+    
+    /**
+     * Creates a ResultValue object from the current instance of the token
+     * <p>
+     * This method will create a ResultValue object, set its data type,
+     * value, and structure according to the token's, and return that
+     * resulting object
+     * @return the ResultValue that contains the token's values
+     * @throws ParserException if this method was called for a token that
+     *                         is not an operand
+     *TODO ASSIGNING STRUCTURE AS PRIMITIVE FOR PROGRAM 3 (MAY NEED TO CHANGE)
+     */
+    public ResultValue toResultValue() throws ParserException
+    {
+        ResultValue resVal = new ResultValue(); // the result value to be returned
+        // We should only call this method if the token is an operand
+        if(! (this.primClassif == Token.OPERAND))
+        {
+            // User's havabol code should NEVER get this error. This error is for debugging and
+            // if it occurs, it is because we wrote an improper call to this method
+            String diagnosticTxt = String.format("Improper call to 'Token.toResultValue' for token '%s' that has primary"
+                    + "classification '%s'", this.tokenStr, Token.strPrimClassifM[this.primClassif]);
+            throw new ParserException(this.iSourceLineNr + 1, diagnosticTxt, "");
+        }
+        // Assign the data type
+        resVal.type = this.subClassif;
+        // Assign the value
+        resVal.value = this.tokenStr;
+        // Assign the structure (primitive for program 3, don't yet know how we will determine the structure)
+        resVal.structure = STIdentifier.PRIMITVE;
+        return resVal;
+    }
 }

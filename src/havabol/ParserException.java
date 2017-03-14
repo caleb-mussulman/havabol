@@ -2,6 +2,8 @@ package havabol;
 
 public class ParserException extends Exception {
     
+  // Eclipse won't stop telling me we need this...
+  private static final long serialVersionUID = -8791015214876501863L;
   public int iLineNr;
   public String diagnostic;
   public String sourceFileName;

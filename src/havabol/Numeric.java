@@ -11,7 +11,7 @@ public class Numeric {
 	/*
 	 * CLASS VARIABLES
 	 */
-	int integerValue;
+    int integerValue;
 	double doubleValue;
 	String strValue; // display value
 	int type; // INTEGER, FLOAT
