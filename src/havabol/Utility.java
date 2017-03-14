@@ -38,7 +38,7 @@ public class Utility {
     		// The updated value gets stored in nop1 because it is of form -=
     		nop1.strValue = tempValue.toString();
     		
-    		res.value = nop1.strValue.format("%0.2s", nop1.strValue);
+    		res.value = String.format("%0.2s", nop1.strValue);
     	// It is an integer value.
     	} else if (nop1.resval.structure == 2) {
     		nop1.type = 0;
@@ -52,7 +52,7 @@ public class Utility {
     		// The updated value gets stored in nop1 because it is of form -=
     		nop1.strValue = String.valueOf(subValue);
     		
-    		res.value = nop1.strValue.format("%0.2s", nop1.strValue);
+    		res.value = String.format("%0.2s", nop1.strValue);
     	}
     	
 		return res;
@@ -73,7 +73,7 @@ public class Utility {
     		// The updated value gets stored in nop1 because it is of form +=
     		nop1.strValue = tempValue.toString();
     		
-    		res.value = nop1.strValue.format("%0.2s", nop1.strValue);
+    		res.value = String.format("%0.2s", nop1.strValue);
     	// It is an integer value.
     	} else if (nop1.resval.structure == 2) {
     		nop1.type = 0;
@@ -87,7 +87,7 @@ public class Utility {
     		// The updated value gets stored in nop1 because it is of form +=
     		nop1.strValue = String.valueOf(subValue);
     		
-    		res.value = nop1.strValue.format("%0.2s", nop1.strValue);
+    		res.value = String.format("%0.2s", nop1.strValue);
     	}
     	
 		return res;
@@ -108,7 +108,7 @@ public class Utility {
     		// The updated value gets stored in nop1 because it is of form *=
     		nop1.strValue = tempValue.toString();
     		
-    		res.value = nop1.strValue.format("%0.2s", nop1.strValue);
+    		res.value = String.format("%0.2s", nop1.strValue);
     	// It is an integer value.
     	} else if (nop1.resval.structure == 2) {
     		nop1.type = 0;
@@ -122,7 +122,7 @@ public class Utility {
     		// The updated value gets stored in nop1 because it is of form *=
     		nop1.strValue = String.valueOf(subValue);
     		
-    		res.value = nop1.strValue.format("%0.2s", nop1.strValue);
+    		res.value = String.format("%0.2s", nop1.strValue);
     	}
     	
 		return res;
@@ -143,7 +143,7 @@ public class Utility {
     		// The updated value gets stored in nop1 because it is of form /=
     		nop1.strValue = tempValue.toString();
     		
-    		res.value = nop1.strValue.format("%0.2s", nop1.strValue);
+    		res.value = String.format("%0.2s", nop1.strValue);
     	// It is an integer value.
     	} else if (nop1.resval.structure == 2) {
     		nop1.type = 0;
@@ -157,7 +157,7 @@ public class Utility {
     		// The updated value gets stored in nop1 because it is of form /=
     		nop1.strValue = String.valueOf(subValue);
     		
-    		res.value = nop1.strValue.format("%0.2s", nop1.strValue);
+    		res.value = String.format("%0.2s", nop1.strValue);
     	}
     	
 		return res;
