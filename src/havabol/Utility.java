@@ -26,7 +26,7 @@ public class Utility {
     	ResultValue res = null;
     	
     	// Is a floating point value.
-    	if (nop1.resval.value.matches("[+-]?([0-9]*[.])?[0-9]+")) {
+    	if (nop1.resval.structure == 3) {
     		nop1.type = 1;
     		nop2.type = 1;
     		
@@ -40,7 +40,7 @@ public class Utility {
     		
     		res.value = nop1.strValue.format("%0.2s", nop1.strValue);
     	// It is an integer value.
-    	} else if (nop1.resval.value.matches("\\d+")) {
+    	} else if (nop1.resval.structure == 2) {
     		nop1.type = 0;
     		nop2.type = 0;
     		
@@ -61,7 +61,7 @@ public class Utility {
     	ResultValue res = null;
     	
     	// Is a floating point value.
-    	if (nop1.resval.value.matches("[+-]?([0-9]*[.])?[0-9]+")) {
+    	if (nop1.resval.structure == 3) {
     		nop1.type = 1;
     		nop2.type = 1;
     		
@@ -75,7 +75,7 @@ public class Utility {
     		
     		res.value = nop1.strValue.format("%0.2s", nop1.strValue);
     	// It is an integer value.
-    	} else if (nop1.resval.value.matches("\\d+")) {
+    	} else if (nop1.resval.structure == 2) {
     		nop1.type = 0;
     		nop2.type = 0;
     		
@@ -96,7 +96,7 @@ public class Utility {
     	ResultValue res = null;
     	
     	// Is a floating point value.
-    	if (nop1.resval.value.matches("[+-]?([0-9]*[.])?[0-9]+")) {
+    	if (nop1.resval.structure == 3) {
     		nop1.type = 1;
     		nop2.type = 1;
     		
@@ -110,7 +110,7 @@ public class Utility {
     		
     		res.value = nop1.strValue.format("%0.2s", nop1.strValue);
     	// It is an integer value.
-    	} else if (nop1.resval.value.matches("\\d+")) {
+    	} else if (nop1.resval.structure == 2) {
     		nop1.type = 0;
     		nop2.type = 0;
     		
@@ -131,7 +131,7 @@ public class Utility {
     	ResultValue res = null;
     	
     	// Is a floating point value.
-    	if (nop1.resval.value.matches("[+-]?([0-9]*[.])?[0-9]+")) {
+    	if (nop1.resval.structure == 3) {
     		nop1.type = 1;
     		nop2.type = 1;
     		
@@ -145,7 +145,7 @@ public class Utility {
     		
     		res.value = nop1.strValue.format("%0.2s", nop1.strValue);
     	// It is an integer value.
-    	} else if (nop1.resval.value.matches("\\d+")) {
+    	} else if (nop1.resval.structure == 2) {
     		nop1.type = 0;
     		nop2.type = 0;
     		
