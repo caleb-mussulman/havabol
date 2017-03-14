@@ -23,7 +23,7 @@ public class Utility {
      */
     // Takes Numeric params
     public static ResultValue subtract(Parser parser, Numeric nop1, Numeric nop2) {
-    	ResultValue res = null;
+    	ResultValue res = new ResultValue();
     	
     	// Is a floating point value.
     	if (nop1.resval.structure == 3) {
@@ -58,7 +58,7 @@ public class Utility {
 		return res;
     }
     public static ResultValue add(Parser parser, Numeric nop1, Numeric nop2) {
-    	ResultValue res = null;
+    	ResultValue res = new ResultValue();
     	
     	// Is a floating point value.
     	if (nop1.resval.structure == 3) {
@@ -93,7 +93,7 @@ public class Utility {
 		return res;
     }
     public static ResultValue mulitply(Parser parser, Numeric nop1, Numeric nop2) {
-    	ResultValue res = null;
+    	ResultValue res = new ResultValue();
     	
     	// Is a floating point value.
     	if (nop1.resval.structure == 3) {
@@ -128,7 +128,7 @@ public class Utility {
 		return res;
     }
     public static ResultValue divide(Parser parser, Numeric nop1, Numeric nop2) {
-    	ResultValue res = null;
+    	ResultValue res = new ResultValue();
     	
     	// Is a floating point value.
     	if (nop1.resval.structure == 3) {
