@@ -301,6 +301,11 @@ public class Scanner
             {
                 nextToken.subClassif = ((STFunction) STEntryResult).subClassif;
             }
+            // If token is an operator, add its number of operands as subclassification
+            else if(STEntryResult instanceof STOperator)
+            {
+                nextToken.subClassif = ((STOperator) STEntryResult).subClassif;
+            }
             // If token is an identifier, then it is an OPERAND IDENTIFIER that has
             // already been declared (i.e., it is currently in the symbol table)
             else if(STEntryResult instanceof STIdentifier)

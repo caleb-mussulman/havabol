@@ -657,7 +657,9 @@ public class Parser
         // Evaluate the post-fix expression
         for(Token outToken : outList)
         {
+            // Set the current parsing line number, for error messages
             this.iParseTokenLineNr = outToken.iSourceLineNr;
+            
             // Check the type of token
             switch(outToken.primClassif)
             {
@@ -682,10 +684,19 @@ public class Parser
                     // Unary operator
                     if(outToken.subClassif == Token.UNARY)
                     {
-                        ResultValue param = new ResultValue();
+                        // Check to see that there is an operand for the operation
+                        if(resultStack.isEmpty())
+                        {
+                            errorWithCurrent("Missing operand for operation '%s'", outToken.tokenStr);
+                        }
+                        // An operand exists so retrieve it
+                        ResultValue param = resultStack.pop();
+                        
+                        // Determine which unary operation to perform
                         switch(outToken.tokenStr)
                         {
-                            //case
+                            case "-":
+                                
                         }
                     }
                     // Binary operator

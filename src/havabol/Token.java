@@ -113,7 +113,7 @@ public class Token
                     subClassifStr = "**garbage**";
                 break;
             case Token.OPERATOR:
-                if(subClassif == UNARY || tokenStr.equals("not"))
+                if(subClassif == UNARY)
                     subClassifStr = "UNARY";
                 else
                     subClassifStr = "BINARY";

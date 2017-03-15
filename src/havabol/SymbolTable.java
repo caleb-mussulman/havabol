@@ -147,10 +147,10 @@ public class SymbolTable
                         , Token.BUILTIN, 1));
         
         //==========================OPERATORS========================
-        ht.put("and", new STEntry("and",Token.OPERATOR));
-        ht.put("or", new STEntry("or",Token.OPERATOR));
-        ht.put("not", new STEntry("not",Token.OPERATOR));
-        ht.put("in", new STEntry("in",Token.OPERATOR));
-        ht.put("notin", new STEntry("notin",Token.OPERATOR));
+        ht.put("and", new STOperator("and",Token.OPERATOR, Token.BINARY));
+        ht.put("or", new STOperator("or",Token.OPERATOR, Token.BINARY));
+        ht.put("not", new STOperator("not",Token.OPERATOR, Token.UNARY));
+        ht.put("in", new STOperator("in",Token.OPERATOR, Token.BINARY));
+        ht.put("notin", new STOperator("notin",Token.OPERATOR, Token.BINARY));
     }
 }
