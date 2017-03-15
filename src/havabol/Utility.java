@@ -6,7 +6,8 @@ package havabol;
  *
  * @authors Taylor Brauer
  */
-public class Utility {
+public class Utility 
+{
 	/*
 	 * CLASS VARIABLES
 	 */
@@ -14,19 +15,22 @@ public class Utility {
 	/*
 	 *  CONSTRUCTOR
 	 */
-    public Utility() {
+    public Utility()
+    {
     	
     }
     
     /*
      * CLASS METHODS
      */
-    // Takes Numeric params
-    public static ResultValue subtract(Parser parser, Numeric nop1, Numeric nop2) {
+    // Operations (+=, -=, *=, /=)
+    public static ResultValue subtract(Parser parser, Numeric nop1, Numeric nop2) 
+    {
     	ResultValue res = new ResultValue();
     	
     	// Is a floating point value.
-    	if (nop1.resval.structure == 3) {
+    	if (nop1.resval.structure == 3) 
+    	{
     		nop1.type = 1;
     		nop2.type = 1;
     		
@@ -40,7 +44,9 @@ public class Utility {
     		
     		res.value = String.format("%0.2s", nop1.strValue);
     	// It is an integer value.
-    	} else if (nop1.resval.structure == 2) {
+    	} 
+    	else if (nop1.resval.structure == 2) 
+    	{
     		nop1.type = 0;
     		nop2.type = 0;
     		
@@ -57,11 +63,13 @@ public class Utility {
     	
 		return res;
     }
-    public static ResultValue add(Parser parser, Numeric nop1, Numeric nop2) {
+    public static ResultValue add(Parser parser, Numeric nop1, Numeric nop2) 
+    {
     	ResultValue res = new ResultValue();
     	
     	// Is a floating point value.
-    	if (nop1.resval.structure == 3) {
+    	if (nop1.resval.structure == 3) 
+    	{
     		nop1.type = 1;
     		nop2.type = 1;
     		
@@ -75,7 +83,9 @@ public class Utility {
     		
     		res.value = String.format("%0.2s", nop1.strValue);
     	// It is an integer value.
-    	} else if (nop1.resval.structure == 2) {
+    	}
+    	else if (nop1.resval.structure == 2) 
+    	{
     		nop1.type = 0;
     		nop2.type = 0;
     		
@@ -92,11 +102,13 @@ public class Utility {
     	
 		return res;
     }
-    public static ResultValue mulitply(Parser parser, Numeric nop1, Numeric nop2) {
+    public static ResultValue mulitply(Parser parser, Numeric nop1, Numeric nop2) 
+    {
     	ResultValue res = new ResultValue();
     	
     	// Is a floating point value.
-    	if (nop1.resval.structure == 3) {
+    	if (nop1.resval.structure == 3) 
+    	{
     		nop1.type = 1;
     		nop2.type = 1;
     		
@@ -110,7 +122,9 @@ public class Utility {
     		
     		res.value = String.format("%0.2s", nop1.strValue);
     	// It is an integer value.
-    	} else if (nop1.resval.structure == 2) {
+    	} 
+    	else if (nop1.resval.structure == 2) 
+    	{
     		nop1.type = 0;
     		nop2.type = 0;
     		
@@ -127,11 +141,13 @@ public class Utility {
     	
 		return res;
     }
-    public static ResultValue divide(Parser parser, Numeric nop1, Numeric nop2) {
+    public static ResultValue divide(Parser parser, Numeric nop1, Numeric nop2) 
+    {
     	ResultValue res = new ResultValue();
     	
     	// Is a floating point value.
-    	if (nop1.resval.structure == 3) {
+    	if (nop1.resval.structure == 3) 
+    	{
     		nop1.type = 1;
     		nop2.type = 1;
     		
@@ -145,7 +161,9 @@ public class Utility {
     		
     		res.value = String.format("%0.2s", nop1.strValue);
     	// It is an integer value.
-    	} else if (nop1.resval.structure == 2) {
+    	} 
+    	else if (nop1.resval.structure == 2) 
+    	{
     		nop1.type = 0;
     		nop2.type = 0;
     		
@@ -163,28 +181,5 @@ public class Utility {
 		return res;
     }
     
-    /**
-     * These may not be used.
-     */
-    // Takes ResultValue params
-//    public ResultValue subtract(Parser parser, ResultValue resval1, ResultValue resval2) {
-//    	ResultValue res = null;
-//    	
-//		return res;
-//    }
-//    public ResultValue add(Parser parser, ResultValue resval1, ResultValue resval2) {
-//    	ResultValue res = null;
-//    	
-//		return res;
-//    }
-//    public ResultValue mulitply(Parser parser, ResultValue resval1, ResultValue resval2) {
-//    	ResultValue res = null;
-//    	
-//		return res;
-//    }
-//    public ResultValue divide(Parser parser, ResultValue resval1, ResultValue resval2) {
-//    	ResultValue res = null;
-//    	
-//		return res;
-//    }
+    
 }
