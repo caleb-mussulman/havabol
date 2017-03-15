@@ -7,6 +7,7 @@ public class Parser
     public String sourceFileNm;
     public Scanner scan;
     public SymbolTable symbolTable;
+    public int iParseTokenLineNr;
     
     Parser(Scanner scan, SymbolTable symbolTable)
     {
@@ -65,6 +66,28 @@ public class Parser
     }
     
     /**
+     * A simpler method for handling errors with the current token, and 
+     * exiting execution while parsing.
+     * <p>
+     * This is similar to 'error' method, excpet that the line number is for the
+     * current token being parsed, not scanned. This is primarily for accuracy of
+     * error messages when parsing large expressions, where the error should be
+     * for the current operator being evaluated, rather than the last token parsed
+     * <p>
+     * Simply calls errorLineNr with the line number of the current operator
+     * being evaluated to create the error message. This is just for making
+     * coding errors simpler
+     * @param format     the format string to print out
+     * @param varArgs    the corresponding values to match with the format
+     *                   specifiers in the format string
+     * @throws Exception well, yeah...
+     */
+    public void errorWithCurrent(String format, Object... varArgs) throws Exception
+    {
+        errorLineNr(this.iParseTokenLineNr, format, varArgs);
+    }
+    
+    /**
      * A simpler method for handling errors and exiting execution while parsing
      * <p>
      * Simply calls errorLineNr with the scanner's current line number to create
@@ -78,6 +101,7 @@ public class Parser
     {
         errorLineNr(scan.currentToken.iSourceLineNr, format, varArgs);
     }
+    
     /**
      * Determines the type of statement and invokes the corresponding subroutine
      * <p>
@@ -602,7 +626,7 @@ public class Parser
                                 outList.add(popped);
                             }
                             
-                            // TODO may change
+                            // TODO error message may change
                             if(! bFoundParen)
                             {
                                 error("Could not find matching '('");
@@ -611,6 +635,7 @@ public class Parser
                         default:
                             error("Invalid separator, found '%s'", token.tokenStr);
                     }
+                    break;
                 default:
                     error("Unrecognized argument for expression, found '%s'. May be missing ';' or ':'?", token.tokenStr);
             }
@@ -629,23 +654,61 @@ public class Parser
             outList.add(popped);
         }
         
+        // Evaluate the post-fix expression
         for(Token outToken : outList)
         {
+            this.iParseTokenLineNr = outToken.iSourceLineNr;
+            // Check the type of token
             switch(outToken.primClassif)
             {
+                // Operands need to be put of the result stack
                 case Token.OPERAND:
-                    resultStack.push(outToken.toResultValue());
+                    // The operand is an identifier, so get its associated value
+                    // before putting it on the result stack
+                    if(outToken.subClassif == Token.IDENTIFIER)
+                    {
+                        resultStack.push(symbolTable.retrieveVariableValue(this, outToken.tokenStr));
+                    }
+                    // Operand is not an identifier, so just put the operand on the result stack
+                    else
+                    {
+                        resultStack.push(outToken.toResultValue());
+                    }
                     break;
+                    
+                // Operators need to take the appropriate number of
+                // operands off of the stack and evaluate them
                 case Token.OPERATOR:
+                    // Unary operator
+                    if(outToken.subClassif == Token.UNARY)
+                    {
+                        ResultValue param = new ResultValue();
+                        switch(outToken.tokenStr)
+                        {
+                            //case
+                        }
+                    }
+                    // Binary operator
+                    else
+                    {
+                        
+                    }
                     break;
             }
         }
-        
+        //-----------TEMPORARY------------------
         for(Token current: outList)
         {
-            System.out.println(current.tokenStr);
+            if(current.primClassif == Token.OPERAND)
+            {
+                System.out.println(current.tokenStr + " " + current.subClassif);
+            }
+            else
+            {
+                System.out.println(current.tokenStr);
+            }
+            
         }
-        //-----------TEMPORARY------------------
         ResultValue TEMPRES = new ResultValue();
         return TEMPRES;
         //--------------------------------------
