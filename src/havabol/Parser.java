@@ -577,8 +577,11 @@ public class Parser
     public ResultValue expr() throws Exception
     {
         ArrayList<Token> outList = new ArrayList<Token>(); // List to hold prefix expr
-        Stack<Token> postfixStack = new Stack<Token>(); // List to hold the tokens as they are added to prefix expr
-        Stack<ResultValue> resultStack = new Stack<ResultValue>();
+        Stack<Token> postfixStack = new Stack<Token>(); // Stack to hold the tokens as they are added to post-fix expr
+        Stack<ResultValue> resultStack = new Stack<ResultValue>(); // Stack to hold values as they are
+                                                                   // evaluated from the post-fix stack
+        boolean expectingOperand = true; // Used to determine that the order of operators and operands
+                                         // from the infix expression is valid
         
         // Get the next token
         scan.getNext();
@@ -590,12 +593,31 @@ public class Parser
             switch(token.primClassif)
             {
                 case Token.OPERAND:
+                    // Error if we were expecting an operator
+                    if(! expectingOperand)
+                    {
+                        error("Expecting an operator, found operand '%s'", token.tokenStr);
+                    }
+                    // Add the operand to our post-fix list
                     outList.add(scan.currentToken);
+                    // Now we are expecting the next token to be a binary operator
+                    expectingOperand = false;
                     break;
+                    
                 case Token.OPERATOR:
-                    // Pop tokens off the stack while they have a precedence greater than or equal to the current operator token
+                    // Error if we were expecting an operand and we got a binary operator
+                    // (e.g., x = 4 * * 5 is incorrect, while x = 4 * - 5 is correct
+                    // since the "-" is a unary operator in the second case)
+                    if(expectingOperand && token.subClassif == Token.BINARY)
+                    {
+                        error("Expecting an operand, found operator '%s'", token.tokenStr);
+                    }
+                    
+                    // Pop tokens off the stack while they have a precedence greater
+                    // than or equal to the current operator token
                     while(! postfixStack.isEmpty())
                     {
+                        
                         if(token.precedence() > postfixStack.peek().stkPrecedence())
                         {
                             break;
@@ -603,15 +625,31 @@ public class Parser
                         //If current tokens precedence is less than or equal stk precedence
                         outList.add(postfixStack.pop());
                     }
+                    // Add the operator to our post-fix list
                     postfixStack.push(token);
+                    // Now we are expecting the next token to be an operand or a binary operator
+                    expectingOperand = true;
                     break;
+                    
                 case Token.SEPARATOR:
                     switch(token.tokenStr)
                     {
                         case "(":
+                            // Error if we were expecting an operator and found a "("
+                            // (e.g., 3 (4 + 6) is invalid, while 3 * (4 + 6) is valid)
+                            if(! expectingOperand)
+                            {
+                                error("Expecting an operator before '('");
+                            }
                             postfixStack.push(token);
                             break;
                         case ")":
+                            // Error if we were expecting an operand and found a ")"
+                            // (e.g., 3 * (4 + ) is invalid, while 3 * (4 + 6) is valid)
+                            if(expectingOperand)
+                            {
+                                error("Expecting an operand before ')'");
+                            }
                             boolean bFoundParen = false;// Signifies if we found the matching left parenthesis
                             // Remove from the stack until the matching parenthesis is found
                             while(! postfixStack.isEmpty())
@@ -654,6 +692,21 @@ public class Parser
             outList.add(popped);
         }
         
+      //TODO-------TEMPORARY------------------
+        for(Token current: outList)
+        {
+            if(current.primClassif == Token.OPERAND)
+            {
+                System.out.println(current.tokenStr + " " + current.subClassif);
+            }
+            else
+            {
+                System.out.println(current.tokenStr);
+            }
+            
+        }
+        //--------------------------------------
+        
         // Evaluate the post-fix expression
         for(Token outToken : outList)
         {
@@ -690,36 +743,96 @@ public class Parser
                             errorWithCurrent("Missing operand for operation '%s'", outToken.tokenStr);
                         }
                         // An operand exists so retrieve it
-                        ResultValue param = resultStack.pop();
+                        ResultValue resop = resultStack.pop();
                         
                         // Determine which unary operation to perform
                         switch(outToken.tokenStr)
                         {
                             case "-":
-                                
+                                //Utility.unary();
+                                break;
+                            case "not":
+                                //Utility.not();
+                                break;
+                            default:
+                                // This error message would only occur if we added a new operator to the language
+                                // and forgot to add its appropriate case in this switch statement
+                                errorWithCurrent("Unrecognized operator, found '%s'", outToken.tokenStr);
                         }
                     }
                     // Binary operator
                     else
                     {
+                        // Check to see that there is the second operand for the operation
+                        if(resultStack.isEmpty())
+                        {
+                            errorWithCurrent("Missing operands for operation '%s'", outToken.tokenStr);
+                        }
+                        // Get the second operand
+                        ResultValue resOp2 = resultStack.pop();
                         
+                        // Check to see that there is the first operand for the operation
+                        if(resultStack.isEmpty())
+                        {
+                            errorWithCurrent("Missing second operand for operation '%s'", outToken.tokenStr);
+                        }
+                        // Get the first operand
+                        ResultValue resOp1 = resultStack.pop();
+                        
+                        switch(outToken.tokenStr)
+                        {
+                            case "^":
+                                break;
+                                
+                            case "*":
+                                break;
+                                    
+                            case "/":
+                                break;
+                                    
+                            case "+":
+                                break;
+                                    
+                            case "-":
+                                break;
+                                    
+                            case "#":
+                                break;
+                                    
+                            case "<":
+                                break;
+                                    
+                            case ">":
+                                break;
+                                    
+                            case "<=":
+                                break;
+                                    
+                            case ">=":
+                                break;
+                                    
+                            case "==":
+                                break;
+                                    
+                            case "!=":
+                                break;
+                                    
+                            case "and":
+                                break;
+                                    
+                            case "or":
+                                break;
+                                
+                            default:
+                                // This error message would only occur if we added a new operator to the language
+                                // and forgot to add its appropriate case in this switch statement
+                                errorWithCurrent("Unrecognized operator, found '%s'", outToken.tokenStr);
+                        }
                     }
                     break;
             }
         }
-        //-----------TEMPORARY------------------
-        for(Token current: outList)
-        {
-            if(current.primClassif == Token.OPERAND)
-            {
-                System.out.println(current.tokenStr + " " + current.subClassif);
-            }
-            else
-            {
-                System.out.println(current.tokenStr);
-            }
-            
-        }
+        //TODO-------TEMPORARY------------------
         ResultValue TEMPRES = new ResultValue();
         return TEMPRES;
         //--------------------------------------
