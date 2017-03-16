@@ -105,11 +105,30 @@ public class Utility
     	{
     		// This is the new resval2
     		ResultValue res = coerceTypeRes(resval1.type, resval2);
+    		String result = "";
     		
     		switch(operation) {
+    		case EQUAL:    			
+    			if (res.type == Token.STRING)
+    			{
+    				result = resval1.value.equals(res.value) ? "T" : "F";
+    			}
+    			else if (res.type == Token.INTEGER)
+    			{
+    				Integer iRes1 = Integer.parseInt(resval1.value);
+    				Integer iRes2 = Integer.parseInt(res.value);
+    				
+    				result = (iRes1 == iRes2) ? "T" : "F";
+    			}
+    			else if (res.type == Token.FLOAT)
+    			{
+    				Double dRes1 = Double.parseDouble(resval1.value);
+    				Double dRes2 = Double.parseDouble(res.value);
+    				
+    				result = (dRes1 == dRes2) ? "T" : "F";
+    			}
+    			break;
     		case NOT_EQUAL:
-    			String result = "";
-    			
     			if (res.type == Token.STRING)
     			{
     				result = resval1.value.equals(res.value) ? "F" : "T";
@@ -128,15 +147,36 @@ public class Utility
     				
     				result = (dRes1 == dRes2) ? "F" : "T";
     			}
-    			return result;
+    			break;
+    		case LESS_THAN:
+    			if (res.type == Token.STRING)
+    			{
+    				int resCompare = resval1.value.compareTo(res.value);
+    				result = (resCompare < 0) ? "T" : "F";
+    			}
+    			else if (res.type == Token.INTEGER)
+    			{
+    				Integer iRes1 = Integer.parseInt(resval1.value);
+    				Integer iRes2 = Integer.parseInt(res.value);
+    				
+    				result = (iRes1 < iRes2) ? "T" : "F";
+    			}
+    			else if (res.type == Token.FLOAT)
+    			{
+    				Double dRes1 = Double.parseDouble(resval1.value);
+    				Double dRes2 = Double.parseDouble(res.value);
+    				
+    				result = (dRes1 < dRes2) ? "T" : "F";
+    			}
+    			break;
     		}
+    		return result;
     	}
     	else
     	{
     		parser.errorWithCurrent("Cannot convert %s to type %s", resval2.value, resval1.type);
     		return "";
     	}
-    	return "";
     }
     
     // Convert for Numeric and ResultValue params.
