@@ -12,6 +12,13 @@ public class Utility
 	 * CLASS VARIABLES
 	 */
 	
+	// CONSTANTS FOR UTILITY
+	/*
+	 * Type: (same as in token classifications.
+	 * INTEGER = 2
+	 * FLOAT   = 3
+	 */
+	
 	/*
 	 *  CONSTRUCTOR
 	 */
@@ -23,16 +30,16 @@ public class Utility
     /*
      * CLASS METHODS
      */
-    // Operations (+=, -=, *=, /=)
+    // Assignment Operators (+=, -=, *=, /=)
     public static ResultValue subtract(Parser parser, Numeric nop1, Numeric nop2) 
     {
     	ResultValue res = new ResultValue();
     	
     	// Is a floating point value.
-    	if (nop1.resval.structure == 3) 
+    	if (nop1.resval.structure == 15 && nop1.resval.type == 3) 
     	{
-    		nop1.type = 1;
-    		nop2.type = 1;
+    		nop1.type = 3;
+    		nop2.type = 3;
     		
     		nop1.doubleValue = Double.parseDouble(nop1.resval.value);
     		nop2.doubleValue = Double.parseDouble(nop2.resval.value);
@@ -43,12 +50,12 @@ public class Utility
     		nop1.strValue = tempValue.toString();
     		
     		res.value = String.format("%0.2s", nop1.strValue);
+    	}
     	// It is an integer value.
-    	} 
-    	else if (nop1.resval.structure == 2) 
+    	else if (nop1.resval.structure == 15 && nop1.resval.type == 2) 
     	{
-    		nop1.type = 0;
-    		nop2.type = 0;
+    		nop1.type = 2;
+    		nop2.type = 2;
     		
     		nop1.integerValue = Integer.parseInt(nop1.resval.value);
     		nop2.integerValue = Integer.parseInt(nop2.resval.value);
@@ -68,10 +75,10 @@ public class Utility
     	ResultValue res = new ResultValue();
     	
     	// Is a floating point value.
-    	if (nop1.resval.structure == 3) 
+    	if (nop1.resval.structure == 15 && nop1.resval.type == 3) 
     	{
-    		nop1.type = 1;
-    		nop2.type = 1;
+    		nop1.type = 3;
+    		nop2.type = 3;
     		
     		nop1.doubleValue = Double.parseDouble(nop1.resval.value);
     		nop2.doubleValue = Double.parseDouble(nop2.resval.value);
@@ -82,12 +89,12 @@ public class Utility
     		nop1.strValue = tempValue.toString();
     		
     		res.value = String.format("%0.2s", nop1.strValue);
-    	// It is an integer value.
     	}
-    	else if (nop1.resval.structure == 2) 
+    	// It is an integer value.
+    	else if (nop1.resval.structure == 15 && nop1.resval.type == 2) 
     	{
-    		nop1.type = 0;
-    		nop2.type = 0;
+    		nop1.type = 2;
+    		nop2.type = 2;
     		
     		nop1.integerValue = Integer.parseInt(nop1.resval.value);
     		nop2.integerValue = Integer.parseInt(nop2.resval.value);
@@ -107,10 +114,10 @@ public class Utility
     	ResultValue res = new ResultValue();
     	
     	// Is a floating point value.
-    	if (nop1.resval.structure == 3) 
+    	if (nop1.resval.structure == 15 && nop1.resval.type == 3) 
     	{
-    		nop1.type = 1;
-    		nop2.type = 1;
+    		nop1.type = 3;
+    		nop2.type = 3;
     		
     		nop1.doubleValue = Double.parseDouble(nop1.resval.value);
     		nop2.doubleValue = Double.parseDouble(nop2.resval.value);
@@ -121,12 +128,12 @@ public class Utility
     		nop1.strValue = tempValue.toString();
     		
     		res.value = String.format("%0.2s", nop1.strValue);
+    	}
     	// It is an integer value.
-    	} 
-    	else if (nop1.resval.structure == 2) 
+    	else if (nop1.resval.structure == 15 && nop1.resval.type == 2) 
     	{
-    		nop1.type = 0;
-    		nop2.type = 0;
+    		nop1.type = 2;
+    		nop2.type = 2;
     		
     		nop1.integerValue = Integer.parseInt(nop1.resval.value);
     		nop2.integerValue = Integer.parseInt(nop2.resval.value);
@@ -146,10 +153,10 @@ public class Utility
     	ResultValue res = new ResultValue();
     	
     	// Is a floating point value.
-    	if (nop1.resval.structure == 3) 
+    	if (nop1.resval.structure == 15 && nop1.resval.type == 3) 
     	{
-    		nop1.type = 1;
-    		nop2.type = 1;
+    		nop1.type = 3;
+    		nop2.type = 3;
     		
     		nop1.doubleValue = Double.parseDouble(nop1.resval.value);
     		nop2.doubleValue = Double.parseDouble(nop2.resval.value);
@@ -160,12 +167,12 @@ public class Utility
     		nop1.strValue = tempValue.toString();
     		
     		res.value = String.format("%0.2s", nop1.strValue);
+    	}
     	// It is an integer value.
-    	} 
-    	else if (nop1.resval.structure == 2) 
+    	else if (nop1.resval.structure == 15 && nop1.resval.type == 2) 
     	{
-    		nop1.type = 0;
-    		nop2.type = 0;
+    		nop1.type = 2;
+    		nop2.type = 2;
     		
     		nop1.integerValue = Integer.parseInt(nop1.resval.value);
     		nop2.integerValue = Integer.parseInt(nop2.resval.value);
@@ -181,5 +188,41 @@ public class Utility
 		return res;
     }
     
+    // Binary Operators (<=, >=)
+    public static ResultValue geCompare(Parser parser, Numeric nop1, Numeric nop2) 
+    {
+    	ResultValue res = new ResultValue();
+    	
+    	// Determine what type and structure nop1 and nop2 are.
+    	// PRIM, FLOAT
+    	if (nop1.resval.structure == 15 && nop1.resval.type == 3)
+    	{
+    		// Set type
+    		nop1.type = 3;
+    		nop2.type = 3;
+    		
+    		// Do compare on the two
+    		
+    	
+    		// Store the value of the result.
+    	}
+    	// PRIM, INT
+    	else if (nop1.resval.structure == 15 && nop1.resval.type == 2) 
+    	{
+    		// Set type
+    		nop1.type = 2;
+    		nop2.type = 2;
+    		
+    		// Do compare on the two
+        	
+    		// Store the value of the result.
+    	}
+    	
+    	
+    	// Give the result to the caller.
+    	return res;
+    }
+    
+    // Unary Operators
     
 }

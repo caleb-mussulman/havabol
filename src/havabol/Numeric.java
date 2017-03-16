@@ -16,6 +16,13 @@ public class Numeric {
 	String strValue; // display value
 	int type; // INTEGER, FLOAT
 	
+	// CONSTANTS FOR NUMERIC
+	/*
+	 * Type: (same as in token classifications.
+	 * INTEGER = 2
+	 * FLOAT   = 3
+	 */
+	
 	// constructor vars
 	Parser parser;
 	ResultValue resval;
