@@ -99,13 +99,44 @@ public class Utility
     }
     
     // Other operators.
-    public static ResultValue compare(Parser parser, int operation, ResultValue resval1, ResultValue resval2) {
+    public static String compare(Parser parser, int operation, ResultValue resval1, ResultValue resval2) throws Exception
+    {    	
     	if (resval1.type != resval2.type)
     	{
-    		coerceTypeRes(resval1.type, resval2);
+    		// This is the new resval2
+    		ResultValue res = coerceTypeRes(resval1.type, resval2);
+    		
+    		switch(operation) {
+    		case NOT_EQUAL:
+    			String result = "";
+    			
+    			if (res.type == Token.STRING)
+    			{
+    				result = resval1.value.equals(res.value) ? "F" : "T";
+    			}
+    			else if (res.type == Token.INTEGER)
+    			{
+    				Integer iRes1 = Integer.parseInt(resval1.value);
+    				Integer iRes2 = Integer.parseInt(res.value);
+    				
+    				result = (iRes1 == iRes2) ? "F" : "T";
+    			}
+    			else if (res.type == Token.FLOAT)
+    			{
+    				Double dRes1 = Double.parseDouble(resval1.value);
+    				Double dRes2 = Double.parseDouble(res.value);
+    				
+    				result = (dRes1 == dRes2) ? "F" : "T";
+    			}
+    			return result;
+    		}
     	}
-    	
-    	return null;
+    	else
+    	{
+    		parser.errorWithCurrent("Cannot convert %s to type %s", resval2.value, resval1.type);
+    		return "";
+    	}
+    	return "";
     }
     
     // Convert for Numeric and ResultValue params.
@@ -129,12 +160,15 @@ public class Utility
     public static ResultValue coerceTypeRes(int type, ResultValue resval2) {
     	ResultValue res = new ResultValue();
     	
-    	if (type == Token.INTEGER) {
+    	if (type == Token.INTEGER)
+    	{
     		int temp = Integer.parseInt(resval2.value); // need to capture this error message.
     		res.type = type;
     		res.value = String.valueOf(temp);
     		res.structure = resval2.structure;
-    	} else if (type == Token.FLOAT) {
+    	}
+    	else if (type == Token.FLOAT)
+    	{
     		double temp = Double.parseDouble(resval2.value); // need to capture this error message.
     		res.type = type;
     		res.value = String.valueOf(temp);
