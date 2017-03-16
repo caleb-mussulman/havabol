@@ -3,6 +3,15 @@ package havabol;
 /**
  * @desc Performs an operation on two numerics, stores the result as a ResultValue,
  * and returns it to whatever called it.
+ * <p>
+ * This is used for behind the scenes operations that are not apparent to the
+ * programmer.
+ * <p>
+ * programmer makes a statement
+ * if x < 5:
+ *    ...
+ * endif:
+ * The < operation is what this method handles.
  *
  * @authors Taylor Brauer
  */
@@ -302,6 +311,33 @@ public class Utility
     				}
     			}
     			break;
+    		case NOT:
+    			if (res.type == Token.STRING)
+    			{
+    				parser.errorWithCurrent("Cannot negate %s", resval1.type);
+    			}
+    			else if (res.type == Token.INTEGER)
+    			{
+    				parser.errorWithCurrent("Cannot negate %s", resval1.type);
+    			}
+    			else if (res.type == Token.FLOAT)
+    			{
+    				parser.errorWithCurrent("Cannot negate %s", resval1.type);
+    			}
+    			else if (res.type == Token.BOOLEAN)
+    			{
+    				if (res.value.equals("T"))
+    				{
+    					return "F";
+    				}
+    				else if (res.value.equals("F"))
+    				{
+    					return "T";
+    				}
+    			}
+    			break;
+    		case CONCAT:
+    			
     		}
     		return result;
     	}
