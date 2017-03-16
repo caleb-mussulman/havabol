@@ -8,15 +8,19 @@ package havabol;
  */
 public class Utility 
 {
-	/*
-	 * CLASS VARIABLES
-	 */
+	// Binary
 	public static final int EQUAL              = 31;
 	public static final int NOT_EQUAL          = 32;
 	public static final int LESS_THAN          = 33;
 	public static final int GREATER_THAN       = 34;
 	public static final int LESS_THAN_EQUAL    = 35;
 	public static final int GREATER_THAN_EQUAL = 36;
+	
+	// Unary
+	public static final int NOT                = 41;
+	public static final int AND                = 42;
+	public static final int OR                 = 43;
+	public static final int CONCAT             = 44;
 	
 	/*
 	 *  CONSTRUCTOR
@@ -239,6 +243,13 @@ public class Utility
     				
     				result = (dRes1 >= dRes2) ? "T" : "F";
     			}
+    			break;
+    		case AND:
+    			if (resval1.type != resval2.type)
+    			{
+    				parser.errorWithCurrent("Cannot && %s and %s together", resval1.type, resval2.type);
+    			}
+    			// only booleans beyond this point.
     			break;
     		}
     		return result;
