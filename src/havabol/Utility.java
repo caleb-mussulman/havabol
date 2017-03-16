@@ -43,6 +43,8 @@ public class Utility
     		nop1.strValue = tempValue.toString();
     		
     		res.value = String.format("%0.2s", nop1.strValue);
+    		res.type  = nop1.resval.type;
+    		res.structure = nop1.resval.structure;
     	}
     	// It is an integer value.
     	else if (nop1.resval.type == Token.INTEGER) 
@@ -53,6 +55,8 @@ public class Utility
     		nop1.strValue = String.valueOf(tempValue);
     		
     		res.value = String.format("%s", nop1.strValue);
+    		res.type  = nop1.resval.type;
+    		res.structure = nop1.resval.structure;
     	}
     	
 		return res;
@@ -76,6 +80,8 @@ public class Utility
     		nop1.strValue = tempValue.toString();
     		
     		res.value = String.format("%0.2s", nop1.strValue);
+    		res.type  = nop1.resval.type;
+    		res.structure = nop1.resval.structure;
     	}
     	// It is an integer value.
     	else if (nop1.resval.type == Token.INTEGER) 
@@ -85,6 +91,8 @@ public class Utility
     		nop1.strValue = String.valueOf(tempValue);
     		
     		res.value = String.format("%s", nop1.strValue);
+    		res.type  = nop1.resval.type;
+    		res.structure = nop1.resval.structure;
     	}
     	
 		return res;
@@ -107,6 +115,8 @@ public class Utility
     		nop1.strValue = tempValue.toString();
     		
     		res.value = String.format("%0.2s", nop1.strValue);
+    		res.type  = nop1.resval.type;
+    		res.structure = nop1.resval.structure;
     	}
     	// It is an integer value.
     	else if (nop1.resval.type == Token.INTEGER) 
@@ -116,6 +126,8 @@ public class Utility
     		nop1.strValue = String.valueOf(tempValue);
     		
     		res.value = String.format("%s", nop1.strValue);
+    		res.type  = nop1.resval.type;
+    		res.structure = nop1.resval.structure;
     	}
     	
 		return res;
@@ -138,6 +150,8 @@ public class Utility
     		nop1.strValue = tempValue.toString();
     		
     		res.value = String.format("%0.2s", nop1.strValue);
+    		res.type  = nop1.resval.type;
+    		res.structure = nop1.resval.structure;
     	}
     	// It is an integer value.
     	else if (nop1.resval.type == Token.INTEGER) 
@@ -147,6 +161,8 @@ public class Utility
     		nop1.strValue = String.valueOf(tempValue);
     		
     		res.value = String.format("%s", nop1.strValue);
+    		res.type  = nop1.resval.type;
+    		res.structure = nop1.resval.structure;
     	}
     	
 		return res;
