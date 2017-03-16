@@ -189,7 +189,7 @@ public class Utility
     }
     
     // Binary Operators (<=, >=)
-    public static ResultValue geCompare(Parser parser, Numeric nop1, Numeric nop2) 
+    public static ResultValue compare(Parser parser, Numeric nop1, Numeric nop2) 
     {
     	ResultValue res = new ResultValue();
     	
@@ -201,10 +201,28 @@ public class Utility
     		nop1.type = 3;
     		nop2.type = 3;
     		
-    		// Do compare on the two
+    		// Convert
+    		nop1.doubleValue = Double.parseDouble(nop1.resval.value);
+    		nop2.doubleValue = Double.parseDouble(nop2.resval.value);
     		
-    	
-    		// Store the value of the result.
+    		// Do compare on the two
+    		if (nop1.doubleValue >= nop1.doubleValue) // >=
+    		{
+    			nop1.strValue = String.valueOf(nop1.doubleValue);
+    			res.value = String.format("%s", nop1.strValue);
+    		}
+    		else if (nop1.doubleValue <= nop1.doubleValue) // <=
+    		{
+    			nop2.strValue = String.valueOf(nop2.doubleValue);
+    			res.value = String.format("%s", nop2.strValue);
+    		}
+    		else
+    		{
+    			nop2.strValue = String.valueOf(nop2.doubleValue); // ==
+    			res.value = String.format("%s", nop2.strValue);
+    		}
+    		
+    		// ** ERROR ** IF ANOTHER CASE HERE.
     	}
     	// PRIM, INT
     	else if (nop1.resval.structure == 15 && nop1.resval.type == 2) 
@@ -213,9 +231,28 @@ public class Utility
     		nop1.type = 2;
     		nop2.type = 2;
     		
+    		// Convert
+    		nop1.integerValue = Integer.parseInt(nop1.resval.value);
+    		nop2.integerValue = Integer.parseInt(nop2.resval.value);
+    		
     		// Do compare on the two
-        	
-    		// Store the value of the result.
+    		if (nop1.integerValue >= nop1.integerValue) // >=
+    		{
+    			nop1.strValue = String.valueOf(nop1.integerValue);
+    			res.value = String.format("%s", nop1.strValue);
+    		}
+    		else if (nop1.integerValue <= nop1.integerValue) // <=
+    		{
+    			nop2.strValue = String.valueOf(nop2.integerValue);
+    			res.value = String.format("%s", nop2.strValue);
+    		}
+    		else
+    		{
+    			nop2.strValue = String.valueOf(nop2.integerValue); // ==
+    			res.value = String.format("%s", nop2.strValue);
+    		}
+    		
+    		// ** ERROR ** IF ANOTHER CASE HERE.
     	}
     	
     	
