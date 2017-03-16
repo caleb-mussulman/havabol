@@ -17,6 +17,9 @@ package havabol;
  */
 public class Utility 
 {
+	/*
+	 * LOGICAL OPERATIONS
+	 */
 	// Binary
 	public static final int EQUAL              = 31;
 	public static final int NOT_EQUAL          = 32;
@@ -29,8 +32,6 @@ public class Utility
 	public static final int NOT                = 41;
 	public static final int AND                = 42;
 	public static final int OR                 = 43;
-	public static final int CONCAT             = 44;
-	public static final int UMINUS             = 45;
 	
 	/*
 	 *  CONSTRUCTOR
@@ -337,24 +338,6 @@ public class Utility
     				}
     			}
     			break;
-    		case CONCAT:
-    			if (res.type == Token.STRING)
-    			{
-    				result = resval1.value + res.value;
-    			}
-    			else if (res.type == Token.INTEGER)
-    			{
-    				parser.errorWithCurrent("Cannot concatenate %ss", resval1.type);
-    			}
-    			else if (res.type == Token.FLOAT)
-    			{
-    				parser.errorWithCurrent("Cannot concatenate %ss", resval1.type);
-    			}
-    			else if (res.type == Token.BOOLEAN)
-    			{
-    				parser.errorWithCurrent("Cannot concatenate %ss", resval1.type);
-    			}
-    			break;
     		}
     		return result;
     	}
@@ -457,6 +440,8 @@ public class Utility
     	}
     }
     
+    
+    // Coerce the second result value into the type of the first result value.
     public static ResultValue coerceTypeRes(int type, ResultValue resval2) {
     	ResultValue res = new ResultValue();
     	
