@@ -245,11 +245,62 @@ public class Utility
     			}
     			break;
     		case AND:
-    			if (resval1.type != resval2.type)
+    			if (res.type == Token.STRING)
     			{
-    				parser.errorWithCurrent("Cannot && %s and %s together", resval1.type, resval2.type);
+    				parser.errorWithCurrent("Cannot && %s and %s together", resval1.type, res.type);
     			}
-    			// only booleans beyond this point.
+    			else if (res.type == Token.INTEGER)
+    			{
+    				parser.errorWithCurrent("Cannot && %s and %s together", resval1.type, res.type);
+    			}
+    			else if (res.type == Token.FLOAT)
+    			{
+    				parser.errorWithCurrent("Cannot && %s and %s together", resval1.type, res.type);
+    			}
+    			else if (res.type == Token.BOOLEAN)
+    			{
+    				if (resval1.value.equals("T") && res.value.equals("T"))
+    				{
+    					return "T";
+    				}
+    				else
+    				{
+    					return "F";
+    				}
+    			}
+    			break;
+    		case OR:
+    			if (res.type == Token.STRING)
+    			{
+    				parser.errorWithCurrent("Cannot || %s and %s together", resval1.type, res.type);
+    			}
+    			else if (res.type == Token.INTEGER)
+    			{
+    				parser.errorWithCurrent("Cannot || %s and %s together", resval1.type, res.type);
+    			}
+    			else if (res.type == Token.FLOAT)
+    			{
+    				parser.errorWithCurrent("Cannot || %s and %s together", resval1.type, res.type);
+    			}
+    			else if (res.type == Token.BOOLEAN)
+    			{
+    				if (resval1.value.equals("T") && res.value.equals("T"))
+    				{
+    					return "T";
+    				}
+    				else if (resval1.value.equals("F") && res.value.equals("T"))
+    				{
+    					return "T";
+    				}
+    				else if (resval1.value.equals("T") && res.value.equals("F"))
+    				{
+    					return "T";
+    				}
+    				else
+    				{
+    					return "F";
+    				}
+    			}
     			break;
     		}
     		return result;
