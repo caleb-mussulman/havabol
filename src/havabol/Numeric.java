@@ -16,13 +16,6 @@ public class Numeric {
 	String strValue; // display value
 	int type; // INTEGER, FLOAT
 	
-	// CONSTANTS FOR NUMERIC
-	/*
-	 * Type: (same as in token classifications.
-	 * INTEGER = 2
-	 * FLOAT   = 3
-	 */
-	
 	// constructor vars
 	Parser parser;
 	ResultValue resval;
@@ -39,23 +32,8 @@ public class Numeric {
 		this.operator = aOperator;
 		this.opndDesc = aOperandDesc;
 		
-		if (! isValidNumeric(resval.type)) {
-			parser.errorWithCurrent("%s is not a valid type.", resval.type);
-		}
-	}
-	
-	/*
-	 *  METHODS
-	 */
-	public static Boolean isValidNumeric(int type)
-	{
-		if (type == Token.INTEGER || type == Token.FLOAT)
-		{
-			return true;
-		}
-		else
-		{
-			return false;
+		if (resval.type != Token.INTEGER && resval.type != Token.FLOAT) {
+			parser.errorWithCurrent("%s is not a valid type.", Token.strSubClassifM[resval.type]);
 		}
 	}
 }
