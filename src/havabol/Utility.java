@@ -422,6 +422,43 @@ public class Utility
 		}
     }
     
+    public static void expon(Parser parser, ResultValue resval1, ResultValue resval2) throws Exception
+    {
+    	String result = "";
+    	
+    	if (resval1.type == Token.STRING)
+		{
+			parser.errorWithCurrent("Cannot perform exponentiation on %s", resval1.type);
+		}
+		else if (resval1.type == Token.INTEGER)
+		{
+			Integer iRes1 = Integer.parseInt(resval1.value);
+			Integer iRes2 = Integer.parseInt(resval2.value);
+			
+			Double exponVal = Math.pow((double)iRes1, (double)iRes2);
+			int intVal = exponVal.intValue();
+			result = String.valueOf(intVal);
+		}
+		else if (resval1.type == Token.FLOAT)
+		{
+			Double dRes1 = Double.parseDouble(resval1.value);
+			Double dRes2 = Double.parseDouble(resval2.value);
+			
+			double exponVal = Math.pow(dRes1, dRes2);
+			result = String.valueOf(exponVal);
+		}
+		else if (resval1.type == Token.BOOLEAN)
+		{
+			parser.errorWithCurrent("Cannot perform exponentiation on %s", resval1.type);
+		}
+		else
+		{
+			parser.errorWithCurrent("Taylor didn't add another case for uminus.");
+		}
+    	
+    	resval1.value = result;
+    }
+    
     // Convert for Numeric and ResultValue params.
     public static void coerceTypeNum(Numeric nop1, Numeric nop2) {
     	if (nop1.resval.type != nop2.resval.type) {
