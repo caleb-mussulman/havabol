@@ -188,7 +188,7 @@ public class Utility
 		return res;
     }
     
-    // Binary Operators (<=, >=) => Value is a primitive
+    // Binary Operators (<=, >=, <, >) => Value is a primitive
     public static ResultValue compare(Parser parser, Numeric nop1, Numeric nop2) 
     {
     	ResultValue res = new ResultValue();
@@ -216,6 +216,16 @@ public class Utility
     			nop2.strValue = String.valueOf(nop2.doubleValue);
     			res.value = String.format("%0.2s", nop2.strValue);
     		}
+    		else if (nop1.doubleValue > nop1.doubleValue) // >
+    		{
+    			nop1.strValue = String.valueOf(nop1.doubleValue);
+    			res.value = String.format("%0.2s", nop1.strValue);
+    		}
+    		else if (nop1.doubleValue < nop1.doubleValue) // <
+    		{
+    			nop2.strValue = String.valueOf(nop2.doubleValue);
+    			res.value = String.format("%0.2s", nop2.strValue);
+    		}
     		
     		// ** ERROR ** IF ANOTHER CASE HERE.
     	}
@@ -237,6 +247,16 @@ public class Utility
     			res.value = String.format("%s", nop1.strValue);
     		}
     		else if (nop1.integerValue <= nop1.integerValue) // <=
+    		{
+    			nop2.strValue = String.valueOf(nop2.integerValue);
+    			res.value = String.format("%s", nop2.strValue);
+    		}
+    		else if (nop1.integerValue > nop1.integerValue) // >
+    		{
+    			nop1.strValue = String.valueOf(nop1.integerValue);
+    			res.value = String.format("%s", nop1.strValue);
+    		}
+    		else if (nop1.integerValue < nop1.integerValue) // <
     		{
     			nop2.strValue = String.valueOf(nop2.integerValue);
     			res.value = String.format("%s", nop2.strValue);
