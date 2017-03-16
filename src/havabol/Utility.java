@@ -98,7 +98,15 @@ public class Utility
 		return res;
     }
     
-    // Other operators.
+    /**
+     * Compares 2 result values' together based on a given operation.
+     * @param parser - used for logging error messages.
+     * @param operation - Binary operator (==, !=, <, >, <=, >=)
+     * @param resval1 - Object containing result value 1
+     * @param resval2 - Object containing result value 2
+     * @return A true or false Havabol value (e.g. "T" or "F")
+     * @throws Exception when a RS value fails to parse correctly.
+     */
     public static String compare(Parser parser, int operation, ResultValue resval1, ResultValue resval2) throws Exception
     {    	
     	if (resval1.type != resval2.type)
