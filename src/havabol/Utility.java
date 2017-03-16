@@ -270,11 +270,11 @@ public class Utility
     			{
     				if (resval1.value.equals("T") && res.value.equals("T"))
     				{
-    					return "T";
+    					result = "T";
     				}
     				else
     				{
-    					return "F";
+    					result = "F";
     				}
     			}
     			break;
@@ -295,19 +295,19 @@ public class Utility
     			{
     				if (resval1.value.equals("T") && res.value.equals("T"))
     				{
-    					return "T";
+    					result = "T";
     				}
     				else if (resval1.value.equals("F") && res.value.equals("T"))
     				{
-    					return "T";
+    					result = "T";
     				}
     				else if (resval1.value.equals("T") && res.value.equals("F"))
     				{
-    					return "T";
+    					result = "T";
     				}
     				else
     				{
-    					return "F";
+    					result = "F";
     				}
     			}
     			break;
@@ -328,16 +328,32 @@ public class Utility
     			{
     				if (res.value.equals("T"))
     				{
-    					return "F";
+    					result = "F";
     				}
     				else if (res.value.equals("F"))
     				{
-    					return "T";
+    					result = "T";
     				}
     			}
     			break;
     		case CONCAT:
-    			
+    			if (res.type == Token.STRING)
+    			{
+    				result = resval1.value + res.value;
+    			}
+    			else if (res.type == Token.INTEGER)
+    			{
+    				parser.errorWithCurrent("Cannot concatenate %ss", resval1.type);
+    			}
+    			else if (res.type == Token.FLOAT)
+    			{
+    				parser.errorWithCurrent("Cannot concatenate %ss", resval1.type);
+    			}
+    			else if (res.type == Token.BOOLEAN)
+    			{
+    				parser.errorWithCurrent("Cannot concatenate %ss", resval1.type);
+    			}
+    			break;
     		}
     		return result;
     	}
