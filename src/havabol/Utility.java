@@ -30,6 +30,7 @@ public class Utility
 	public static final int AND                = 42;
 	public static final int OR                 = 43;
 	public static final int CONCAT             = 44;
+	public static final int UMINUS             = 45;
 	
 	/*
 	 *  CONSTRUCTOR
@@ -362,6 +363,80 @@ public class Utility
     		parser.errorWithCurrent("Cannot convert %s to type %s", resval2.value, resval1.type);
     		return "";
     	}
+    }
+    
+    public static void concat(Parser parser, ResultValue resval1, ResultValue resval2) throws Exception
+    {
+    	String result = "";
+    	
+    	if (resval1.type == Token.STRING)
+		{
+			result = resval1.value + resval2.value;
+		}
+		else if (resval1.type == Token.INTEGER)
+		{
+			Integer iRes1 = Integer.parseInt(resval1.value);
+			Integer iRes2 = Integer.parseInt(resval2.value);
+			
+			resval1.value = String.valueOf(iRes1);
+			resval2.value = String.valueOf(iRes2);
+			
+			result = resval1.value + resval2.value;
+		}
+		else if (resval1.type == Token.FLOAT)
+		{
+			Double dRes1 = Double.parseDouble(resval1.value);
+			Double dRes2 = Double.parseDouble(resval2.value);
+			
+			resval1.value = String.valueOf(dRes1);
+			resval2.value = String.valueOf(dRes2);
+			
+			result = resval1.value + resval2.value;
+		}
+		else if (resval1.type == Token.BOOLEAN)
+		{
+			Boolean bRes1 = Boolean.parseBoolean(resval1.value);
+			Boolean bRes2 = Boolean.parseBoolean(resval2.value);
+			
+			resval1.value = String.valueOf(bRes1);
+			resval2.value = String.valueOf(bRes2);
+			
+			result = resval1.value + resval2.value;
+		}
+		else
+		{
+			parser.errorWithCurrent("Taylor didn't add another case for concat.");
+		}
+    	
+    	resval1.value = result;
+    }
+    
+    public static void uminus(Parser parser, ResultValue resval) throws Exception
+    {
+    	if (resval.type == Token.STRING)
+		{
+			parser.errorWithCurrent("Cannot perform unairy minus on %s", resval.type);
+		}
+		else if (resval.type == Token.INTEGER)
+		{
+			Integer iRes = Integer.parseInt(resval.value);
+			int iOp = -1 * iRes;
+			resval.value = String.valueOf(iOp);
+		}
+		else if (resval.type == Token.FLOAT)
+		{
+			Double dRes = Double.parseDouble(resval.value);
+			double dOp = -1 * dRes;
+			resval.value = String.valueOf(dOp);
+		}
+		else if (resval.type == Token.BOOLEAN)
+		{
+			parser.errorWithCurrent("Cannot perform unairy minus on %s", resval.type);
+		}
+		else
+		{
+			parser.errorWithCurrent("Taylor didn't add another case for uminus.");
+		}
     }
     
     // Convert for Numeric and ResultValue params.
