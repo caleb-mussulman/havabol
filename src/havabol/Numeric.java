@@ -29,16 +29,33 @@ public class Numeric {
 	String operator;
 	String opndDesc;
     
-	// CONSTRUCTOR
-	public Numeric(Parser aParser, ResultValue aResultValue, String aOperator, String aOperandDesc) {
+	/*
+	 * CONSTRUCTOR
+	 */
+	public Numeric(Parser aParser, ResultValue aResultValue, String aOperator, String aOperandDesc) throws Exception
+	{
 		this.parser = aParser;
 		this.resval = aResultValue;
 		this.operator = aOperator;
 		this.opndDesc = aOperandDesc;
+		
+		if (! isValidNumeric(resval.type)) {
+			parser.errorWithCurrent("%s is not a valid type.", resval.type);
+		}
 	}
 	
 	/*
 	 *  METHODS
 	 */
-	
+	public static Boolean isValidNumeric(int type)
+	{
+		if (type == Token.INTEGER || type == Token.FLOAT)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
 }
