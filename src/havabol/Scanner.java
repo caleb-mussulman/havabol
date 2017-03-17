@@ -72,14 +72,19 @@ public class Scanner
         // Initialize first line of input if the file is not empty
         if(! sourceLineM.isEmpty())
         {
-            textCharM = sourceLineM.get(iSourceLineNr).toCharArray();
+            this.textCharM = sourceLineM.get(iSourceLineNr).toCharArray();
+        }
+        // Otherwise, just initialize to length 0 for a clean exit
+        else
+        {
+            this.textCharM = new char [0];
         }
         
         this.currentToken = new Token();
         this.nextToken = new Token();
         
         // Pre-loaded value to print the first line of input on first call to getNext()
-        currentToken.iSourceLineNr = -1;
+        this.currentToken.iSourceLineNr = -1;
         
         this.getNext();
     }
@@ -91,13 +96,18 @@ public class Scanner
      * to set the character array to where the scanner should start
      * scanning on that line on the next call to 'getnext()'. These
      * values would have been set in the token when it was scanned.
+     * Then calls getNext() twice in order to put that token into
+     * the scanner's current token as well as get the correct
+     * look-ahead token in the scanner's next token
      * @param positionToken  the token to be used to set the position
      */
-    public void setPosition(Token positionToken)
+    public void setPosition(Token positionToken) throws Exception
     {
         this.iSourceLineNr = positionToken.iSourceLineNr;
         this.iColPos = positionToken.iColPos;
         textCharM = sourceLineM.get(iSourceLineNr).toCharArray();
+        this.getNext();
+        this.getNext();
     }
 
     /**
@@ -144,12 +154,6 @@ public class Scanner
         */
         currentToken = nextToken;
         nextToken = new Token();
-        
-        // Covers the case when the file is empty.
-        if(currentToken.primClassif == Token.EOF)
-        {
-            return currentToken.tokenStr;
-        }
         
         // Go through whitespace and comments until at a token or at the end of the file.
         while(true)
@@ -262,7 +266,7 @@ public class Scanner
             // Initialize token as a String token.
             nextToken.tokenStr = new String(retCharM, 0, iTokenLength);
             nextToken.iSourceLineNr = this.iSourceLineNr;
-            nextToken.iColPos = iTokenBeginIndex;
+            nextToken.iColPos = iTokenBeginIndex - 1; // Put the beginning position on the quote
             nextToken.primClassif = Token.OPERAND;
             nextToken.subClassif = Token.STRING;
             

@@ -159,15 +159,30 @@ public class Parser
             {
                 declareStmt(bExec);
             }
-            // Current token is a call to debug function
-            else if(scan.currentToken.tokenStr.equals("debug"))
+            // Current token is the start of a function call
+            else if(scan.currentToken.primClassif == Token.FUNCTION)
             {
-                debug();
+                // Function is a built-in function
+                if(scan.currentToken.subClassif == Token.BUILTIN)
+                {
+                    // Execute the appropriate function
+                    switch(scan.currentToken.tokenStr)
+                    {
+                        case "debug":
+                            debug();
+                            break;
+                        case "print":
+                            print(bExec);
+                        default:
+                            // Only reached if we add a built-in function but haven't called it here
+                            error("Unknown built-in function: '%s'", scan.currentToken.tokenStr);
+                    }
+                }
             }
             // Current token is start of undefined statement
             else
             {
-                error("unknown statement type: '%s'", scan.currentToken.tokenStr);
+                error("Unknown statement type: '%s'", scan.currentToken.tokenStr);
             }
         }
     }
@@ -356,9 +371,6 @@ public class Parser
                 }
                 // Go back to the top of the while loop
                 scan.setPosition(whileToken);
-                // Call 'getNext' twice so that 'while' is the current token
-                scan.getNext();
-                scan.getNext();
                 //Re-evaluate the expression
                 resCond = expr();
             }
@@ -697,7 +709,7 @@ public class Parser
                             // TODO error message may change
                             if(! bFoundParen)
                             {
-                                error("Could not find matching '('");
+                                error("Could not find matching '('. May be missing ';' or ':'?");
                             }
                             break;
                         default:
@@ -717,7 +729,7 @@ public class Parser
             // Should not have any left parenthesis
             if(popped.tokenStr.equals("("))
             {
-                error("Missing ')'");
+                error("Missing ')'. If not, may be missing ';' or ':'?");
             }
             outList.add(popped);
         }
@@ -865,7 +877,7 @@ public class Parser
         
         //TODO-------TEMPORARY------------------
         ResultValue tempResVal = new ResultValue();
-        tempResVal.value = "You forgot to change the temp return value for expr";
+        tempResVal.value = "T";
         tempResVal.type = 2;
         //--------------------------------------
         
@@ -916,6 +928,27 @@ public class Parser
         errorLineNr(iLineNrCalledFrom, "No ending '%s' for '%s' statement", skipToStr, calledFrom);
     }
     
+    /**
+     * Prints debug information while executing code
+     * Assumption: current token is on a "debug" token
+     * <p>
+     * This method allows the user to debug their code by printing out
+     * underlying operatons. The debug function can turn on/off a debugger
+     * to print out information for the following:
+     *      - the currently scanned token's information
+     *      - the variable and value of a an assignment statement
+     *      - the evaluation of an expression
+     * <p>
+     * The syntax is as follows:
+     *      debug <debugType> <onOff>;
+     * debugType:= Assign
+     *           | Expr
+     *           | Token
+     * onOff:= on
+     *       | off
+     * @throws Exception - if one of the given options to debug is invalid
+     *                   - if missing ';'
+     */
     public void debug() throws Exception
     {
         String debugType;  // The type of debug to call
@@ -978,5 +1011,62 @@ public class Parser
                 // Only reached if we add another debugger type and don't check for it
                 error("The case for debug type '%s' was never added to the debug method...", debugType);
         }
+    }
+    
+    /**
+     * Prints a variable number of comma-separated expressions
+     * Assumption: current token is on a "print" token
+     * <p>
+     * 
+     * @param bExec      whether or not we will execute the statements
+     * @throws Exception
+     */
+    public void print(boolean bExec) throws Exception
+    {
+        int iPrintLineNr; // Line number for beginning of print statement
+        iPrintLineNr = scan.currentToken.iSourceLineNr;
+        
+        // Get the next token and make sure it is "("
+        if(! scan.getNext().equals("("))
+        {
+            error("Expected '(' for 'print' function");
+        }
+        
+        // Get the token after the '(' and save its information
+        scan.getNext();
+        Token tokenAfterLeftParen = scan.currentToken;
+        
+        // Need to find the end of the print function by looking for a ')' followed by a ';'
+        // since the 'print' statement is delimited by the ';'
+        while(! scan.nextToken.tokenStr.equals(";"))
+        {
+            scan.getNext();
+        }
+        
+        // Make sure that the token before the ';' is a ')'
+        if(! scan.currentToken.tokenStr.equals(")"))
+        {
+            error("Missing either ')' or ';' for 'print' beginning on line %d", iPrintLineNr);
+        }
+        
+        // Because the print statement may contains multiple ')', we need to signify that the
+        // ending one is different so we can stop parsing expression when we hit this one
+        scan.currentToken.primClassif = Token.RT_PAREN;
+        
+        // Now move the scanner's position back to the token after print's opening '('
+        scan.setPosition(tokenAfterLeftParen);
+        
+        // Print each comma-separated expression until we hit the special ')' before the ';'
+        while(scan.currentToken.primClassif != Token.RT_PAREN)
+        {
+            ResultValue resVal = expr();
+            System.out.printf("%s ", resVal.value);
+        }
+        
+        // Print the newline
+        System.out.print("\n");
+        
+        // Move to the ';' after the ')'
+        scan.getNext();
     }
 }
