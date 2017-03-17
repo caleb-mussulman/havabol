@@ -11,7 +11,7 @@ public class Numeric {
 	/*
 	 * CLASS VARIABLES
 	 */
-    int integerValue;
+        int integerValue;
 	double doubleValue;
 	String strValue; // display value
 	int type; // INTEGER, FLOAT
@@ -22,16 +22,23 @@ public class Numeric {
 	String operator;
 	String opndDesc;
     
-	/*
-	 * CONSTRUCTOR
-	 */
-	public Numeric(Parser aParser, ResultValue aResultValue, String aOperator, String aOperandDesc) throws Exception
+	/**
+         * Initalizes Numeric fields
+         * <p>
+         * @param aParser
+         * @param aResultValue
+         * @param aOperator
+         * @param aOperandDesc
+         * @throws Exception 
+         */
+	public Numeric(Parser Parser, ResultValue ResultValue, String Operator, String OperandDesc) throws Exception
 	{
-		this.parser = aParser;
-		this.resval = aResultValue;
-		this.operator = aOperator;
-		this.opndDesc = aOperandDesc;
+		this.parser = Parser;
+		this.resval = ResultValue;
+		this.operator = Operator;
+		this.opndDesc = OperandDesc;
 		
+                //ensure our result value types are valid primitives
 		if (resval.type != Token.INTEGER && resval.type != Token.FLOAT) {
 			parser.errorWithCurrent("%s is not a valid type.", Token.strSubClassifM[resval.type]);
 		}
