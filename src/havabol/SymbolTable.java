@@ -145,6 +145,8 @@ public class SymbolTable
                      , Token.BUILTIN, 1));
         ht.put("MAXELEM", new STFunction("MAXELEM",Token.FUNCTION,Token.INTEGER
                         , Token.BUILTIN, 1));
+        ht.put("debug", new STFunction("debug", Token.FUNCTION, Token.VOID
+                      , Token.BUILTIN, 2));
         
         //==========================OPERATORS========================
         ht.put("and", new STOperator("and",Token.OPERATOR, Token.BINARY));

@@ -8,12 +8,18 @@ public class Parser
     public Scanner scan;
     public SymbolTable symbolTable;
     public int iParseTokenLineNr;
+    public boolean bShowAssign; // Determines whether or not to print the variable and value
+                                // of the current assignment
+    public boolean bShowExpr; // Determines whether or not to print the result of the current
+                              // expression (given that there was at least one operator)
     
     Parser(Scanner scan, SymbolTable symbolTable)
     {
         this.scan = scan;
         this.symbolTable = symbolTable;
         this.sourceFileNm = scan.sourceFileNm;
+        this.bShowAssign = false;
+        this.bShowExpr = false;
     }
     
     // This is a temporary method so we can still see the token output
@@ -152,6 +158,11 @@ public class Parser
             else if((scan.currentToken.primClassif == Token.CONTROL) && (scan.currentToken.subClassif == Token.DECLARE))
             {
                 declareStmt(bExec);
+            }
+            // Current token is a call to debug function
+            else if(scan.currentToken.tokenStr.equals("debug"))
+            {
+                debug();
             }
             // Current token is start of undefined statement
             else
@@ -438,11 +449,12 @@ public class Parser
         ResultValue res01; // Result value of first operand
         Numeric nOp2;      // Numeric value of second operand
         Numeric nOp1;      // Numeric value of first operand
+        ResultValue resAssign; // Result Value to be assigned to variable
         switch(operatorStr)
         {
             case "=":
-                res02 = expr();
-                symbolTable.storeVariableValue(this, variableStr, res02);
+                resAssign = expr();
+                symbolTable.storeVariableValue(this, variableStr, resAssign);
                 break;
             case "-=":
                 res02 = expr();
@@ -452,8 +464,10 @@ public class Parser
                 res01 = symbolTable.retrieveVariableValue(this, variableStr);
                 // Target variable must also be numeric
                 nOp1 = new Numeric(this, res01, "-=", "1st operand");
-                // Subtract second operand from first operand and assign the result to the variable
-                symbolTable.storeVariableValue(this, variableStr, Utility.subtract(this, nOp1, nOp2));
+                // Subtract second operand from first operand
+                resAssign = Utility.subtract(this, nOp1, nOp2);
+                // Assign the result to the variable
+                symbolTable.storeVariableValue(this, variableStr, resAssign);
                 break;
             case "+=":
                 res02 = expr();
@@ -463,11 +477,23 @@ public class Parser
                 res01 = symbolTable.retrieveVariableValue(this, variableStr);
                 // Target variable must also be numeric
                 nOp1 = new Numeric(this, res01, "+=", "1st operand");
-                // Add both operands and assign the result to the variable
-                symbolTable.storeVariableValue(this, variableStr, Utility.add(this, nOp1, nOp2));
+                // Add both operands
+                resAssign = Utility.add(this, nOp1, nOp2);
+                // Assign the result to the variable
+                symbolTable.storeVariableValue(this, variableStr, resAssign);
                 break;
             default:
                 error("Expected assignment operator, found '%s'", operatorStr);
+                resAssign = new ResultValue(); // This will never be reached
+        }
+        
+        // Print the debug information for the variable and value of the assignment
+        if(bShowAssign)
+        {
+            System.out.println("\t\t...\n");
+            System.out.printf("\t\tVariable: %s\n", variableStr);
+            System.out.printf("\t\tType:     %s\n", Token.strSubClassifM[resAssign.type]);
+            System.out.printf("\t\tValue:    %s\n", resAssign.value);
         }
     }
     
@@ -582,7 +608,8 @@ public class Parser
                                                                    // evaluated from the post-fix stack
         boolean expectingOperand = true; // Used to determine that the order of operators and operands
                                          // from the infix expression is valid
-        
+        boolean bFoundAnOperator = false; // If the debugger for an expression is turned on, we only want to
+                                          // print expression results if they had at least on operator
         // Get the next token
         scan.getNext();
         // TODO For now, the delimiter for an expression is only "," ";" or ":"
@@ -605,6 +632,9 @@ public class Parser
                     break;
                     
                 case Token.OPERATOR:
+                    // Found an operator for the expression debugger, if it is on
+                    bFoundAnOperator = true;
+                    
                     // Error if we were expecting an operand and we got a binary operator
                     // (e.g., x = 4 * * 5 is incorrect, while x = 4 * - 5 is correct
                     // since the "-" is a unary operator in the second case)
@@ -832,9 +862,23 @@ public class Parser
                     break;
             }
         }
+        
         //TODO-------TEMPORARY------------------
-        ResultValue TEMPRES = new ResultValue();
-        return TEMPRES;
+        ResultValue tempResVal = new ResultValue();
+        tempResVal.value = "You forgot to change the temp return value for expr";
+        tempResVal.type = 2;
+        //--------------------------------------
+        
+        // Print the debug information for the result of the current expression
+        if(bShowExpr && bFoundAnOperator)
+        {
+            System.out.println("\t\t...");
+            System.out.printf("\t\tType:  %s\n", Token.strSubClassifM[tempResVal.type]);
+            System.out.printf("\t\tValue: %s\n", tempResVal.value);
+        }
+        
+        //TODO-------TEMPORARY------------------
+        return tempResVal;
         //--------------------------------------
     }
     
@@ -870,5 +914,69 @@ public class Parser
         }
         // We hit the end of file, so the skipTo string was never found
         errorLineNr(iLineNrCalledFrom, "No ending '%s' for '%s' statement", skipToStr, calledFrom);
+    }
+    
+    public void debug() throws Exception
+    {
+        String debugType;  // The type of debug to call
+        String debugOnOff; // Turn the debug on or turn it off
+        boolean bDebug;    // Used for calling debuggers to turn on or off
+        
+        // Get the debug type
+        debugType = scan.getNext();
+        // Make sure the debug type is valid
+        if(! Arrays.asList("Assign", "Expr", "Token").contains(debugType))
+        {
+            error("Invalid type for debug function, found '%s',", debugType);
+        }
+        
+        // Get the "on" or "off" token and validate
+        debugOnOff = scan.getNext();
+        // Turn on debugger
+        if(debugOnOff.equals("on"))
+        {
+            bDebug = true;
+        }
+        // Turn off debugger
+        else if(debugOnOff.equals("off"))
+        {
+            bDebug = false;
+        }
+        // Invalid option, so error
+        else
+        {
+            error("Invalid option for debug function, must specify 'on' or 'off', found '%s'", debugOnOff);
+            bDebug = false; // Never reached
+        }
+        
+        // Get the ';' before activating/deactivating a debugger
+        if(! scan.getNext().equals(";"))
+        {
+            error("Expected ';' after debug statement");
+        }
+        
+        // If Token debugging is on, don't want to print the tokens for
+        // a debug statement. Now that we have parsed a debug statement,
+        // indicate to the scanner that it is OK to print the token info
+        scan.bInDebugStmt = false;
+        
+        // Turn the appropriate debugger on or off
+        switch(debugType)
+        {
+            case "Assign":
+                this.bShowAssign = bDebug;
+                break;
+                
+            case "Expr":
+                this.bShowExpr = bDebug;
+                break;
+                
+            case "Token":
+                scan.bShowToken = bDebug;
+                break;
+            default:
+                // Only reached if we add another debugger type and don't check for it
+                error("The case for debug type '%s' was never added to the debug method...", debugType);
+        }
     }
 }

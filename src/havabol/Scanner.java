@@ -24,6 +24,9 @@ public class Scanner
     public int iColPos;
     public Token currentToken;
     public Token nextToken;
+    public boolean bShowToken; // Determines whether or not to print the current token's information
+    public boolean bInDebugStmt; // Used to make sure we don't print token information if
+                                      // currently parsing a debug statement
     
     /**
      * Creates a Scanner object for scanning through the given file and
@@ -45,6 +48,8 @@ public class Scanner
         this.iSourceLineNr = 0;
         this.iColPos = 0;
         this.sourceLineM = new ArrayList<String>();
+        this.bShowToken = false;
+        this.bInDebugStmt = true;
         
         // Read all lines from input file
         try(BufferedReader buffReader = new BufferedReader(new FileReader(sourceFileNm)))
@@ -300,6 +305,12 @@ public class Scanner
             else if(STEntryResult instanceof STFunction)
             {
                 nextToken.subClassif = ((STFunction) STEntryResult).subClassif;
+                
+                // Don't print debug information if in a debug statement
+                if(((STFunction) STEntryResult).symbol.equals("debug"))
+                {
+                    bInDebugStmt = true;
+                }
             }
             // If token is an operator, add its number of operands as subclassification
             else if(STEntryResult instanceof STOperator)
@@ -402,6 +413,16 @@ public class Scanner
                 nextToken.subClassif = Token.IDENTIFIER;
             }
         }
+        
+        // Print the current token if the debugger is on and the parser
+        // is not currently on a debug statement
+        if(bShowToken && (! bInDebugStmt))
+        {
+            System.out.println("\t\t...");
+            System.out.print("\t\t");
+            currentToken.printToken();
+        }
+        
         return currentToken.tokenStr;
     }
 }
