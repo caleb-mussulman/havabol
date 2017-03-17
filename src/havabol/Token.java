@@ -198,12 +198,13 @@ public class Token
      * not yet in the post-fix stack
      * <p>
      * See Token.getPrecedence for more information
+     * @param  parse            the parser so its error methods can be used
      * @return                  the precedence value
      * @throws ParserException  if this method was called with an invalid token
      */
-    public int precedence() throws ParserException
+    public int precedence(Parser parse) throws ParserException
     {
-        return getPrecedence(false);
+        return getPrecedence(parse, false);
     }
     
     /**
@@ -211,12 +212,13 @@ public class Token
      * already in the post-fix stack
      * <p>
      * See Token.getPrecedence for more information
+     * @param  parse            the parser so its error methods can be used
      * @return                  the precedence value
      * @throws ParserException  if this method was called with an invalid token
      */
-    public int stkPrecedence() throws ParserException
+    public int stkPrecedence(Parser parse) throws ParserException
     {
-        return getPrecedence(true);
+        return getPrecedence(parse, true);
     }
     
     /**
@@ -247,12 +249,13 @@ public class Token
      *      not         5                   5
      *      and or      4                   4
      * -----------------------------------------------------
+     * @param  parse            the parser so its error methods can be used
      * @param stackPrecedence   boolean to determine if the precedence is for
      *                          the token on the post-fix stack 
      * @return                  the precedence value
      * @throws ParserException  if this method was called with an invalid token
      */
-    private int getPrecedence(boolean stackPrecedence) throws ParserException
+    private int getPrecedence(Parser parse, boolean stackPrecedence) throws ParserException
     {
         // We should only call this method if the token is an operator or separator
         if(! ((this.primClassif == Token.OPERATOR) || (this.primClassif == Token.SEPARATOR)) )
@@ -322,8 +325,9 @@ public class Token
                 return 4;
             default:
                 // This should really never be reached. If it is, we have improperly called this function
-                String diagnosticTxt = String.format("Invalid operator/separator on call to Token.getPrecedence, found '%s'", this.tokenStr);
-                throw new ParserException(this.iSourceLineNr + 1, diagnosticTxt, "");
+                parse.errorLineNr(this.iSourceLineNr + 1, "Invalid operator/separator on call to"
+                                  + "Token.getPrecedence, found '%s'", this.tokenStr);
+                return -1; // Never reached
         }
     }
     
@@ -333,12 +337,13 @@ public class Token
      * This method will create a ResultValue object, set its data type,
      * value, and structure according to the token's, and return that
      * resulting object
-     * @return the ResultValue that contains the token's values
-     * @throws ParserException if this method was called for a token that
-     *                         is not an operand
+     * @param  parse - the parser so its error methods can be used
+     * @return - the ResultValue that contains the token's values
+     * @throws ParserException - if this method was called for a token that
+     *                         - is not an operand
      *TODO ASSIGNING STRUCTURE AS PRIMITIVE FOR PROGRAM 3 (MAY NEED TO CHANGE)
      */
-    public ResultValue toResultValue() throws ParserException
+    public ResultValue toResultValue(Parser parse) throws ParserException
     {
         ResultValue resVal = new ResultValue(); // the result value to be returned
         // We should only call this method if the token is an operand
@@ -346,9 +351,8 @@ public class Token
         {
             // User's havabol code should NEVER get this error. This error is for debugging and
             // if it occurs, it is because we wrote an improper call to this method
-            String diagnosticTxt = String.format("Improper call to 'Token.toResultValue' for token '%s' that has primary"
-                    + "classification '%s'", this.tokenStr, Token.strPrimClassifM[this.primClassif]);
-            throw new ParserException(this.iSourceLineNr + 1, diagnosticTxt, "");
+            parse.errorLineNr(this.iSourceLineNr + 1, "Improper call to 'Token.toResultValue' for token '%s' that has primary"
+                              + "classification '%s'", this.tokenStr, Token.getType(parse, this.primClassif));
         }
         // Assign the data type
         resVal.type = this.subClassif;
@@ -357,5 +361,31 @@ public class Token
         // Assign the structure (primitive for program 3, don't yet know how we will determine the structure)
         resVal.structure = STIdentifier.PRIMITVE;
         return resVal;
+    }
+    
+    /**
+     * Gets the string name for an operand based on the constant passed on
+     * <p>
+     * This method is passed in an int enumeration type that corresponds to
+     * the defined constants for operands. If that value is not within the
+     * range of the valid enumerated operands, then we will error out. This
+     * will really only happen when we try to get the enumerated value of
+     * some ResultValue that has not been initialized. So, this method is
+     * primarily for consolidating on that error check
+     * @param parse             the parse instance so its error methods can be used
+     * @param enumType          the enumerated value of the type of operand
+     * @return                  the string value of the corresponding enumeration
+     * @throws ParserException  if the integer enumeration is not valid
+     */
+    public static String getType(Parser parse, int enumType) throws ParserException
+    {
+        // Make sure that the enumerated type is a valid value
+        if((enumType < Token.OPERAND_SUB_CLASS_MIN) || (enumType > Token.OPERAND_SUB_CLASS_MAX))
+        {
+            parse.error("Can not access the enumerated type for an operand with enum value '%d'", enumType);
+        }
+        
+        // It is a valid value so get its corresponding string value
+        return Token.strSubClassifM[enumType];
     }
 }

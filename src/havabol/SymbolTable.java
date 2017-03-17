@@ -72,7 +72,12 @@ public class SymbolTable
      */
     ResultValue retrieveVariableValue(Parser errParse, String symbol) throws Exception
     {
-        //All Error checking is done in storageManager.getVariableValue
+        // First check that the variable has been declared
+        if(! ht.containsKey(symbol))
+        {
+            errParse.error("Variable '%s' has not been declared");
+        }
+        // Variable has been declared, so get it from the storage manager
         ResultValue resVal = storageManager.getVariableValue(errParse, symbol);
         return resVal;
     }
@@ -89,21 +94,25 @@ public class SymbolTable
         //Check if the symbol is already declared.
         if(ht.containsKey(symbol))
         {
-            //Check if the ResultValue's type matches the type
+            // Get the type of the variable
             int symbolType = ((STIdentifier) ht.get(symbol)).dclType;
-            if(value.type ==  symbolType)
+            
+            // Check that the type of the value equals the type of the variable
+            if(value.type == symbolType)
             {
                 storageManager.putVariableValue(errParse, symbol, value);
             }
+            // The types do not match
             else
             {
                 errParse.error("Variable '%s' of type '%s' can not be assigned value '%s' of type '%s'"
-                              ,symbol, symbolType ,value.value, value.type); 
+                              ,symbol, Token.getType(errParse, symbolType) ,value.value, Token.getType(errParse, value.type)); 
             }
         }
+        // The variable has not been declared
         else
         {
-            errParse.error("Variable: '%s' has not been declared", symbol);
+            errParse.error("Variable '%s' has not been declared", symbol);
         }
     }
     

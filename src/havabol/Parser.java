@@ -12,6 +12,10 @@ public class Parser
                                 // of the current assignment
     public boolean bShowExpr; // Determines whether or not to print the result of the current
                               // expression (given that there was at least one operator)
+    public boolean bExpectingRtParen; // Determines how to treat the last ')' of an expression.
+                                      // In the case of functions, we want it to act as a delimiter
+                                      // for the functions parameters, so this value would be set
+                                      // to true, so that we don't try to find the matching '('
     
     Parser(Scanner scan, SymbolTable symbolTable)
     {
@@ -63,9 +67,9 @@ public class Parser
      * @param format     the format string to print out
      * @param varArgs    the corresponding values to match with the format
      *                   specifiers in the format string
-     * @throws Exception well, yeah...
+     * @throws ParserException well, yeah...
      */
-    public void errorLineNr(int iLineNr, String format, Object... varArgs) throws Exception
+    public void errorLineNr(int iLineNr, String format, Object... varArgs) throws ParserException
     {
         String diagnosticTxt = String.format(format, varArgs);
         throw new ParserException(iLineNr + 1, diagnosticTxt, this.sourceFileNm);
@@ -86,9 +90,9 @@ public class Parser
      * @param format     the format string to print out
      * @param varArgs    the corresponding values to match with the format
      *                   specifiers in the format string
-     * @throws Exception well, yeah...
+     * @throws ParserException well, yeah...
      */
-    public void errorWithCurrent(String format, Object... varArgs) throws Exception
+    public void errorWithCurrent(String format, Object... varArgs) throws ParserException
     {
         errorLineNr(this.iParseTokenLineNr, format, varArgs);
     }
@@ -101,9 +105,9 @@ public class Parser
      * @param format     the format string to print out
      * @param varArgs    the corresponding values to match with the format
      *                   specifiers in the format string
-     * @throws Exception well, yeah...
+     * @throws ParserException well, yeah...
      */
-    public void error(String format, Object... varArgs) throws Exception
+    public void error(String format, Object... varArgs) throws ParserException
     {
         errorLineNr(scan.currentToken.iSourceLineNr, format, varArgs);
     }
@@ -173,6 +177,7 @@ public class Parser
                             break;
                         case "print":
                             print(bExec);
+                            break;
                         default:
                             // Only reached if we add a built-in function but haven't called it here
                             error("Unknown built-in function: '%s'", scan.currentToken.tokenStr);
@@ -622,11 +627,15 @@ public class Parser
                                          // from the infix expression is valid
         boolean bFoundAnOperator = false; // If the debugger for an expression is turned on, we only want to
                                           // print expression results if they had at least on operator
+        boolean bFoundRtParen = false; // Indicates that a ')' before a ':' or ';' was found
+        String exprDelimiters = ",:;"; // The delimiters for an expression
+        
         // Get the next token
         scan.getNext();
+        
         // TODO For now, the delimiter for an expression is only "," ";" or ":"
-        // Get the next token as long as it isn't "," ":" or ";"
-        while(",:;".indexOf(scan.currentToken.tokenStr) < 0)
+        // Get the next token as long as it isn't an expression delimiter
+        while(exprDelimiters.indexOf(scan.currentToken.tokenStr) < 0)
         {
             Token token = scan.currentToken;
             switch(token.primClassif)
@@ -660,7 +669,7 @@ public class Parser
                     while(! postfixStack.isEmpty())
                     {
                         
-                        if(token.precedence() > postfixStack.peek().stkPrecedence())
+                        if(token.precedence(this) > postfixStack.peek().stkPrecedence(this))
                         {
                             break;
                         }
@@ -692,7 +701,24 @@ public class Parser
                             {
                                 error("Expecting an operand before ')'");
                             }
+                            
+                            // In the case of function, the final ')' acts as a delimiter for the parameters
+                            // which may be multiple expressions. In this case, we don't want to find the
+                            // matching '(' (which would be the one right after the function name). So, a
+                            // function call will indicate that the last ')' is special through the
+                            // bExpectingRtParen value, and we find that ')' because it will be followed by
+                            // a ':' or ';'
+                            if(bExpectingRtParen && (":;".indexOf(scan.nextToken.tokenStr) >= 0))
+                            {
+                                // Re-classify this token to be the special kind of ')'
+                                scan.currentToken.primClassif = Token.RT_PAREN;
+                                // Indicate that we found such a ')'
+                                bFoundRtParen = true;
+                                break;
+                            }
+                            
                             boolean bFoundParen = false;// Signifies if we found the matching left parenthesis
+                            
                             // Remove from the stack until the matching parenthesis is found
                             while(! postfixStack.isEmpty())
                             {
@@ -719,6 +745,16 @@ public class Parser
                 default:
                     error("Unrecognized argument for expression, found '%s'. May be missing ';' or ':'?", token.tokenStr);
             }
+            
+            // This will only be set to true if we were expecting the special ')'
+            // on the call to expr and we found one. In this case, the function
+            // is going to want the special ')' as the delimiter we don't want
+            // to get the next token, so we leave the loop
+            if(bFoundRtParen)
+            {
+                break;
+            }
+            
             scan.getNext();
         }
         
@@ -769,7 +805,7 @@ public class Parser
                     // Operand is not an identifier, so just put the operand on the result stack
                     else
                     {
-                        resultStack.push(outToken.toResultValue());
+                        resultStack.push(outToken.toResultValue(this));
                     }
                     break;
                     
@@ -877,8 +913,8 @@ public class Parser
         
         //TODO-------TEMPORARY------------------
         ResultValue tempResVal = new ResultValue();
-        tempResVal.value = "T";
-        tempResVal.type = 2;
+        tempResVal.value = "(Temp Res Val)";
+        tempResVal.type = Token.INTEGER;
         //--------------------------------------
         
         // Print the debug information for the result of the current expression
@@ -1017,44 +1053,22 @@ public class Parser
      * Prints a variable number of comma-separated expressions
      * Assumption: current token is on a "print" token
      * <p>
-     * 
+     * This function will continually make a call to expr
+     * and print out the result for every comma-separated
+     * expression, until it finds the matching ')'
      * @param bExec      whether or not we will execute the statements
      * @throws Exception
      */
     public void print(boolean bExec) throws Exception
     {
-        int iPrintLineNr; // Line number for beginning of print statement
-        iPrintLineNr = scan.currentToken.iSourceLineNr;
-        
         // Get the next token and make sure it is "("
         if(! scan.getNext().equals("("))
         {
             error("Expected '(' for 'print' function");
         }
         
-        // Get the token after the '(' and save its information
-        scan.getNext();
-        Token tokenAfterLeftParen = scan.currentToken;
-        
-        // Need to find the end of the print function by looking for a ')' followed by a ';'
-        // since the 'print' statement is delimited by the ';'
-        while(! scan.nextToken.tokenStr.equals(";"))
-        {
-            scan.getNext();
-        }
-        
-        // Make sure that the token before the ';' is a ')'
-        if(! scan.currentToken.tokenStr.equals(")"))
-        {
-            error("Missing either ')' or ';' for 'print' beginning on line %d", iPrintLineNr);
-        }
-        
-        // Because the print statement may contains multiple ')', we need to signify that the
-        // ending one is different so we can stop parsing expression when we hit this one
-        scan.currentToken.primClassif = Token.RT_PAREN;
-        
-        // Now move the scanner's position back to the token after print's opening '('
-        scan.setPosition(tokenAfterLeftParen);
+        // Indicate to the parser that we are expecting the special ')' at the end
+        this.bExpectingRtParen = true;
         
         // Print each comma-separated expression until we hit the special ')' before the ';'
         while(scan.currentToken.primClassif != Token.RT_PAREN)

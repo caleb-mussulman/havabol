@@ -54,15 +54,10 @@ public class StorageManager
         {
             //There is no value associated with that (valid) key
             //Call parser.error to call the ParserException
-            errParse.error("Uninitialized value for Variable: '%s'", symbol);
+            errParse.error("Uninitialized value for variable '%s'", symbol);
         }
-        else
-        {
-            //The value exists
-            return resValue;
-        }
-        //This will never be reached
-        return null;
+        //The value exists
+        return resValue;
     }
     
 }
