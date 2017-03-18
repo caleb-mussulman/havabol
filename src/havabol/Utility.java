@@ -34,14 +34,6 @@ public class Utility
     public static final int OR                 = 43;
     
     /*
-    *  CONSTRUCTOR
-    */
-    public Utility()
-    {
-        
-    }
-    
-    /*
     * CLASS METHODS -- needs to deal with coercion.
     */
     // Assignment Operators (+=, -=, *=, /=)
@@ -114,6 +106,7 @@ public class Utility
     
     /**
      * Compares 2 result values' together based on a given operation.
+     * <p>
      * @param parser - used for logging error messages.
      * @param operation - Binary operator (==, !=, <, >, <=, >=)
      * @param resval1 - Object containing result value 1
@@ -495,6 +488,7 @@ public class Utility
             res.value = String.valueOf(temp);
             res.structure = resval2.structure;
         }
+        //Error Check for an invalid type here...
         
         return res;
     }

@@ -8,13 +8,12 @@ package havabol;
  */
 public class Numeric {
 	
-	/*
-	 * CLASS VARIABLES
-	 */
+	
+	//CLASS VARIABLES
         int integerValue;
 	double doubleValue;
 	String strValue; // display value
-	int type; // INTEGER, FLOAT
+	int type;        // INTEGER, FLOAT
 	
 	// constructor vars
 	Parser parser;
@@ -23,21 +22,21 @@ public class Numeric {
 	String opndDesc;
     
 	/**
-         * Initalizes Numeric fields
+         * Initializes Numeric constructs
          * <p>
-         * @param aParser
-         * @param aResultValue
-         * @param aOperator
-         * @param aOperandDesc
-         * @throws Exception 
+         * @param Parser       - Parser to handle errors
+         * @param resultValue  - ResultValue for numbers value/type/...
+         * @param operator     - String to hold 
+         * @param operandDesc  - String to hold
+         * @throws Exception   - Exception for Parser
          */
-	public Numeric(Parser Parser, ResultValue ResultValue, String Operator, String OperandDesc) throws Exception
+	public Numeric(Parser Parser, ResultValue resultValue, String operator, String operandDesc) throws Exception
 	{
 		this.parser = Parser;
-		this.resval = ResultValue;
-		this.operator = Operator;
-		this.opndDesc = OperandDesc;
-		
+		this.resval = resultValue;
+		this.operator = operator;
+		this.opndDesc = operandDesc;
+                
                 //ensure our result value types are valid primitives
 		if (resval.type != Token.INTEGER && resval.type != Token.FLOAT) {
 			parser.errorWithCurrent("%s is not a valid type.", Token.strSubClassifM[resval.type]);

@@ -737,11 +737,11 @@ public class Parser
                             {
                                 error("Could not find matching '('. May be missing ';' or ':'?");
                             }
-                            break;
+                            break;  //Break out of case ")"
                         default:
                             error("Invalid separator, found '%s'", token.tokenStr);
                     }
-                    break;
+                    break;  //Break out of case Token.SEPARATOR
                 default:
                     error("Unrecognized argument for expression, found '%s'. May be missing ';' or ':'?", token.tokenStr);
             }
