@@ -1,5 +1,10 @@
 package havabol;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * @desc Performs an operation on two numerics, stores the result as a ResultValue,
  * and returns it to whatever called it.
@@ -27,80 +32,103 @@ public class Utility
     public static final int GREATER_THAN       = 34;
     public static final int LESS_THAN_EQUAL    = 35;
     public static final int GREATER_THAN_EQUAL = 36;
+    public static final int AND                = 37;
+    public static final int OR                 = 38;
     
-    // Unary
-    public static final int NOT                = 41;
-    public static final int AND                = 42;
-    public static final int OR                 = 43;
+    @SuppressWarnings("serial")
+    public final static Map<Integer, String> logicalOperator = Collections.unmodifiableMap(new HashMap<Integer, String>(){{
+                                                               put(31, "=="); put(32, "!="); put(33, "<"); put(34, ">");
+                                                               put(35, "<="); put(36, ">="); put(37, "and"); put(38, "or"); }});
     
     /*
     * CLASS METHODS -- needs to deal with coercion.
     */
     // Assignment Operators (+=, -=, *=, /=)
-    public static ResultValue subtract(Parser parser, Numeric nop1, Numeric nop2)
+    public static ResultValue subtract(Parser parser, ResultValue resOp1, ResultValue resOp2, String operationCalledFrom) throws Exception
     {
         ResultValue res = new ResultValue();
+        Numeric nOp1 = new Numeric(parser, resOp1, operationCalledFrom, "1st operand");
+        Numeric nOp2;
         
         // Compare the two values' type and coerce if needed
-        coerceTypeNum(nop1, nop2);
+        if(resOp1.type != resOp2.type)
+        {
+            coerce(parser, resOp1.type, resOp2, operationCalledFrom);
+        }
+        
+        // Get the second result value as a numeric
+        nOp2 = new Numeric(parser, resOp2, operationCalledFrom, "2nd operand");
         
         // Is a floating point value.
-        if (nop1.resval.type == Token.FLOAT)
+        if (nOp1.type == Token.FLOAT)
         {
-            Double tempValue = nop1.doubleValue - nop2.doubleValue;
+            Double tempValue = nOp1.doubleValue - nOp2.doubleValue;
             
-            // The updated value gets stored in nop1 because it is of form -=
-            nop1.strValue = tempValue.toString();
-            
-            res.value = String.format("%0.2s", nop1.strValue);
-            res.type  = nop1.resval.type;
-            res.structure = nop1.resval.structure;
+            // Store the new value of operation
+            res.value = tempValue.toString();
+            res.type  = nOp1.type;
+            res.structure = STIdentifier.PRIMITVE;
         }
         // It is an integer value.
-        else if (nop1.resval.type == Token.INTEGER)
+        else if (nOp1.type == Token.INTEGER)
         {
-            int tempValue = nop1.integerValue - nop2.integerValue;
+            Integer tempValue = nOp1.integerValue - nOp2.integerValue;
             
-            // The updated value gets stored in nop1 because it is of form -=
-            nop1.strValue = String.valueOf(tempValue);
-            
-            res.value = String.format("%s", nop1.strValue);
-            res.type  = nop1.resval.type;
-            res.structure = nop1.resval.structure;
+            // Store the new value of operation
+            res.value = tempValue.toString();
+            res.type  = nOp1.type;
+            res.structure = STIdentifier.PRIMITVE;
+        }
+        // Operation not defined for given type
+        else
+        {
+            parser.errorWithCurrent("The operation '%s' is not defined for the type '%s'"
+                                    , operationCalledFrom, Token.getType(parser, resOp1.type));
         }
         return res;
     }
     
-    public static ResultValue add(Parser parser, Numeric nop1, Numeric nop2)
+    public static ResultValue add(Parser parser, ResultValue resOp1, ResultValue resOp2, String operationCalledFrom) throws Exception
     {
         ResultValue res = new ResultValue();
+        Numeric nOp1 = new Numeric(parser, resOp1, operationCalledFrom, "1st operand");
+        Numeric nOp2;
         
         // Compare the two values' type and coerce if needed
-        coerceTypeNum(nop1, nop2);
+        if(resOp1.type != resOp2.type)
+        {
+            coerce(parser, resOp1.type, resOp2, operationCalledFrom);
+        }
+        
+        // Get the second result value as a numeric
+        nOp2 = new Numeric(parser, resOp2, operationCalledFrom, "2nd operand");
         
         // Is a floating point value.
-        if (nop1.resval.type == Token.FLOAT)
+        if (nOp1.type == Token.FLOAT)
         {
-            Double tempValue = nop1.doubleValue + nop2.doubleValue;
+            Double tempValue = nOp1.doubleValue + nOp2.doubleValue;
             
-            nop1.strValue = tempValue.toString();
-            
-            res.value = String.format("%0.2s", nop1.strValue);
-            res.type  = nop1.resval.type;
-            res.structure = nop1.resval.structure;
+            // Store the new value of the operation
+            res.value = tempValue.toString();
+            res.type  = nOp1.type;
+            res.structure = STIdentifier.PRIMITVE;
         }
         // It is an integer value.
-        else if (nop1.resval.type == Token.INTEGER)
+        else if (nOp1.type == Token.INTEGER)
         {
-            int tempValue = nop1.integerValue + nop2.integerValue;
+            Integer tempValue = nOp1.integerValue + nOp2.integerValue;
             
-            nop1.strValue = String.valueOf(tempValue);
-            
-            res.value = String.format("%s", nop1.strValue);
-            res.type  = nop1.resval.type;
-            res.structure = nop1.resval.structure;
+            // Store the new value of the operation
+            res.value = tempValue.toString();
+            res.type  = nOp1.type;
+            res.structure = STIdentifier.PRIMITVE;
         }
-        
+        // Operation not defined for given type
+        else
+        {
+            parser.errorWithCurrent("The operation '%s' is not defined for the type '%s'"
+                                    , operationCalledFrom, Token.getType(parser, resOp1.type));
+        }
         return res;
     }
     
@@ -114,234 +142,267 @@ public class Utility
      * @return A true or false Havabol value (e.g. "T" or "F")
      * @throws Exception when a RS value fails to parse correctly.
      */
-    public static String compare(Parser parser, int operation, ResultValue resval1, ResultValue resval2) throws Exception
+    public static ResultValue compare(Parser parser, int operation, ResultValue resval1, ResultValue resval2) throws Exception
     {
+        // If the result values are numbers, they must be converted to numerics
+        // Must initialize with dummy values in order to suppress Java error messages
+        // that these variables may not have been initialized
+        ResultValue tempRes = new ResultValue();
+        tempRes.type = Token.INTEGER;
+        tempRes.value = "0";
+        Numeric nOp1 = new Numeric(parser, tempRes, logicalOperator.get(operation), "temp initialization");
+        Numeric nOp2 = new Numeric(parser, tempRes, logicalOperator.get(operation), "temp initialization");
+        
+        // Coerce the second type to the first if they are not equal
         if (resval1.type != resval2.type)
         {
-            // This is the new resval2
-            ResultValue res = coerceTypeRes(resval1.type, resval2);
-            String result = "";
-            
-            switch(operation) {
-                case EQUAL:
-                    if (res.type == Token.STRING)
-                    {
-                        result = resval1.value.equals(res.value) ? "T" : "F";
-                    }
-                    else if (res.type == Token.INTEGER)
-                    {
-                        Integer iRes1 = Integer.parseInt(resval1.value);
-                        Integer iRes2 = Integer.parseInt(res.value);
-                        
-                        result = (iRes1 == iRes2) ? "T" : "F";
-                    }
-                    else if (res.type == Token.FLOAT)
-                    {
-                        Double dRes1 = Double.parseDouble(resval1.value);
-                        Double dRes2 = Double.parseDouble(res.value);
-                        
-                        result = (dRes1 == dRes2) ? "T" : "F";
-                    }
-                    break;
-                case NOT_EQUAL:
-                    if (res.type == Token.STRING)
-                    {
-                        result = resval1.value.equals(res.value) ? "F" : "T";
-                    }
-                    else if (res.type == Token.INTEGER)
-                    {
-                        Integer iRes1 = Integer.parseInt(resval1.value);
-                        Integer iRes2 = Integer.parseInt(res.value);
-                        
-                        result = (iRes1 == iRes2) ? "F" : "T";
-                    }
-                    else if (res.type == Token.FLOAT)
-                    {
-                        Double dRes1 = Double.parseDouble(resval1.value);
-                        Double dRes2 = Double.parseDouble(res.value);
-                        
-                        result = (dRes1 == dRes2) ? "F" : "T";
-                    }
-                    break;
-                case LESS_THAN:
-                    if (res.type == Token.STRING)
-                    {
-                        int resCompare = resval1.value.compareTo(res.value);
-                        result = (resCompare < 0) ? "T" : "F";
-                    }
-                    else if (res.type == Token.INTEGER)
-                    {
-                        Integer iRes1 = Integer.parseInt(resval1.value);
-                        Integer iRes2 = Integer.parseInt(res.value);
-                        
-                        result = (iRes1 < iRes2) ? "T" : "F";
-                    }
-                    else if (res.type == Token.FLOAT)
-                    {
-                        Double dRes1 = Double.parseDouble(resval1.value);
-                        Double dRes2 = Double.parseDouble(res.value);
-                        
-                        result = (dRes1 < dRes2) ? "T" : "F";
-                    }
-                    break;
-                case GREATER_THAN:
-                    if (res.type == Token.STRING)
-                    {
-                        int resCompare = resval1.value.compareTo(res.value);
-                        result = (resCompare > 0) ? "T" : "F";
-                    }
-                    else if (res.type == Token.INTEGER)
-                    {
-                        Integer iRes1 = Integer.parseInt(resval1.value);
-                        Integer iRes2 = Integer.parseInt(res.value);
-                        
-                        result = (iRes1 > iRes2) ? "T" : "F";
-                    }
-                    else if (res.type == Token.FLOAT)
-                    {
-                        Double dRes1 = Double.parseDouble(resval1.value);
-                        Double dRes2 = Double.parseDouble(res.value);
-                        
-                        result = (dRes1 > dRes2) ? "T" : "F";
-                    }
-                    break;
-                case LESS_THAN_EQUAL:
-                    if (res.type == Token.STRING)
-                    {
-                        int resCompare = resval1.value.compareTo(res.value);
-                        result = (resCompare <= 0) ? "T" : "F";
-                    }
-                    else if (res.type == Token.INTEGER)
-                    {
-                        Integer iRes1 = Integer.parseInt(resval1.value);
-                        Integer iRes2 = Integer.parseInt(res.value);
-                        
-                        result = (iRes1 <= iRes2) ? "T" : "F";
-                    }
-                    else if (res.type == Token.FLOAT)
-                    {
-                        Double dRes1 = Double.parseDouble(resval1.value);
-                        Double dRes2 = Double.parseDouble(res.value);
-                        
-                        result = (dRes1 <= dRes2) ? "T" : "F";
-                    }
-                    break;
-                case GREATER_THAN_EQUAL:
-                    if (res.type == Token.STRING)
-                    {
-                        int resCompare = resval1.value.compareTo(res.value);
-                        result = (resCompare >= 0) ? "T" : "F";
-                    }
-                    else if (res.type == Token.INTEGER)
-                    {
-                        Integer iRes1 = Integer.parseInt(resval1.value);
-                        Integer iRes2 = Integer.parseInt(res.value);
-                        
-                        result = (iRes1 >= iRes2) ? "T" : "F";
-                    }
-                    else if (res.type == Token.FLOAT)
-                    {
-                        Double dRes1 = Double.parseDouble(resval1.value);
-                        Double dRes2 = Double.parseDouble(res.value);
-                        
-                        result = (dRes1 >= dRes2) ? "T" : "F";
-                    }
-                    break;
-                case AND:
-                    if (res.type == Token.STRING)
-                    {
-                        parser.errorWithCurrent("Cannot && %s and %s together", resval1.type, res.type);
-                    }
-                    else if (res.type == Token.INTEGER)
-                    {
-                        parser.errorWithCurrent("Cannot && %s and %s together", resval1.type, res.type);
-                    }
-                    else if (res.type == Token.FLOAT)
-                    {
-                        parser.errorWithCurrent("Cannot && %s and %s together", resval1.type, res.type);
-                    }
-                    else if (res.type == Token.BOOLEAN)
-                    {
-                        if (resval1.value.equals("T") && res.value.equals("T"))
-                        {
-                            result = "T";
-                        }
-                        else
-                        {
-                            result = "F";
-                        }
-                    }
-                    break;
-                case OR:
-                    if (res.type == Token.STRING)
-                    {
-                        parser.errorWithCurrent("Cannot || %s and %s together", resval1.type, res.type);
-                    }
-                    else if (res.type == Token.INTEGER)
-                    {
-                        parser.errorWithCurrent("Cannot || %s and %s together", resval1.type, res.type);
-                    }
-                    else if (res.type == Token.FLOAT)
-                    {
-                        parser.errorWithCurrent("Cannot || %s and %s together", resval1.type, res.type);
-                    }
-                    else if (res.type == Token.BOOLEAN)
-                    {
-                        if (resval1.value.equals("T") && res.value.equals("T"))
-                        {
-                            result = "T";
-                        }
-                        else if (resval1.value.equals("F") && res.value.equals("T"))
-                        {
-                            result = "T";
-                        }
-                        else if (resval1.value.equals("T") && res.value.equals("F"))
-                        {
-                            result = "T";
-                        }
-                        else
-                        {
-                            result = "F";
-                        }
-                    }
-                    break;
-                case NOT:
-                    if (res.type == Token.STRING)
-                    {
-                        parser.errorWithCurrent("Cannot negate %s", resval1.type);
-                    }
-                    else if (res.type == Token.INTEGER)
-                    {
-                        parser.errorWithCurrent("Cannot negate %s", resval1.type);
-                    }
-                    else if (res.type == Token.FLOAT)
-                    {
-                        parser.errorWithCurrent("Cannot negate %s", resval1.type);
-                    }
-                    else if (res.type == Token.BOOLEAN)
-                    {
-                        if (res.value.equals("T"))
-                        {
-                            result = "F";
-                        }
-                        else if (res.value.equals("F"))
-                        {
-                            result = "T";
-                        }
-                    }
-                    break;
-            }
-            return result;
+            coerce(parser, resval1.type, resval2, logicalOperator.get(operation));
         }
-        else
+        
+        // Types must be the same now, so if they are numerics, convert to Numeric object
+        if((resval1.type == Token.INTEGER) || (resval1.type == Token.FLOAT))
         {
-            parser.errorWithCurrent("Cannot convert %s to type %s", resval2.value, resval1.type);
-            return "";
+            nOp1 = new Numeric(parser, resval1, logicalOperator.get(operation), "1st operand");
+            nOp2 = new Numeric(parser, resval2, logicalOperator.get(operation), "2nd operand");
         }
+        
+        String result = "";
+        
+        // Determine the passed in comparison operation
+        switch(operation) {
+            case EQUAL:
+                if ((resval2.type == Token.STRING) || (resval2.type == Token.BOOLEAN))
+                {
+                    result = resval1.value.equals(resval2.value) ? "T" : "F";
+                }
+                else if (resval2.type == Token.INTEGER)
+                {
+                    result = (nOp1.integerValue == nOp2.integerValue) ? "T" : "F";
+                }
+                else if (resval2.type == Token.FLOAT)
+                {
+                    result = (nOp1.doubleValue == nOp2.doubleValue) ? "T" : "F";
+                }
+                // The operation is not defined for the given type
+                else
+                {
+                    parser.errorWithCurrent("The operation '%s' is not defined for the type '%s'"
+                                            , logicalOperator.get(operation), Token.getType(parser, resval1.type));
+                }
+                break;
+            case NOT_EQUAL:
+                if ((resval2.type == Token.STRING) || (resval2.type == Token.BOOLEAN))
+                {
+                    result = resval1.value.equals(resval2.value) ? "F" : "T";
+                }
+                else if (resval2.type == Token.INTEGER)
+                {
+                    result = (nOp1.integerValue == nOp2.integerValue) ? "F" : "T";
+                }
+                else if (resval2.type == Token.FLOAT)
+                {
+                    result = (nOp1.doubleValue == nOp2.doubleValue) ? "F" : "T";
+                }
+                // The operation is not defined for the given type
+                else
+                {
+                    parser.errorWithCurrent("The operation '%s' is not defined for the type '%s'"
+                                            , logicalOperator.get(operation), Token.getType(parser, resval1.type));
+                }
+                break;
+            case LESS_THAN:
+                if (resval2.type == Token.STRING)
+                {
+                    int resCompare = resval1.value.compareTo(resval2.value);
+                    result = (resCompare < 0) ? "T" : "F";
+                }
+                else if (resval2.type == Token.INTEGER)
+                {
+                    result = (nOp1.integerValue < nOp2.integerValue) ? "T" : "F";
+                }
+                else if (resval2.type == Token.FLOAT)
+                {
+                    result = (nOp1.doubleValue < nOp2.doubleValue) ? "T" : "F";
+                }
+                // The operation is not defined for the given type
+                else
+                {
+                    parser.errorWithCurrent("The operation '%s' is not defined for the type '%s'"
+                                            , logicalOperator.get(operation), Token.getType(parser, resval1.type));
+                }
+                break;
+            case GREATER_THAN:
+                if (resval2.type == Token.STRING)
+                {
+                    int resCompare = resval1.value.compareTo(resval2.value);
+                    result = (resCompare > 0) ? "T" : "F";
+                }
+                else if (resval2.type == Token.INTEGER)
+                {
+                    result = (nOp1.integerValue > nOp2.integerValue) ? "T" : "F";
+                }
+                else if (resval2.type == Token.FLOAT)
+                {
+                    result = (nOp1.doubleValue > nOp2.doubleValue) ? "T" : "F";
+                }
+                // The operation is not defined for the given type
+                else
+                {
+                    parser.errorWithCurrent("The operation '%s' is not defined for the type '%s'"
+                                            , logicalOperator.get(operation), Token.getType(parser, resval1.type));
+                }
+                break;
+            case LESS_THAN_EQUAL:
+                if (resval2.type == Token.STRING)
+                {
+                    int resCompare = resval1.value.compareTo(resval2.value);
+                    result = (resCompare <= 0) ? "T" : "F";
+                }
+                else if (resval2.type == Token.INTEGER)
+                {
+                    result = (nOp1.integerValue <= nOp2.integerValue) ? "T" : "F";
+                }
+                else if (resval2.type == Token.FLOAT)
+                {
+                    result = (nOp1.doubleValue <= nOp2.doubleValue) ? "T" : "F";
+                }
+                // The operation is not defined for the given type
+                else
+                {
+                    parser.errorWithCurrent("The operation '%s' is not defined for the type '%s'"
+                                            , logicalOperator.get(operation), Token.getType(parser, resval1.type));
+                }
+                break;
+            case GREATER_THAN_EQUAL:
+                if (resval2.type == Token.STRING)
+                {
+                    int resCompare = resval1.value.compareTo(resval2.value);
+                    result = (resCompare >= 0) ? "T" : "F";
+                }
+                else if (resval2.type == Token.INTEGER)
+                {
+                    result = (nOp1.integerValue >= nOp2.integerValue) ? "T" : "F";
+                }
+                else if (resval2.type == Token.FLOAT)
+                {
+                    result = (nOp1.doubleValue >= nOp2.doubleValue) ? "T" : "F";
+                }
+                // The operation is not defined for the given type
+                else
+                {
+                    parser.errorWithCurrent("The operation '%s' is not defined for the type '%s'"
+                                            , logicalOperator.get(operation), Token.getType(parser, resval1.type));
+                }
+                break;
+            case AND:
+                if (resval2.type == Token.STRING)
+                {
+                    parser.errorWithCurrent("Cannot && %s and %s together", resval1.type, resval2.type);
+                }
+                else if (resval2.type == Token.INTEGER)
+                {
+                    parser.errorWithCurrent("Cannot && %s and %s together", resval1.type, resval2.type);
+                }
+                else if (resval2.type == Token.FLOAT)
+                {
+                    parser.errorWithCurrent("Cannot && %s and %s together", resval1.type, resval2.type);
+                }
+                else if (resval2.type == Token.BOOLEAN)
+                {
+                    if (resval1.value.equals("T") && resval2.value.equals("T"))
+                    {
+                        result = "T";
+                    }
+                    else
+                    {
+                        result = "F";
+                    }
+                }
+                // The operation is not defined for the given type
+                else
+                {
+                    parser.errorWithCurrent("The operation '%s' is not defined for the type '%s'"
+                                            , logicalOperator.get(operation), Token.getType(parser, resval1.type));
+                }
+                break;
+            case OR:
+                if (resval2.type == Token.STRING)
+                {
+                    parser.errorWithCurrent("Cannot || %s and %s together", resval1.type, resval2.type);
+                }
+                else if (resval2.type == Token.INTEGER)
+                {
+                    parser.errorWithCurrent("Cannot || %s and %s together", resval1.type, resval2.type);
+                }
+                else if (resval2.type == Token.FLOAT)
+                {
+                    parser.errorWithCurrent("Cannot || %s and %s together", resval1.type, resval2.type);
+                }
+                else if (resval2.type == Token.BOOLEAN)
+                {
+                    if (resval1.value.equals("F") && resval2.value.equals("F"))
+                    {
+                        result = "F";
+                    }
+                    else
+                    {
+                        result = "T";
+                    }
+                }
+                // The operation is not defined for the giveen type
+                else
+                {
+                    parser.errorWithCurrent("The operation '%s' is not defined for the type '%s'"
+                                            , logicalOperator.get(operation), Token.getType(parser, resval1.type));
+                }
+                break;
+            // The given logical operator constant is not valid
+            default:
+                parser.error("Called method 'compare' with invalid operator constant '%d'", operation);
+            /*case NOT:
+                if (res.type == Token.STRING)
+                {
+                    parser.errorWithCurrent("Cannot negate %s", resval1.type);
+                }
+                else if (res.type == Token.INTEGER)
+                {
+                    parser.errorWithCurrent("Cannot negate %s", resval1.type);
+                }
+                else if (res.type == Token.FLOAT)
+                {
+                    parser.errorWithCurrent("Cannot negate %s", resval1.type);
+                }
+                else if (res.type == Token.BOOLEAN)
+                {
+                    if (res.value.equals("T"))
+                    {
+                        result = "F";
+                    }
+                    else if (res.value.equals("F"))
+                    {
+                        result = "T";
+                    }
+                }
+                break;*/
+            }
+        // Check to ensure the boolean result was initialized, in case we missed some logic
+        if(result.equals(""))
+        {
+            parser.errorWithCurrent("The boolean result for operation '%s' was not evaluated properly", logicalOperator.get(operation));
+        }
+        
+        // Create a ResultValue object to hold the boolean value to return
+        ResultValue resReturn = new ResultValue();
+        resReturn.value = result;
+        resReturn.type = Token.BOOLEAN;
+        resReturn.structure = STIdentifier.PRIMITVE;
+        
+        return resReturn;
     }
     
-    public static void concat(Parser parser, ResultValue resval1, ResultValue resval2) throws Exception
+    public static ResultValue concat(Parser parser, ResultValue resval1, ResultValue resval2) throws Exception
     {
+        ResultValue resReturn = new ResultValue();
         String result = "";
         
         if (resval1.type == Token.STRING)
@@ -383,10 +444,14 @@ public class Utility
             parser.errorWithCurrent("Taylor didn't add another case for concat.");
         }
         
-        resval1.value = result;
+        resReturn.value = result;
+        resReturn.type = Token.STRING;
+        resReturn.structure = STIdentifier.PRIMITVE;
+        
+        return resReturn;
     }
     
-    public static void uminus(Parser parser, ResultValue resval) throws Exception
+    public static ResultValue uminus(Parser parser, ResultValue resval) throws Exception
     {
         if (resval.type == Token.STRING)
         {
@@ -394,15 +459,13 @@ public class Utility
         }
         else if (resval.type == Token.INTEGER)
         {
-            Integer iRes = Integer.parseInt(resval.value);
-            int iOp = -1 * iRes;
-            resval.value = String.valueOf(iOp);
+            Numeric nOp = new Numeric(parser, resval, "u-", "1st operand");
+            resval.value = String.valueOf(nOp.integerValue *= -1);
         }
         else if (resval.type == Token.FLOAT)
         {
-            Double dRes = Double.parseDouble(resval.value);
-            double dOp = -1 * dRes;
-            resval.value = String.valueOf(dOp);
+            Numeric nOp = new Numeric(parser, resval, "u-", "1st operand");
+            resval.value = String.valueOf(nOp.doubleValue *= -1);
         }
         else if (resval.type == Token.BOOLEAN)
         {
@@ -412,9 +475,10 @@ public class Utility
         {
             parser.errorWithCurrent("Taylor didn't add another case for uminus.");
         }
+        return resval;
     }
     
-    public static void expon(Parser parser, ResultValue resval1, ResultValue resval2) throws Exception
+    public static ResultValue exponent(Parser parser, ResultValue resval1, ResultValue resval2) throws Exception
     {
         String result = "";
         
@@ -424,19 +488,18 @@ public class Utility
         }
         else if (resval1.type == Token.INTEGER)
         {
-            Integer iRes1 = Integer.parseInt(resval1.value);
-            Integer iRes2 = Integer.parseInt(resval2.value);
+            Numeric nOp1 = new Numeric(parser, resval1, "^", "1st operand");
+            Numeric nOp2 = new Numeric(parser, resval2, "^", "2nd operand");
             
-            Double exponVal = Math.pow((double)iRes1, (double)iRes2);
-            int intVal = exponVal.intValue();
-            result = String.valueOf(intVal);
+            Double exponVal = Math.pow(nOp1.integerValue, nOp2.integerValue);
+            result = String.valueOf(exponVal.intValue());
         }
         else if (resval1.type == Token.FLOAT)
         {
-            Double dRes1 = Double.parseDouble(resval1.value);
-            Double dRes2 = Double.parseDouble(resval2.value);
+            Numeric nOp1 = new Numeric(parser, resval1, "^", "1st operand");
+            Numeric nOp2 = new Numeric(parser, resval2, "^", "2nd operand");
             
-            double exponVal = Math.pow(dRes1, dRes2);
+            Double exponVal = Math.pow(nOp1.doubleValue, nOp2.doubleValue);
             result = String.valueOf(exponVal);
         }
         else if (resval1.type == Token.BOOLEAN)
@@ -449,47 +512,142 @@ public class Utility
         }
         
         resval1.value = result;
+        return resval1;
     }
     
-    // Convert for Numeric and ResultValue params.
-    public static void coerceTypeNum(Numeric nop1, Numeric nop2) {
-        if (nop1.resval.type != nop2.resval.type) {
-            if (nop1.resval.type == Token.FLOAT)
-            {
-                nop2.resval.type = Token.FLOAT;
-                nop1.doubleValue = Double.parseDouble(nop1.resval.value);
-                nop2.doubleValue = Double.parseDouble(nop2.resval.value);
-            }
-            else
-            {
-                nop2.resval.type  = Token.INTEGER;
-                nop1.integerValue = Integer.parseInt(nop1.resval.value);
-                nop2.integerValue = Integer.parseInt(nop2.resval.value);
-            }
-        }
-    }
-    
-    
-    // Coerce the second result value into the type of the first result value.
-    public static ResultValue coerceTypeRes(int type, ResultValue resval2) {
-        ResultValue res = new ResultValue();
-        
-        if (type == Token.INTEGER)
+    /**
+     * Coerce a result value to the given type
+     * <p>
+     * Takes in a ResultValue object and a type constant which is
+     * defined in Token. Attempts to change the result value to the
+     * type, and if it is unsuccessful, will error out, giving the
+     * operation for which the coercion failed
+     * @param parser      to use its different error methods and stop execution
+     * @param coerceType  the type constant to coerce the result value to
+     * @param resval      the result value to be coerced
+     * @param operation   the operation which contains the operand being coerced
+     * @throws Exception  if the result value could not be coerced into the type
+     *                    if the type passed in is not a defined type
+     */
+    public static void coerce(Parser parser, int coerceType, ResultValue resval, String operation) throws Exception
+    {
+        // Check the type to coerce to
+        if (coerceType == Token.INTEGER)
         {
-            int temp = Integer.parseInt(resval2.value); // need to capture this error message.
-            res.type = type;
-            res.value = String.valueOf(temp);
-            res.structure = resval2.structure;
+            // Coerce to an INTEGER
+            switch(resval.type)
+            {
+                case Token.FLOAT:
+                    // The result value is a FLOAT to be coerced into an INTEGER
+                    try
+                    {
+                        double tempDouble = Double.parseDouble(resval.value);
+                        resval.value = Integer.toString((int)tempDouble);
+                        resval.type = Token.INTEGER;
+                    }
+                    catch(NumberFormatException e)
+                    {
+                        // This will really only happen if we scan/store a FLOAT incorrectly
+                        parser.errorWithCurrent("Unable to coerce value '%s' of type 'FLOAT' into type 'INTEGER' for operation '%s'"
+                                                , resval.value, operation);
+                    }
+                    break;
+                case Token.STRING:
+                    // The result value is a STRING to be coerced into an INTEGER
+                    try
+                    {
+                        // Attempt to parse the string as an int
+                        Integer.parseInt(resval.value);
+                        // It parsed properly so change the type to INTEGER
+                        resval.type = Token.INTEGER;
+                    }
+                    catch(NumberFormatException e)
+                    {
+                        // STRING could not be parsed into INTEGER
+                        parser.errorWithCurrent("Unable to coerce value '%s' of type 'STRING' into type 'INTEGER' for operation '%s'"
+                                                , resval.value, operation);
+                    }
+                    break;
+                default:
+                    parser.errorWithCurrent("Illegal operation: attempted to coerce type '%s' into type 'INTEGER'", Token.getType(parser, resval.type));                    
+            }
         }
-        else if (type == Token.FLOAT)
+        else if (coerceType == Token.FLOAT)
         {
-            double temp = Double.parseDouble(resval2.value); // need to capture this error message.
-            res.type = type;
-            res.value = String.valueOf(temp);
-            res.structure = resval2.structure;
+            // Coerce to a FLOAT
+            switch(resval.type)
+            {
+                case Token.INTEGER:
+                    // The result value is an INTEGER to be coerced into a FLOAT
+                    try
+                    {
+                        int tempInt = Integer.parseInt(resval.value);
+                        resval.value = Double.toString((double)tempInt);
+                        resval.type = Token.FLOAT;
+                    }
+                    catch(NumberFormatException e)
+                    {
+                        // This will really only happen if we scan/store an INTEGER incorrectly
+                        parser.errorWithCurrent("Unable to coerce value '%s' of type 'INTEGER' into type 'FLOAT' for operation '%s'"
+                                                , resval.value, operation);
+                    }
+                    break;
+                case Token.STRING:
+                    // The result value is an STRING to be coerced into a FLOAT
+                    try
+                    {
+                        // Attempt to parse the string as an double
+                        Double.parseDouble(resval.value);
+                        // It parsed properly so change the type to FLOAT
+                        resval.type = Token.FLOAT;
+                    }
+                    catch(NumberFormatException e)
+                    {
+                        // STRING could not be parsed into FLOAT
+                        parser.errorWithCurrent("Unable to coerce value '%s' of type 'STRING' into type 'FLOAT' for operation '%s'"
+                                                , resval.value, operation);
+                    }
+                    break;
+                default:
+                    parser.errorWithCurrent("Illegal operation: attempted to coerce type '%s' into type 'FLOAT'",Token.getType(parser, resval.type));
+            }
         }
-        //Error Check for an invalid type here...
-        
-        return res;
+        else if(coerceType == Token.BOOLEAN)
+        {
+            // Coerce to a BOOLEAN
+            switch(resval.type)
+            {
+                case Token.STRING:
+                    // The result value is a STRING to be coerced into a BOOLEAN
+                    
+                    // See if the string contains boolean values 'T' or 'F'
+                    if(Arrays.asList("T", "F").contains(resval.value))
+                    {
+                        resval.type = Token.BOOLEAN;
+                    }
+                    // String is not a valid boolean value
+                    else
+                    {
+                        parser.errorWithCurrent("Unable to coerce value '%s' of type 'STRING' into type 'BOOLEAN' for operation '%s'"
+                                                , resval.value, operation);
+                    }
+                    break;
+                default:
+                    parser.errorWithCurrent("Illegal operation: attempted to coerce type '%s' into type 'BOOLEAN'", Token.getType(parser, resval.type));
+            }
+        }
+        else if(coerceType == Token.DATE)
+        {
+            // TODO when we add date types
+        }
+        else if(coerceType == Token.STRING)
+        {
+            // All data types are stored as STRINGS, so just change the result value's type
+            resval.type = Token.STRING;
+        }
+        else
+        {
+            parser.errorWithCurrent("Illegal operation: attempted to coerce value '%s' into unknown type represented by '%d'", resval.value, resval.type);
+        }
     }
 }

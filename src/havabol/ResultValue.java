@@ -46,14 +46,6 @@ public class ResultValue
      * CONTRUCTOR
      */
     public ResultValue() {
-       initialize();
-    }
-    
-    /*
-     * CLASS METHODS
-     */
-    public void initialize() {
-    	// Initialize with dummy values
         type = -1;
         value = "";
         structure = -1;

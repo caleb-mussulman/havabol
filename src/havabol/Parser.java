@@ -462,10 +462,8 @@ public class Parser
         }
         
         String operatorStr = scan.currentToken.tokenStr;
-        ResultValue res02; // Result value of second operand
-        ResultValue res01; // Result value of first operand
-        Numeric nOp2;      // Numeric value of second operand
-        Numeric nOp1;      // Numeric value of first operand
+        ResultValue resOp2;    // Result value of second operand
+        ResultValue resOp1;    // Result value of first operand
         ResultValue resAssign; // Result Value to be assigned to variable
         switch(operatorStr)
         {
@@ -474,28 +472,20 @@ public class Parser
                 symbolTable.storeVariableValue(this, variableStr, resAssign);
                 break;
             case "-=":
-                res02 = expr();
-                // Expression must be numeric, raise exception if not
-                nOp2 = new Numeric(this, res02, "-=", "2nd operand");
-                // Since it is numeric, get the value of the target variable
-                res01 = symbolTable.retrieveVariableValue(this, variableStr);
-                // Target variable must also be numeric
-                nOp1 = new Numeric(this, res01, "-=", "1st operand");
+                resOp2 = expr();
+                // Get the value of the target variable
+                resOp1 = symbolTable.retrieveVariableValue(this, variableStr);
                 // Subtract second operand from first operand
-                resAssign = Utility.subtract(this, nOp1, nOp2);
+                resAssign = Utility.subtract(this, resOp1, resOp2, "-=");
                 // Assign the result to the variable
                 symbolTable.storeVariableValue(this, variableStr, resAssign);
                 break;
             case "+=":
-                res02 = expr();
-                // Expression must be numeric, raise exception if not
-                nOp2 = new Numeric(this, res02, "+=", "2nd operand");
-                // Since it is numeric, get the value of the target variable
-                res01 = symbolTable.retrieveVariableValue(this, variableStr);
-                // Target variable must also be numeric
-                nOp1 = new Numeric(this, res01, "+=", "1st operand");
+                resOp2 = expr();
+                // Get the value of the target variable
+                resOp1 = symbolTable.retrieveVariableValue(this, variableStr);
                 // Add both operands
-                resAssign = Utility.add(this, nOp1, nOp2);
+                resAssign = Utility.add(this, resOp1, resOp2, "+=");
                 // Assign the result to the variable
                 symbolTable.storeVariableValue(this, variableStr, resAssign);
                 break;
@@ -771,8 +761,11 @@ public class Parser
         }
         
       //TODO-------TEMPORARY------------------
+        /*
+        System.out.println("------------OUTLIST START----------------");
         for(Token current: outList)
         {
+            
             if(current.primClassif == Token.OPERAND)
             {
                 System.out.println(current.tokenStr + " " + current.subClassif);
@@ -783,6 +776,7 @@ public class Parser
             }
             
         }
+        System.out.println("------------OUTLIST END----------------");*/
         //--------------------------------------
         
         // Evaluate the post-fix expression
@@ -821,16 +815,16 @@ public class Parser
                             errorWithCurrent("Missing operand for operation '%s'", outToken.tokenStr);
                         }
                         // An operand exists so retrieve it
-                        ResultValue resop = resultStack.pop();
+                        ResultValue resOp = resultStack.pop();
                         
                         // Determine which unary operation to perform
                         switch(outToken.tokenStr)
                         {
                             case "-":
-                                //Utility.unary();
+                                Utility.uminus(this, resOp);
                                 break;
                             case "not":
-                                //Utility.not();
+                                //Utility.not(this, resOp);
                                 break;
                             default:
                                 // This error message would only occur if we added a new operator to the language
@@ -860,45 +854,59 @@ public class Parser
                         switch(outToken.tokenStr)
                         {
                             case "^":
+                                //Utility.exponent(this, resOp1, resOp2);
                                 break;
                                 
                             case "*":
+                                //Utility.multiply(this, resOp1, resOp2);
                                 break;
                                     
                             case "/":
+                                //Utility.divide(this, resOp1, resOp2);
                                 break;
                                     
                             case "+":
+                                resultStack.push(Utility.add(this, resOp1, resOp2, "+"));
                                 break;
                                     
                             case "-":
+                                resultStack.push(Utility.subtract(this, resOp1, resOp2, "-"));
                                 break;
                                     
                             case "#":
+                                Utility.concat(this, resOp1, resOp2);
                                 break;
                                     
                             case "<":
+                                resultStack.push(Utility.compare(this, Utility.LESS_THAN, resOp1, resOp2));
                                 break;
                                     
                             case ">":
+                                resultStack.push(Utility.compare(this, Utility.GREATER_THAN, resOp1, resOp2));
                                 break;
                                     
                             case "<=":
+                                resultStack.push(Utility.compare(this, Utility.LESS_THAN_EQUAL, resOp1, resOp2));
                                 break;
                                     
                             case ">=":
+                                resultStack.push(Utility.compare(this, Utility.GREATER_THAN_EQUAL, resOp1, resOp2));
                                 break;
                                     
                             case "==":
+                                resultStack.push(Utility.compare(this, Utility.EQUAL, resOp1, resOp2));
                                 break;
                                     
                             case "!=":
+                                resultStack.push(Utility.compare(this, Utility.NOT_EQUAL, resOp1, resOp2));
                                 break;
                                     
                             case "and":
+                                resultStack.push(Utility.compare(this, Utility.AND, resOp1, resOp2));
                                 break;
                                     
                             case "or":
+                                resultStack.push(Utility.compare(this, Utility.GREATER_THAN_EQUAL, resOp1, resOp2));
                                 break;
                                 
                             default:
@@ -911,23 +919,17 @@ public class Parser
             }
         }
         
-        //TODO-------TEMPORARY------------------
-        ResultValue tempResVal = new ResultValue();
-        tempResVal.value = "(Temp Res Val)";
-        tempResVal.type = Token.INTEGER;
-        //--------------------------------------
+        ResultValue resReturnVal = resultStack.pop();
         
         // Print the debug information for the result of the current expression
         if(bShowExpr && bFoundAnOperator)
         {
             System.out.println("\t\t...");
-            System.out.printf("\t\tType:  %s\n", Token.strSubClassifM[tempResVal.type]);
-            System.out.printf("\t\tValue: %s\n", tempResVal.value);
+            System.out.printf("\t\tType:  %s\n", Token.strSubClassifM[resReturnVal.type]);
+            System.out.printf("\t\tValue: %s\n", resReturnVal.value);
         }
         
-        //TODO-------TEMPORARY------------------
-        return tempResVal;
-        //--------------------------------------
+        return resReturnVal;
     }
     
     /**

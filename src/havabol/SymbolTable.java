@@ -98,7 +98,8 @@ public class SymbolTable
             int symbolType = ((STIdentifier) ht.get(symbol)).dclType;
             
             // Check that the type of the value equals the type of the variable
-            if(value.type == symbolType)
+            // (A string variable may be assigned a numeric value)
+            if((value.type == symbolType) || (symbolType == Token.STRING && ((value.type == Token.INTEGER) || (value.type == Token.FLOAT))))
             {
                 storageManager.putVariableValue(errParse, symbol, value);
             }
