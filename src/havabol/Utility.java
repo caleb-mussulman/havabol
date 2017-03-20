@@ -459,32 +459,8 @@ public class Utility
             // The given logical operator constant is not valid
             default:
                 parser.error("Called method 'compare' with invalid operator constant '%d'", operation);
-            /*case NOT:
-                if (res.type == Token.STRING)
-                {
-                    parser.errorWithCurrent("Cannot negate %s", resval1.type);
-                }
-                else if (res.type == Token.INTEGER)
-                {
-                    parser.errorWithCurrent("Cannot negate %s", resval1.type);
-                }
-                else if (res.type == Token.FLOAT)
-                {
-                    parser.errorWithCurrent("Cannot negate %s", resval1.type);
-                }
-                else if (res.type == Token.BOOLEAN)
-                {
-                    if (res.value.equals("T"))
-                    {
-                        result = "F";
-                    }
-                    else if (res.value.equals("F"))
-                    {
-                        result = "T";
-                    }
-                }
-                break;*/
-            }
+        }
+        
         // Check to ensure the boolean result was initialized, in case we missed some logic
         if(result.equals(""))
         {
@@ -498,6 +474,28 @@ public class Utility
         resReturn.structure = STIdentifier.PRIMITVE;
         
         return resReturn;
+    }
+    
+    public static ResultValue not(Parser parser, ResultValue resval) throws Exception
+    {
+        // TODO may be able to coerce a string to a boolean first (need to talk to Clark)
+        // Can only perform the operation on a boolean value
+        if(resval.type != Token.BOOLEAN)
+        {
+            parser.errorWithCurrent("The operation 'not' is not defined for the type '%s'", Token.getType(parser, resval.type));
+        }
+        
+        // Reverse the value of the boolean
+        if (resval.value.equals("T"))
+        {
+            resval.value = "F";
+        }
+        else
+        {
+            resval.value = "T";
+        }
+        
+        return resval;
     }
     
     public static ResultValue concat(Parser parser, ResultValue resval1, ResultValue resval2) throws Exception

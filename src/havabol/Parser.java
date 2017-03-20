@@ -824,7 +824,7 @@ public class Parser
                                 resultStack.push(Utility.uminus(this, resOp));
                                 break;
                             case "not":
-                                //Utility.not(this, resOp);
+                                resultStack.push(Utility.not(this, resOp));
                                 break;
                             default:
                                 // This error message would only occur if we added a new operator to the language
@@ -851,6 +851,7 @@ public class Parser
                         // Get the first operand
                         ResultValue resOp1 = resultStack.pop();
                         
+                        // Determine which binary operation to perform
                         switch(outToken.tokenStr)
                         {
                             case "^":
