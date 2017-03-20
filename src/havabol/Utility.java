@@ -132,6 +132,106 @@ public class Utility
         return res;
     }
     
+    public static ResultValue multiply(Parser parser, ResultValue resOp1, ResultValue resOp2) throws Exception
+    {
+        ResultValue res = new ResultValue();
+        Numeric nOp1 = new Numeric(parser, resOp1, "*", "1st operand");
+        Numeric nOp2;
+        
+        // Compare the two values' type and coerce if needed
+        if(resOp1.type != resOp2.type)
+        {
+            coerce(parser, resOp1.type, resOp2, "*");
+        }
+        
+        // Get the second result value as a numeric
+        nOp2 = new Numeric(parser, resOp2, "*", "2nd operand");
+        
+        // Is a floating point value.
+        if (nOp1.type == Token.FLOAT)
+        {
+            Double tempValue = nOp1.doubleValue * nOp2.doubleValue;
+            
+            // Store the new value of the operation
+            res.value = tempValue.toString();
+            res.type  = nOp1.type;
+            res.structure = STIdentifier.PRIMITVE;
+        }
+        // It is an integer value.
+        else if (nOp1.type == Token.INTEGER)
+        {
+            Integer tempValue = nOp1.integerValue * nOp2.integerValue;
+            
+            // Store the new value of the operation
+            res.value = tempValue.toString();
+            res.type  = nOp1.type;
+            res.structure = STIdentifier.PRIMITVE;
+        }
+        // Operation not defined for given type
+        else
+        {
+            parser.errorWithCurrent("The operation '%s' is not defined for the type '%s'"
+                                    , "*", Token.getType(parser, resOp1.type));
+        }
+        return res;
+    }
+    
+    public static ResultValue divide(Parser parser, ResultValue resOp1, ResultValue resOp2) throws Exception
+    {
+        ResultValue res = new ResultValue();
+        Numeric nOp1 = new Numeric(parser, resOp1, "/", "1st operand");
+        Numeric nOp2;
+        
+        // Compare the two values' type and coerce if needed
+        if(resOp1.type != resOp2.type)
+        {
+            coerce(parser, resOp1.type, resOp2, "/");
+        }
+        
+        // Get the second result value as a numeric
+        nOp2 = new Numeric(parser, resOp2, "/", "2nd operand");
+        
+        // Is a floating point value.
+        if (nOp1.type == Token.FLOAT)
+        {
+            // Can not divide by 0.0
+            if(nOp2.doubleValue == 0.0)
+            {
+                parser.errorWithCurrent("Attempted to divide by zero");
+            }
+            
+            Double tempValue = nOp1.doubleValue / nOp2.doubleValue;
+            
+            // Store the new value of the operation
+            res.value = tempValue.toString();
+            res.type  = nOp1.type;
+            res.structure = STIdentifier.PRIMITVE;
+        }
+        // It is an integer value.
+        else if (nOp1.type == Token.INTEGER)
+        {
+            // Can not divide by 0
+            if(nOp2.integerValue == 0)
+            {
+                parser.errorWithCurrent("Attempted to divide by zero");
+            }
+            
+            Integer tempValue = nOp1.integerValue / nOp2.integerValue;
+            
+            // Store the new value of the operation
+            res.value = tempValue.toString();
+            res.type  = nOp1.type;
+            res.structure = STIdentifier.PRIMITVE;
+        }
+        // Operation not defined for given type
+        else
+        {
+            parser.errorWithCurrent("The operation '%s' is not defined for the type '%s'"
+                                    , "*", Token.getType(parser, resOp1.type));
+        }
+        return res;
+    }
+    
     /**
      * Compares 2 result values' together based on a given operation.
      * <p>

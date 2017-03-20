@@ -821,7 +821,7 @@ public class Parser
                         switch(outToken.tokenStr)
                         {
                             case "-":
-                                Utility.uminus(this, resOp);
+                                resultStack.push(Utility.uminus(this, resOp));
                                 break;
                             case "not":
                                 //Utility.not(this, resOp);
@@ -854,22 +854,24 @@ public class Parser
                         switch(outToken.tokenStr)
                         {
                             case "^":
-                                //Utility.exponent(this, resOp1, resOp2);
+                                resultStack.push(Utility.exponent(this, resOp1, resOp2));
                                 break;
                                 
                             case "*":
-                                //Utility.multiply(this, resOp1, resOp2);
+                                resultStack.push(Utility.multiply(this, resOp1, resOp2));
                                 break;
                                     
                             case "/":
-                                //Utility.divide(this, resOp1, resOp2);
+                                resultStack.push(Utility.divide(this, resOp1, resOp2));
                                 break;
                                     
                             case "+":
+                                // The last parameter is to indicate 'add' is called from '+' as opposed to '+='
                                 resultStack.push(Utility.add(this, resOp1, resOp2, "+"));
                                 break;
                                     
                             case "-":
+                                // The last parameter is to indicate 'subtract' is called from '-' as opposed to '-='
                                 resultStack.push(Utility.subtract(this, resOp1, resOp2, "-"));
                                 break;
                                     
