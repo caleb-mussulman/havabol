@@ -218,6 +218,14 @@ public class Parser
         {
             // We are executing (not ignoring)
             ResultValue resCond = expr();
+            
+            // The resulting condition must be a boolean value
+            if(resCond.type != Token.BOOLEAN)
+            {
+                errorLineNr(iIfLineNr, "Expected a 'BOOLEAN' type for the evaluation of 'if' statement's condition"
+                            + ", found '%s' type", resCond.type);
+            }
+            
             // Did the condition return true?
             if(resCond.value.equals("T"))
             {
@@ -358,6 +366,13 @@ public class Parser
         {
             // We are executing (not ignoring)
             ResultValue resCond = expr();
+            
+            // The resulting condition must be a boolean value
+            if(resCond.type != Token.BOOLEAN)
+            {
+                errorLineNr(whileToken.iSourceLineNr, "Expected a 'BOOLEAN' type for the evaluation of 'while' statement's condition"
+                           + ", found '%s' type", resCond.type);
+            }
             
             // Continue in the while loop as long as the expression evaluates to true
             while(resCond.value.equals("T"))
