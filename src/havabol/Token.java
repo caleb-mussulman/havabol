@@ -128,7 +128,7 @@ public class Token
         // any possible non-printable characters in the string
         if(subClassif == Token.STRING)
         {
-            hexPrint(25, tokenStr);
+            hexPrint(41, tokenStr);
         }
         else
         {
@@ -164,6 +164,7 @@ public class Token
         int len = str.length();
         char [] charray = str.toCharArray();
         char ch;
+        boolean bFoundUnprintable = false;
         // print each character in the string
         for (int i = 0; i < len; i++)
         {
@@ -171,25 +172,34 @@ public class Token
             if (ch > 31 && ch < 127)   // ASCII printable characters
                 System.out.printf("%c", ch);
             else
+            {
+                bFoundUnprintable = true;
                 System.out.printf(". ");
+            }
         }
-        System.out.printf("\n");
-        // indent the second line to the number of specified spaces
-        for (int i = 0; i < indent; i++)
+        
+        // Print the line containing the unprintable character's value
+        // only if one of these characters was in the string
+        if(bFoundUnprintable)
         {
-            System.out.printf(" ");
+            System.out.printf("\n");
+            // indent the second line to the number of specified spaces
+            for (int i = 0; i < indent; i++)
+            {
+                System.out.printf(" ");
+            }
+            // print the second line.  Non-printable characters will be shown
+            // as their hex value.  Printable will simply be a space
+            for (int i = 0; i < len; i++)
+            {
+                ch = charray[i];
+                // only deal with the printable characters
+                if (ch > 31 && ch < 127)   // ASCII printable characters
+                    System.out.printf(" ", ch);
+                else
+                    System.out.printf("%02X", (int) ch);
+            }   
         }
-        // print the second line.  Non-printable characters will be shown
-        // as their hex value.  Printable will simply be a space
-        for (int i = 0; i < len; i++)
-        {
-            ch = charray[i];
-            // only deal with the printable characters
-            if (ch > 31 && ch < 127)   // ASCII printable characters
-                System.out.printf(" ", ch);
-            else
-                System.out.printf("%02X", (int) ch);
-        }    
         System.out.printf("\n");
     }
 

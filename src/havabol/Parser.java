@@ -1095,10 +1095,20 @@ public class Parser
         {
             ResultValue resVal = expr();
             System.out.printf("%s ", resVal.value);
+            
+            // If the scanner is printing token information, print a
+            // '\n'; otherwise, there will be output formatting errors
+            if(scan.bShowToken)
+            {
+                System.out.printf("\n");
+            }
         }
         
-        // Print the newline
-        System.out.print("\n");
+        // Print the newline, unless we had already printed one because
+        // the scanner was printing token info
+        if(! scan.bShowToken){
+            System.out.print("\n");
+        }
         
         // Move to the ';' after the ')'
         scan.getNext();

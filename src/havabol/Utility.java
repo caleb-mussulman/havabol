@@ -557,12 +557,12 @@ public class Utility
         }
         else if (resval.type == Token.INTEGER)
         {
-            Numeric nOp = new Numeric(parser, resval, "u-", "1st operand");
+            Numeric nOp = new Numeric(parser, resval, "u-", "The operand");
             resval.value = String.valueOf(nOp.integerValue *= -1);
         }
         else if (resval.type == Token.FLOAT)
         {
-            Numeric nOp = new Numeric(parser, resval, "u-", "1st operand");
+            Numeric nOp = new Numeric(parser, resval, "u-", "The operand");
             resval.value = String.valueOf(nOp.doubleValue *= -1);
         }
         else if (resval.type == Token.BOOLEAN)
