@@ -483,7 +483,14 @@ public class Parser
         switch(operatorStr)
         {
             case "=":
+                STIdentifier STVariable = (STIdentifier) symbolTable.getSymbol(variableStr);
                 resAssign = expr();
+                // If the variable and value types don't match, then attempt to coerce the
+                // type of the value to the type of the variable
+                if(STVariable.dclType != resAssign.type)
+                {
+                    Utility.coerce(this, STVariable.dclType, resAssign, "=");
+                }
                 symbolTable.storeVariableValue(this, variableStr, resAssign);
                 break;
             case "-=":
@@ -1081,6 +1088,17 @@ public class Parser
      */
     public void print(boolean bExec) throws Exception
     {
+        int iPrintLineNr; // line number for beginning of print statement
+        iPrintLineNr  =scan.currentToken.iSourceLineNr;
+        
+        // Do we need to ignore execution of the printing?
+        if(! bExec)
+        {
+            // Skip to the end of the print statement
+            skipTo(iPrintLineNr, "print", ";");
+            return;
+        }
+        
         // Get the next token and make sure it is "("
         if(! scan.getNext().equals("("))
         {
