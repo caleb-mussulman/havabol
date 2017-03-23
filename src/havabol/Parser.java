@@ -27,32 +27,9 @@ public class Parser
     }
     
     // This is a temporary method so we can still see the token output
-    public void parse()
+    public void parse() throws Exception
     {
-        try
-        {   /* Previous invocation of havabol
-            while (true)
-            {
-                // Print a column heading 
-                System.out.printf("%-11s %-12s %s\n"
-                        , "primClassif"
-                        , "subClassif"
-                        , "tokenStr");
-                scan.getNext();
-                if(scan.currentToken.primClassif == Token.EOF)
-                {
-                    break;
-                }
-                // Print the final token result in table format
-                scan.currentToken.printToken();
-            }*/
-            
-            statements(true);
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
+        statements(true);
     }
     
     /**
@@ -1089,7 +1066,7 @@ public class Parser
     public void print(boolean bExec) throws Exception
     {
         int iPrintLineNr; // line number for beginning of print statement
-        iPrintLineNr  =scan.currentToken.iSourceLineNr;
+        iPrintLineNr = scan.currentToken.iSourceLineNr;
         
         // Do we need to ignore execution of the printing?
         if(! bExec)

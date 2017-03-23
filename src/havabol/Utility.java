@@ -44,8 +44,13 @@ public class Utility
     * CLASS METHODS -- needs to deal with coercion.
     */
     // Assignment Operators (+=, -=, *=, /=)
-    public static ResultValue subtract(Parser parser, ResultValue resOp1, ResultValue resOp2, String operationCalledFrom) throws Exception
+    public static ResultValue subtract(Parser parser, ResultValue resParam1, ResultValue resParam2, String operationCalledFrom) throws Exception
     {
+        // Must get a copy of the passed in result values so that the
+        // original result value objects are not manipulated
+        ResultValue resOp1 = Utility.getResultValueCopy(resParam1);
+        ResultValue resOp2 = Utility.getResultValueCopy(resParam2);
+        
         ResultValue res = new ResultValue();
         Numeric nOp1 = new Numeric(parser, resOp1, operationCalledFrom, "1st operand");
         Numeric nOp2;
@@ -88,8 +93,13 @@ public class Utility
         return res;
     }
     
-    public static ResultValue add(Parser parser, ResultValue resOp1, ResultValue resOp2, String operationCalledFrom) throws Exception
+    public static ResultValue add(Parser parser, ResultValue resParam1, ResultValue resParam2, String operationCalledFrom) throws Exception
     {
+        // Must get a copy of the passed in result values so that the
+        // original result value objects are not manipulated
+        ResultValue resOp1 = Utility.getResultValueCopy(resParam1);
+        ResultValue resOp2 = Utility.getResultValueCopy(resParam2);
+        
         ResultValue res = new ResultValue();
         Numeric nOp1 = new Numeric(parser, resOp1, operationCalledFrom, "1st operand");
         Numeric nOp2;
@@ -132,8 +142,13 @@ public class Utility
         return res;
     }
     
-    public static ResultValue multiply(Parser parser, ResultValue resOp1, ResultValue resOp2) throws Exception
+    public static ResultValue multiply(Parser parser, ResultValue resParam1, ResultValue resParam2) throws Exception
     {
+        // Must get a copy of the passed in result values so that the
+        // original result value objects are not manipulated
+        ResultValue resOp1 = Utility.getResultValueCopy(resParam1);
+        ResultValue resOp2 = Utility.getResultValueCopy(resParam2);
+        
         ResultValue res = new ResultValue();
         Numeric nOp1 = new Numeric(parser, resOp1, "*", "1st operand");
         Numeric nOp2;
@@ -176,8 +191,13 @@ public class Utility
         return res;
     }
     
-    public static ResultValue divide(Parser parser, ResultValue resOp1, ResultValue resOp2) throws Exception
+    public static ResultValue divide(Parser parser, ResultValue resParam1, ResultValue resParam2) throws Exception
     {
+        // Must get a copy of the passed in result values so that the
+        // original result value objects are not manipulated
+        ResultValue resOp1 = Utility.getResultValueCopy(resParam1);
+        ResultValue resOp2 = Utility.getResultValueCopy(resParam2);
+        
         ResultValue res = new ResultValue();
         Numeric nOp1 = new Numeric(parser, resOp1, "/", "1st operand");
         Numeric nOp2;
@@ -242,8 +262,13 @@ public class Utility
      * @return A true or false Havabol value (e.g. "T" or "F")
      * @throws Exception when a RS value fails to parse correctly.
      */
-    public static ResultValue compare(Parser parser, int operation, ResultValue resval1, ResultValue resval2) throws Exception
+    public static ResultValue compare(Parser parser, int operation, ResultValue resParam1, ResultValue resParam2) throws Exception
     {
+        // Must get a copy of the passed in result values so that the
+        // original result value objects are not manipulated
+        ResultValue resval1 = Utility.getResultValueCopy(resParam1);
+        ResultValue resval2 = Utility.getResultValueCopy(resParam2);
+        
         // If the result values are numbers, they must be converted to numerics
         // Must initialize with dummy values in order to suppress Java error messages
         // that these variables may not have been initialized
@@ -476,8 +501,12 @@ public class Utility
         return resReturn;
     }
     
-    public static ResultValue not(Parser parser, ResultValue resval) throws Exception
+    public static ResultValue not(Parser parser, ResultValue resParam) throws Exception
     {
+        // Must get a copy of the passed in result value so that the
+        // original result value object is not manipulated
+        ResultValue resval = Utility.getResultValueCopy(resParam);
+        
         // TODO may be able to coerce a string to a boolean first (need to talk to Clark)
         // Can only perform the operation on a boolean value
         if(resval.type != Token.BOOLEAN)
@@ -498,8 +527,13 @@ public class Utility
         return resval;
     }
     
-    public static ResultValue concat(Parser parser, ResultValue resval1, ResultValue resval2) throws Exception
+    public static ResultValue concat(Parser parser, ResultValue resParam1, ResultValue resParam2) throws Exception
     {
+        // Must get a copy of the passed in result values so that the
+        // original result value objects are not manipulated
+        ResultValue resval1 = Utility.getResultValueCopy(resParam1);
+        ResultValue resval2 = Utility.getResultValueCopy(resParam2);
+        
         ResultValue resReturn = new ResultValue();
         String result = "";
         
@@ -549,8 +583,12 @@ public class Utility
         return resReturn;
     }
     
-    public static ResultValue uminus(Parser parser, ResultValue resval) throws Exception
+    public static ResultValue uminus(Parser parser, ResultValue resParam) throws Exception
     {
+        // Must get a copy of the passed in result value so that the
+        // original result value object is not manipulated
+        ResultValue resval = Utility.getResultValueCopy(resParam);
+        
         if (resval.type == Token.STRING)
         {
             parser.errorWithCurrent("Cannot perform unairy minus on %s", resval.type);
@@ -576,8 +614,13 @@ public class Utility
         return resval;
     }
     
-    public static ResultValue exponent(Parser parser, ResultValue resval1, ResultValue resval2) throws Exception
+    public static ResultValue exponent(Parser parser, ResultValue resParam1, ResultValue resParam2) throws Exception
     {
+        // Must get a copy of the passed in result values so that the
+        // original result value objects are not manipulated
+        ResultValue resval1 = Utility.getResultValueCopy(resParam1);
+        ResultValue resval2 = Utility.getResultValueCopy(resParam2);
+        
         String result = "";
         
         if (resval1.type == Token.STRING)
@@ -740,7 +783,23 @@ public class Utility
         }
         else if(coerceType == Token.STRING)
         {
-            // All data types are stored as STRINGS, so just change the result value's type
+            //If it is a float, reduce precision to two decimal spaces
+            if(resval.type == Token.FLOAT)
+            {
+                try
+                {
+                    resval.value = String.format("%.2lf", Double.parseDouble(resval.value));
+                }
+                catch(NumberFormatException e)
+                {
+                    // STRING could not be parsed into FLOAT
+                    parser.errorWithCurrent("Unable to coerce value '%s' of type 'FLOAT' into type 'STRING' for operation '%s'"
+                                            , resval.value, operation);
+                }
+            }
+            
+            // All data types are stored as STRINGS, so just change the
+            // result value's type
             resval.type = Token.STRING;
         }
         else
@@ -748,4 +807,14 @@ public class Utility
             parser.errorWithCurrent("Illegal operation: attempted to coerce value '%s' into unknown type represented by '%d'", resval.value, resval.type);
         }
     }
+    
+    public static ResultValue getResultValueCopy(ResultValue resParam)
+    {
+        ResultValue resReturn = new ResultValue();
+        resReturn.type = resParam.type;
+        resReturn.value = resParam.value;
+        resReturn.structure = resParam.structure;
+        return resReturn;
+    }
 }
+
