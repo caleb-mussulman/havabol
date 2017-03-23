@@ -533,50 +533,12 @@ public class Utility
         // original result value objects are not manipulated
         ResultValue resval1 = Utility.getResultValueCopy(resParam1);
         ResultValue resval2 = Utility.getResultValueCopy(resParam2);
-        
         ResultValue resReturn = new ResultValue();
-        String result = "";
         
-        if (resval1.type == Token.STRING)
-        {
-            result = resval1.value + resval2.value;
-        }
-        else if (resval1.type == Token.INTEGER)
-        {
-            Integer iRes1 = Integer.parseInt(resval1.value);
-            Integer iRes2 = Integer.parseInt(resval2.value);
-            
-            resval1.value = String.valueOf(iRes1);
-            resval2.value = String.valueOf(iRes2);
-            
-            result = resval1.value + resval2.value;
-        }
-        else if (resval1.type == Token.FLOAT)
-        {
-            Double dRes1 = Double.parseDouble(resval1.value);
-            Double dRes2 = Double.parseDouble(resval2.value);
-            
-            resval1.value = String.valueOf(dRes1);
-            resval2.value = String.valueOf(dRes2);
-            
-            result = resval1.value + resval2.value;
-        }
-        else if (resval1.type == Token.BOOLEAN)
-        {
-            Boolean bRes1 = Boolean.parseBoolean(resval1.value);
-            Boolean bRes2 = Boolean.parseBoolean(resval2.value);
-            
-            resval1.value = String.valueOf(bRes1);
-            resval2.value = String.valueOf(bRes2);
-            
-            result = resval1.value + resval2.value;
-        }
-        else
-        {
-            parser.errorWithCurrent("Taylor didn't add another case for concat.");
-        }
+        Utility.coerce(parser, Token.STRING, resval1, "#");   
+        Utility.coerce(parser, Token.STRING, resval2, "#");
         
-        resReturn.value = result;
+        resReturn.value = resval1.value + resval2.value;
         resReturn.type = Token.STRING;
         resReturn.structure = STIdentifier.PRIMITVE;
         
@@ -589,27 +551,17 @@ public class Utility
         // original result value object is not manipulated
         ResultValue resval = Utility.getResultValueCopy(resParam);
         
-        if (resval.type == Token.STRING)
+        Numeric nOp = new Numeric(parser, resval, "u-", "operand");
+        
+        if (nOp.type == Token.INTEGER)
         {
-            parser.errorWithCurrent("Cannot perform unairy minus on %s", resval.type);
-        }
-        else if (resval.type == Token.INTEGER)
-        {
-            Numeric nOp = new Numeric(parser, resval, "u-", "The operand");
             resval.value = String.valueOf(nOp.integerValue *= -1);
+            resval.type = Token.INTEGER;
         }
-        else if (resval.type == Token.FLOAT)
+        else if (nOp.type == Token.FLOAT)
         {
-            Numeric nOp = new Numeric(parser, resval, "u-", "The operand");
             resval.value = String.valueOf(nOp.doubleValue *= -1);
-        }
-        else if (resval.type == Token.BOOLEAN)
-        {
-            parser.errorWithCurrent("Cannot perform unairy minus on %s", resval.type);
-        }
-        else
-        {
-            parser.errorWithCurrent("Taylor didn't add another case for uminus.");
+            resval.type = Token.FLOAT;
         }
         return resval;
     }
@@ -788,7 +740,7 @@ public class Utility
             {
                 try
                 {
-                    resval.value = String.format("%.2lf", Double.parseDouble(resval.value));
+                    resval.value = String.format("%.2f", Double.parseDouble(resval.value));
                 }
                 catch(NumberFormatException e)
                 {

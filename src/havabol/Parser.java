@@ -759,25 +759,6 @@ public class Parser
             outList.add(popped);
         }
         
-      //TODO-------TEMPORARY------------------
-        /*
-        System.out.println("------------OUTLIST START----------------");
-        for(Token current: outList)
-        {
-            
-            if(current.primClassif == Token.OPERAND)
-            {
-                System.out.println(current.tokenStr + " " + current.subClassif);
-            }
-            else
-            {
-                System.out.println(current.tokenStr);
-            }
-            
-        }
-        System.out.println("------------OUTLIST END----------------");*/
-        //--------------------------------------
-        
         // Evaluate the post-fix expression
         for(Token outToken : outList)
         {
@@ -876,7 +857,7 @@ public class Parser
                                 break;
                                     
                             case "#":
-                                Utility.concat(this, resOp1, resOp2);
+                                resultStack.push(Utility.concat(this, resOp1, resOp2));
                                 break;
                                     
                             case "<":

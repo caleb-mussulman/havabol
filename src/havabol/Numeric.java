@@ -33,19 +33,38 @@ public class Numeric {
 		    // Check the type of the result value
 		    switch(resultValue.type)
 		    {
+		        // Turn the INTEGER result value into a numeric
 		        case Token.INTEGER:
 		            this.integerValue = Integer.parseInt(resultValue.value);
 		            this.strValue = resultValue.value;
 		            this.type = resultValue.type;
 		            break;
+		        // Turn the FLOAT result value into a numeric
 		        case Token.FLOAT:
 		            this.doubleValue = Double.parseDouble(resultValue.value);
                     this.strValue = resultValue.value;
                     this.type = resultValue.type;
 		            break;
+		        // If the result value is a STRING, attempt to create a valid numeric out of it.
+		        case Token.STRING:
+		            // If there is a decimal, try to create a FLOAT
+		            if(resultValue.value.contains("."))
+		            {
+		                this.doubleValue = Double.parseDouble(resultValue.value);
+		                this.strValue = resultValue.value;
+	                    this.type = Token.FLOAT;
+		            }
+		            // If there is no decimal, try to create an INTEGER
+		            else
+		            {
+		                this.integerValue = Integer.parseInt(resultValue.value);
+		                this.strValue = resultValue.value;
+	                    this.type = Token.INTEGER;
+		            }
+		            break;
 		        default:
 		            // Can not create a numeric out of something that is not an INTEGER OR FLOAT
-		            parser.errorWithCurrent("%s of operation '%s' has type '%s' and value '%s', must have type 'INTEGER' or 'FLOAT'"
+		            parser.errorWithCurrent("The %s of operation '%s' has type '%s' and value '%s', must have type 'INTEGER' or 'FLOAT'"
                                             , operandDescription, operator, Token.getType(parser, resultValue.type), resultValue.value);
 		    }
 		}
@@ -53,7 +72,8 @@ public class Numeric {
 		// This should only happen if we implemented something incorrectly
 		catch(NumberFormatException e)
 		{
-		    parser.errorWithCurrent("Could not parse '%s' into INTEGER/FLOAT", resultValue.value);
+		    parser.errorWithCurrent("Could not parse %s of operation '%s' into 'INTEGER' or 'FLOAT', found '%s' of type '%s'"
+		                            , operandDescription, operator, resultValue.value, Token.getType(parser, resultValue.type));
 		}
 	}
 }

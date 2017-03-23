@@ -1,0 +1,35 @@
+// Expressions involving one operator
+print("p3SimpExpr.txt");
+Int two;
+two = 2;
+Int three ;
+three = 3;
+Int four ;
+four = 4;
+Int five ;
+five = 5;
+print ("variables: 2 * 3 =", two * three);
+print ("constants: 2 * 3 =", 2 * 3);
+
+// numeric comparisons
+Int x;
+x=three*4;
+if x > three:
+    print("right:", x, ">", 3);
+else:
+    print("wrong:", x, ">", 3, "is F");
+endif;
+if x >= 3.0:
+    print("right:", x, ">=", 3.0);
+else:
+    print("wrong:", x, ">=", 3.0, "is F");
+endif;
+
+// str comparisons
+String sA;
+sA="12";
+if sA > three:
+    print("wrong: string", sA, ">", 3, "'12' > 3 should be F");
+else:
+    print("right: string", sA, ">", 3, "is F");
+endif;
