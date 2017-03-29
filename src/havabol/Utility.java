@@ -609,6 +609,69 @@ public class Utility
     }
     
     /**
+     ******************************** START OF FUNCTIONS ***************************************************
+     */
+    
+    /**
+     * This takes in a string, creates a new Result Value, gets the size of the value in the passed in
+     * ResultValue and assigns that value to the newly created Result Value as an Integer.
+     * @param parser - Used for sending error messages to the programmer.
+     * @param string - String that the programmer wants to get a count on.
+     * @return A result value that contains information about the length of the string that was passed in.
+     * @throws Exception
+     */
+    public static ResultValue length(Parser parser, ResultValue string) throws Exception
+    {
+        ResultValue stringresval = new ResultValue();
+        
+        if (stringresval.type != Token.STRING)
+        {
+            parser.errorWithCurrent("Cannot get length of type %s. Must be type string.", stringresval.type);
+        }
+        
+        int len = string.value.length();
+        stringresval.value = String.valueOf(len);
+        stringresval.type = Token.INTEGER;
+        stringresval.structure = STIdentifier.PRIMITVE;
+        
+        return stringresval;
+    }
+    
+    /**
+     * This takes in a string, creates a new Result Value, checks to see if the string is empty or matches
+     * to some white space, and returns true is during its check it does not encounter a non white space
+     * character.
+     * @param parser - Used for sending error messages to the programmer.
+     * @param string - String that the programmer wants to check for spaces or empty.
+     * @return Result value that contains T or F indicating if the string has spaces or is empty.
+     * @throws Exception
+     */
+    public static ResultValue spaces(Parser parser, ResultValue string) throws Exception
+    {
+        ResultValue stringresval = new ResultValue();
+        
+        if (stringresval.type != Token.STRING)
+        {
+            parser.errorWithCurrent("Cannot make a check for spaces on type %s", stringresval.type);
+        }
+        
+        if (stringresval.value.isEmpty() || stringresval.value.matches("\\s"))
+        {
+            stringresval.value = "T";
+            stringresval.type = Token.BOOLEAN;
+            stringresval.structure = STIdentifier.PRIMITVE;
+        }
+        else
+        {
+            stringresval.value = "F";
+            stringresval.type = Token.BOOLEAN;
+            stringresval.structure = STIdentifier.PRIMITVE;
+        }
+        
+        return stringresval;
+    }
+    
+    /**
      * Coerce a result value to the given type
      * <p>
      * Takes in a ResultValue object and a type constant which is
