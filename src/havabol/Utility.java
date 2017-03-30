@@ -670,6 +670,9 @@ public class Utility
         
         return stringresval;
     }
+    /**
+     ******************************** HELPER FUNCTIONS ***********************************************
+     */
     
     /**
      * Coerce a result value to the given type
