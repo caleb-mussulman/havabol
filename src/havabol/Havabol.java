@@ -23,7 +23,7 @@ public class Havabol
     {
         // Create the SymbolTable
         SymbolTable symbolTable = new SymbolTable();
-        
+
         try
         {
             Scanner scan = new Scanner(args[0], symbolTable);

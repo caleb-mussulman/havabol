@@ -1,9 +1,6 @@
 package havabol;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @desc Performs an operation on two numerics, stores the result as a ResultValue,
@@ -257,8 +254,8 @@ public class Utility
      * <p>
      * @param parser - used for logging error messages.
      * @param operation - Binary operator (==, !=, <, >, <=, >=)
-     * @param resval1 - Object containing result value 1
-     * @param resval2 - Object containing result value 2
+     * @param resParam1 - Object containing result value 1
+     * @param resParam2 - Object containing result value 2
      * @return A true or false Havabol value (e.g. "T" or "F")
      * @throws Exception when a RS value fails to parse correctly.
      */
@@ -669,6 +666,28 @@ public class Utility
         }
         
         return stringresval;
+    }
+
+    /**
+     *
+     * @param resArr
+     * @param size
+     * @return
+     */
+    public static ResultValue elem(ArrayList<Integer> resArr, int size){
+        ResultValue count = new ResultValue();
+
+        int tmp = 0;
+        for(int i = 0; i < size; i++){
+            if(resArr.get(i) != null) {
+                tmp++;
+            }
+        }
+        count.type = Token.INTEGER;
+        count.value = String.valueOf(tmp);
+        count.structure = STIdentifier.PRIMITVE;
+        //terminatingString?
+        return count;
     }
     /**
      ******************************** HELPER FUNCTIONS ***********************************************
