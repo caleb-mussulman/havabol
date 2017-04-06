@@ -617,7 +617,7 @@ public class Utility
      * @return A result value that contains information about the length of the string that was passed in.
      * @throws Exception
      */
-    public static ResultValue length(Parser parser, ResultValue string) throws Exception
+    public static ResultValue LEN(Parser parser, ResultValue string) throws Exception
     {
         ResultValue stringresval = new ResultValue();
         
@@ -643,7 +643,7 @@ public class Utility
      * @return Result value that contains T or F indicating if the string has spaces or is empty.
      * @throws Exception
      */
-    public static ResultValue spaces(Parser parser, ResultValue string) throws Exception
+    public static ResultValue SPACES(Parser parser, ResultValue string) throws Exception
     {
         ResultValue stringresval = new ResultValue();
         
@@ -667,27 +667,60 @@ public class Utility
         
         return stringresval;
     }
+    
+    /**
+     * TODO: Cover this with Caleb
+     * Havabol built-in function:
+     * ELEM - short for ELEMENTS
+     * FIXED or UNBOUNDED
+     * <p>
+     * Returning a ResultValue that holds the number of elements in the Havabol Array
+     * @param resultArray
+     * @return - The number of elements in the array
+     */
+    public static ResultValue ELEM(Parser errParse, ResultArray resultArray)
+    {
+        int tmp;
+
+        //Create a new resultValue to return and initialize its attributes
+        ResultValue resultValue = new ResultValue();
+        resultValue.type = Token.INTEGER;   //This will always be an integer.
+        resultValue.structure = STIdentifier.PRIMITVE;
+        resultValue.terminatingStr = "";
+
+        //The highest populated subscript + 1, in ArrayList's is simply the what the .size() function returns.
+        tmp = resultArray.valueList.size();     //Returns the number of Elements in the array.
+
+        resultValue.value = String.valueOf(tmp); //Converts integer value to a string.
+
+        return resultValue;
+    }
 
     /**
-     *
-     * @param resArr
-     * @param size
+     * TODO: Cover this with Caleb
+     * @param errParse
+     * @param resultArray
      * @return
      */
-    public static ResultValue elem(ArrayList<Integer> resArr, int size){
-        ResultValue count = new ResultValue();
+    public static ResultValue MAXELEM(Parser errParse, ResultArray resultArray) throws ParserException {
+        int tmp;
 
-        int tmp = 0;
-        for(int i = 0; i < size; i++){
-            if(resArr.get(i) != null) {
-                tmp++;
-            }
+        //TODO: No access to the resultArray's "symbol" -- Store in value of ResultArray's?
+        if(resultArray.structure == STIdentifier.UNBOUNDED_ARRAY){
+            errParse.error("Array is of structure Unbounded, can not resolve MAXELEM");
         }
-        count.type = Token.INTEGER;
-        count.value = String.valueOf(tmp);
-        count.structure = STIdentifier.PRIMITVE;
-        //terminatingString?
-        return count;
+
+        //Create a new resultValue to return and initalize its attributes.
+        ResultValue resultValue = new ResultValue();
+        resultValue.type = Token.INTEGER;
+        resultValue.structure = STIdentifier.PRIMITVE;
+        resultValue.terminatingStr = "";
+
+        //Parser has already initalized maxElem within the resultArray
+        tmp = resultArray.maxElem;
+        resultValue.value = String.valueOf(tmp);
+
+        return resultValue;
     }
     /**
      ******************************** HELPER FUNCTIONS ***********************************************
@@ -857,60 +890,5 @@ public class Utility
         resReturn.value = resParam.value;
         resReturn.structure = resParam.structure;
         return resReturn;
-    }
-
-    /**
-     * TODO: Cover this with Caleb
-     * Havabol built-in function:
-     * ELEM - short for ELEMENTS
-     * FIXED or UNBOUNDED
-     * <p>
-     * Returning a ResultValue that holds the number of elements in the Havabol Array
-     * @param resultArray
-     * @return - The number of elements in the array
-     */
-    public static ResultValue ELEM(Parser errParse, ResultArray resultArray)
-    {
-        int tmp;
-
-        //Create a new resultValue to return and initialize its attributes
-        ResultValue resultValue = new ResultValue();
-        resultValue.type = Token.INTEGER;   //This will always be an integer.
-        resultValue.structure = STIdentifier.PRIMITVE;
-        resultValue.terminatingStr = "";
-
-        //The highest populated subscript + 1, in ArrayList's is simply the what the .size() function returns.
-        tmp = resultArray.valueList.size();     //Returns the number of Elements in the array.
-
-        resultValue.value = String.valueOf(tmp); //Converts integer value to a string.
-
-        return resultValue;
-    }
-
-    /**
-     * TODO: Cover this with Caleb
-     * @param errParse
-     * @param resultArray
-     * @return
-     */
-    public static ResultValue MAXELEM(Parser errParse, ResultArray resultArray) throws ParserException {
-        int tmp;
-
-        //TODO: No access to the resultArray's "symbol" -- Store in value of ResultArray's?
-        if(resultArray.structure == STIdentifier.UNBOUNDED_ARRAY){
-            errParse.error("Array is of structure Unbounded, can not resolve MAXELEM");
-        }
-
-        //Create a new resultValue to return and initalize its attributes.
-        ResultValue resultValue = new ResultValue();
-        resultValue.type = Token.INTEGER;
-        resultValue.structure = STIdentifier.PRIMITVE;
-        resultValue.terminatingStr = "";
-
-        //Parser has already initalized maxElem within the resultArray
-        tmp = resultArray.maxElem;
-        resultValue.value = String.valueOf(tmp);
-
-        return resultValue;
     }
 }
