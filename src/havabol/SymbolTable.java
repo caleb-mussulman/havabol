@@ -75,7 +75,7 @@ public class SymbolTable
         // First check that the variable has been declared
         if(! ht.containsKey(symbol))
         {
-            errParse.error("Variable '%s' has not been declared");
+            errParse.error("Variable '%s' has not been declared", symbol);
         }
         // Variable has been declared, so get it from the storage manager
         ResultValue resVal = storageManager.getVariableValue(errParse, symbol);
@@ -83,6 +83,7 @@ public class SymbolTable
     }
     
     /**
+     * TODO: How can we use this method to store both ResultValues and ResultArrays in the storageManager?
      * Stores value into the storageManager HashMap.
      * <p>
      * @param errParse - The Parser so we can use it's error() method
@@ -101,6 +102,7 @@ public class SymbolTable
             // (A string variable may be assigned a numeric value)
             if((value.type == symbolType) || (symbolType == Token.STRING && ((value.type == Token.INTEGER) || (value.type == Token.FLOAT))))
             {
+                //TODO: We need a reference to putResultArray from StorageManager
                 storageManager.putVariableValue(errParse, symbol, value);
             }
             // The types do not match
@@ -116,7 +118,29 @@ public class SymbolTable
             errParse.error("Variable '%s' has not been declared", symbol);
         }
     }
-    
+
+    /**
+     *  Stores an
+     * @param errParse
+     * @param symbol
+     * @param resultArray
+     * @throws Exception
+     */
+    void storeArrayValue(Parser errParse, String symbol, ResultArray resultArray) throws Exception
+    {
+        //TODO: Should this function exist, or should storeVariableValue take care of storing ResultArrays in the SymbolTable?
+        if(ht.containsKey(symbol))
+        {
+
+        }
+        else
+        {
+            errParse.error("Array '%s' has not been delcared", symbol);
+        }
+
+
+    }
+
     /**
      * Initializes all the keys in the HashMap ht to their corresponding values
      * <p>

@@ -844,7 +844,12 @@ public class Utility
             parser.errorWithCurrent("Illegal operation: attempted to coerce value '%s' into unknown type represented by '%d'", resval.value, resval.type);
         }
     }
-    
+
+    /**
+     * TODO: DOCUMENTATION FOR THIS FUNCTION
+     * @param resParam
+     * @return
+     */
     public static ResultValue getResultValueCopy(ResultValue resParam)
     {
         ResultValue resReturn = new ResultValue();
@@ -853,5 +858,59 @@ public class Utility
         resReturn.structure = resParam.structure;
         return resReturn;
     }
-}
 
+    /**
+     * TODO: Cover this with Caleb
+     * Havabol built-in function:
+     * ELEM - short for ELEMENTS
+     * FIXED or UNBOUNDED
+     * <p>
+     * Returning a ResultValue that holds the number of elements in the Havabol Array
+     * @param resultArray
+     * @return - The number of elements in the array
+     */
+    public static ResultValue ELEM(Parser errParse, ResultArray resultArray)
+    {
+        int tmp;
+
+        //Create a new resultValue to return and initialize its attributes
+        ResultValue resultValue = new ResultValue();
+        resultValue.type = Token.INTEGER;   //This will always be an integer.
+        resultValue.structure = STIdentifier.PRIMITVE;
+        resultValue.terminatingStr = "";
+
+        //The highest populated subscript + 1, in ArrayList's is simply the what the .size() function returns.
+        tmp = resultArray.valueList.size();     //Returns the number of Elements in the array.
+
+        resultValue.value = String.valueOf(tmp); //Converts integer value to a string.
+
+        return resultValue;
+    }
+
+    /**
+     * TODO: Cover this with Caleb
+     * @param errParse
+     * @param resultArray
+     * @return
+     */
+    public static ResultValue MAXELEM(Parser errParse, ResultArray resultArray) throws ParserException {
+        int tmp;
+
+        //TODO: No access to the resultArray's "symbol" -- Store in value of ResultArray's?
+        if(resultArray.structure == STIdentifier.UNBOUNDED_ARRAY){
+            errParse.error("Array is of structure Unbounded, can not resolve MAXELEM");
+        }
+
+        //Create a new resultValue to return and initalize its attributes.
+        ResultValue resultValue = new ResultValue();
+        resultValue.type = Token.INTEGER;
+        resultValue.structure = STIdentifier.PRIMITVE;
+        resultValue.terminatingStr = "";
+
+        //Parser has already initalized maxElem within the resultArray
+        tmp = resultArray.maxElem;
+        resultValue.value = String.valueOf(tmp);
+
+        return resultValue;
+    }
+}
