@@ -709,8 +709,8 @@ public class Utility
      * FIXED or UNBOUNDED
      * <p>
      * Returning a ResultValue that holds the number of elements in the Havabol Array
-     * @param resultArray
-     * @return - The number of elements in the array
+     * @param resultArray - A ResultArray object reference -- A Havabol Array.
+     * @return            - The number of elements in the array
      */
     public static ResultValue ELEM(Parser errParse, ResultArray resultArray)
     {
@@ -736,11 +736,12 @@ public class Utility
      * @param resultArray
      * @return
      */
-    public static ResultValue MAXELEM(Parser errParse, ResultArray resultArray) throws ParserException {
+    public static ResultValue MAXELEM(Parser errParse, ResultArray resultArray) throws ParserException
+    {
         int tmp;
 
-        //TODO: No access to the resultArray's "symbol" -- Store in value of ResultArray's?
-        if(resultArray.structure == STIdentifier.UNBOUNDED_ARRAY){
+        if(resultArray.structure == STIdentifier.UNBOUNDED_ARRAY)
+        {
             errParse.error("Array is of structure Unbounded, can not resolve MAXELEM");
         }
 

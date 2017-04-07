@@ -9,7 +9,7 @@ public class StorageManager
     *  are stored in the hashtable, not in an instance of StorageManager
     */
     public HashMap<String,ResultValue> sm;
-    
+
     /**
      * Simply creates HashMap that will effectively be our
      * StorageManager.
@@ -31,20 +31,20 @@ public class StorageManager
      */
     void putVariableValue(Parser errParse, String symbol, ResultValue value)
     {
-        //Need to be able to test this... not sure if works as intended...
-        sm.put(symbol,value);
+        //Stores the object reference to a ResultValue.
+        sm.put(symbol, value);
     }
     
     /**
      * The function that will be used to get the value of the passed
-     * symbol (variable) from the prase(?) to retrieve the value 
+     * symbol (variable) from the parser(?) to retrieve the value
      * of the symbol(variable).
      * <p>
      * Quickly does a hash lookup for the passed String symbol and returns
      * the value as a string...
      * Conversion will be done by numeric class
      * @param symbol - Key for the ResultValue (Variable name in Havabol)
-     * @return       - ResuultValue Object Reference from HashTable sm.
+     * @return       - ResultValue Object Reference from HashTable sm.
      */
     ResultValue getVariableValue(Parser errParse, String symbol) throws Exception
     {
@@ -62,10 +62,11 @@ public class StorageManager
     }
 
     /**
-     * TODO: MAY BE REMOVED
-     * @param errParse    - ...
-     * @param symbol      - ...
-     * @param resultArray - ...
+     * Stores an array into the StorageManager HashMap sm.
+     * <p>
+     * @param errParse    - Used for error checking
+     * @param symbol      - Key for the ResultArray (Array name in Havabol)
+     * @param resultArray - Storing a ResultArray reference as the value.
      * @throws Exception  - ...
      */
     void putResultArray(Parser errParse, String symbol, ResultArray resultArray) throws Exception
@@ -74,7 +75,6 @@ public class StorageManager
     }
 
     /**
-     * TODO: MAY BE REMOVED
      * Gets a reference to the ResultArray Object within the HashTable sm.
      * <p>
      * @param symbol - Key for the ResultArray (Array Variable name in Havabol)
@@ -84,6 +84,11 @@ public class StorageManager
     {
         ResultArray resultArray;
         resultArray = (ResultArray) sm.get(symbol);
+        if(resultArray == null)
+        {
+            //Could not find reference to array in storageManager
+            errParse.error("Could not find reference to array '%s'", symbol);
+        }
         return resultArray;
     }
 
@@ -109,85 +114,142 @@ public class StorageManager
         ResultArray resultArray;
         resultArray = getResultArray(errParse, symbol);
 
-        //We must get the iIndex (subscript) value from the ResultValue index
+        //Coerce the index to an integer ALWAYS.
+        Utility.coerce(errParse, Token.INTEGER, index, "ArrayElementReference");
+
+        //Must get the iIndex (subscript) value from the ResultValue index
         int iIndex = Integer.parseInt(index.value);
 
-        //If the array is FIXED and we are attempting to assign out of bounds of declared maxElem.
-        if((resultArray.structure == STIdentifier.FIXED_ARRAY) && (iIndex > resultArray.maxElem-1))
+        //Stores the corresponding non-negative index of a negative subscript, if the index is non-negative, it remains 0.
+        int iTmp_Index = 0;
+
+        //If it's a negative subscript
+        if(iIndex < 0)
         {
-            errParse.error("Assignment of '%s' to '%s'['%s'] is out of bounds ", resultValue.value, symbol, index.value);
+            //The corresponding non-negative index that the "negative" index references.
+            iTmp_Index = resultArray.valueList.size() + iIndex;
         }
-        //Setting a value to an index that is beyond the contiguous size of the array.
-        if(iIndex > resultArray.valueList.size())
+
+        // Attempting to assign to an index out of bounds.
+        if((resultArray.structure == STIdentifier.FIXED_ARRAY) && ((iIndex > resultArray.maxElem-1) || (iTmp_Index < 0)))
+        {
+            errParse.error("Assignment of '%s' to '%s'['%s'] is out of bounds"
+                          , resultValue.value, symbol, index.value);
+        }
+
+        //Negative subscripts do not work for UNBOUNDED arrays.
+        if(resultArray.structure == STIdentifier.UNBOUNDED_ARRAY && iIndex < 0)
+        {
+            errParse.error("'%s' is negative, invalid subscript for Unbounded Array '%s'"
+                          , index.value, symbol);
+        }
+
+        //Setting a value to an index that is beyond the current contiguous size of the array.
+        if(iIndex >= resultArray.valueList.size())
         {
             //Pad the arrayList with null values to initialize an index that's beyond continuous space.
             for(int i = resultArray.valueList.size(); i <= iIndex; i++)
             {
-                resultArray.valueList.add(i,null);
+
+                //If the resultArray has been scaled, all padding will be of scaledValue
+                if(resultArray.bScaled == true)
+                {
+                    //If the type of the resultArray and scaledValue aren't the same, we must to coerce.
+                    if (resultArray.type != resultArray.scaledValue.type)
+                    {
+                        Utility.coerce(errParse, resultArray.type, resultArray.scaledValue, "ArrayAssignmentInvalidType");
+                    }
+
+                    resultArray.valueList.add(i, resultArray.scaledValue);
+                }
+                //This array has not previously been Scaled (bScaled = false)
+                else
+                {
+                    resultArray.valueList.add(i, null);
+                }
             }
-            resultArray.valueList.set(iIndex, resultValue);
+
+            //If the type of the resultArray and resultValue aren't the same, we must to coerce.
+            if(resultArray.type != resultValue.type)
+            {
+                Utility.coerce(errParse, resultArray.type, resultValue, "ArrayAssignmentInvalidType");
+            }
+
+            //We have to check if iIndex was a negative subscript one more time, to assign to the correct index.
+            if(iIndex < 0)
+            {
+                //iIndex was negative.
+                resultArray.valueList.set(iTmp_Index, resultValue);
+            }
+            else
+            {
+                //iIndex was 0 or positive (normal)
+                resultArray.valueList.set(iIndex, resultValue);
+            }
         }
-        //TODO: Negative subscripts...
-        //Any other index range.
+        //Any other index range. (Should  be within a valid range by this point)
         else
         {
-            //Assign the passed value to the index in the array.
-            resultArray.valueList.set(iIndex, resultValue);
+            //If the type of the resultArray and resultValue aren't the same, we must to coerce.
+            if(resultArray.type != resultValue.type)
+            {
+                Utility.coerce(errParse, resultArray.type, resultValue, "ArrayAssignmentInvalidType");
+            }
+
+            //We have to check if iIndex was a negative subscript one more time, to assign to the correct index.
+            if(iIndex < 0)
+            {
+                //iIndex was negative.
+                resultArray.valueList.set(iTmp_Index, resultValue);
+            }
+            else
+            {
+                //iIndex was non-negative (normal)
+                resultArray.valueList.set(iIndex, resultValue);
+            }
         }
-
-        //Store the resultArray in the StorageManager
-        putResultArray(errParse, symbol, resultArray);
-
     }
 
     /**
-     * TODO: MAY BE CHANGED - USES POSSIBLE REMOVED FUNCTIONS
      * TODO: Error cases need to thought out.
-     * TODO: How does this affect UNBOUNDED ARRAY?
+     * TODO: How does this affect UNBOUNDED ARRAY
      * Assigns the corresponding ResultArray.ValueList<ResultValue>'s to copy of the ResultValue scalar.
      * <p>
      * @param symbol - Key for the ResultArray (Array Variable name in Havabol)
      * @param scalar - The ResultValue that will be stored in all indices of a FIXED ARRAY.
      *               - The ResultValue that will be stored in all null indices of an UNBOUNDED ARRAY. ???
      */
-    void scalarAssign(Parser errParse, String symbol, ResultValue scalar)throws Exception
+    void scalarAssign(Parser errParse, String symbol, ResultValue scalar) throws Exception
     {
-        //TODO: Additions of bScaled and ScaledValue
         ResultArray resultArray;
 
         //Get a reference to the corresponding ResultArray Object
         resultArray = getResultArray(errParse, symbol);
 
+        //Immediately indicate that this ResultArray has been scaled and is default scale value.
+        resultArray.bScaled = true;
+        resultArray.scaledValue = scalar;
+
         if(resultArray.structure == STIdentifier.UNBOUNDED_ARRAY)
-        {
-            //if the valueList is empty
-            if(resultArray.valueList.isEmpty())
-            {
-                //TODO: What happens here? -- bScaled and ScaledValue
-            }
-            //For each ResultValue in resultArray.ValueList, change it's value and type (just in case)
-            for (int i = 0; i < resultArray.valueList.size(); i++)
-            {
-                //TODO: Attempted to use UTILITY.getResultValueCopy(Scalar) ... Doesn't work.
-                resultArray.valueList.get(i).value = scalar.value;
-                resultArray.valueList.get(i).type = scalar.type;
-                //structure is not going to be of scalar.structure.
-                //terminatingStr is not going to be of scalar.terminatingStr.
-            }
-            //Store the altered resultArray back into the StorageManager HashTable.
-            putResultArray(errParse, symbol, resultArray);
-        }
-        else if(resultArray.structure == STIdentifier.FIXED_ARRAY)
         {
 
             //For each ResultValue in resultArray.ValueList, change it's value and type (just in case)
             for (int i = 0; i < resultArray.valueList.size(); i++)
             {
-                //TODO: Attempted to use UTILITY.getResultValueCopy(Scalar) ... Doesn't work.
-                resultArray.valueList.get(i).value = scalar.value;
-                resultArray.valueList.get(i).type = scalar.type;
-                //structure is not going to be of scalar.structure.
-                //terminatingStr is not going to be of scalar.terminatingStr.
+                //The ResultValue at ith position get's a copy of the Scalar ResultValue instead.
+                resultArray.valueList.set(i, Utility.getResultValueCopy(scalar));
+                //Set the ArrayList as bScaled = true and give it the default scaledValue
+            }
+        }
+        else if(resultArray.structure == STIdentifier.FIXED_ARRAY)
+        {
+
+            //For each ResultValue in resultArray.ValueList, change it's value and type (just in case)
+            //TODO: GET INFORMATION ABOUT MAXELEM AND CHANGE FOR LOOP CONDITION TO THE SIZE OF THE ANSWER FROM CLARK
+            for (int i = 0; i < resultArray.valueList.size(); i++)
+            {
+                resultArray.valueList.set(i, Utility.getResultValueCopy(scalar));
+                //Set the ArrayList as bScaled = true and give it the default scaledValue
             }
             //Store the altered resultArray back into the StorageManager HashTable.
             putResultArray(errParse, symbol, resultArray);
@@ -201,9 +263,7 @@ public class StorageManager
     }
 
     /**
-     * TODO: MAY BE CHANGED - USES POSSIBLE REMOVED FUNCTIONS
      * TODO: Error cases need to thought out.
-     * TODO: How does this work with UNBOUNDED ARRAY?
      *  Does a FIXED ARRAY Array-to-Array assignment.
      *  <p>
      *  Example:

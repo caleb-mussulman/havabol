@@ -27,7 +27,7 @@ public class ResultArray extends ResultValue
     //TODO: Does a constructor need to be made for this class?
     ArrayList<ResultValue> valueList = new ArrayList<>();
     int maxElem;
-    ResultValue scaledValue = new ResultValue();
+    ResultValue scaledValue;
     boolean bScaled = false;
 
 }
