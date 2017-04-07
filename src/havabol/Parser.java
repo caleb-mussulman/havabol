@@ -16,6 +16,9 @@ public class Parser
                                       // In the case of functions, we want it to act as a delimiter
                                       // for the functions parameters, so this value would be set
                                       // to true, so that we don't try to find the matching '('
+    public boolean bDeclaringArray; // Used when calling 'expr' to parse the declared size of the array
+                                    // Indicates that we want to evaluate the expression in the brackets
+                                    // and not the array element reference
     
     Parser(Scanner scan, SymbolTable symbolTable)
     {
@@ -24,6 +27,8 @@ public class Parser
         this.sourceFileNm = scan.sourceFileNm;
         this.bShowAssign = false;
         this.bShowExpr = false;
+        this.bExpectingRtParen = false;
+        this.bDeclaringArray = false;
     }
     
     // This is a temporary method so we can still see the token output
@@ -550,17 +555,11 @@ public class Parser
         {
             error("Expected a declaration type for the beginning of a declare statement, found '%s'", scan.currentToken.tokenStr);
         }
-        
         String declareStr = scan.currentToken.tokenStr;
         
-        // Get the variable to be declared and check it
-        scan.getNext();
-        if((scan.currentToken.primClassif != Token.OPERAND) || (scan.currentToken.subClassif != Token.IDENTIFIER))
-        {
-            error("Expected a variable for the target of an declaration");
-        }
-        
-        String variableStr = scan.currentToken.tokenStr;
+        // Save the declare token. This is to set the position of the scanner
+        // for a call to 'expr' if we are declaring a fixed-size array
+        Token declareToken = scan.currentToken;
         
         // Get the declaration type's constant
         int declareType;
@@ -587,19 +586,170 @@ public class Parser
                 error("Unknown declaration type, found '%s'", declareStr);
         }
         
-        // Put the declared variable in the symbol table
-        STIdentifier STVariable = new STIdentifier(variableStr, Token.OPERAND, declareType, STIdentifier.NOT_A_PARAMETER
-                                                              , STIdentifier.PRIMITVE, STIdentifier.LOCAL);
-        symbolTable.putSymbol(variableStr, STVariable);
-        
-        // Check if the declaration also contains an assignment
-        if(scan.nextToken.primClassif == Token.OPERATOR)
+        // Get the variable to be declared and check it
+        scan.getNext();
+        if((scan.currentToken.primClassif != Token.OPERAND) || (scan.currentToken.subClassif != Token.IDENTIFIER))
         {
-            assignStmt(bExec);
-            return;
+            error("Expected a variable for the target of an declaration");
+        }
+        String variableStr = scan.currentToken.tokenStr;
+        
+        // Determine if we are declaring an array
+        if(scan.nextToken.tokenStr.equals("["))
+        {
+            // We are declaring an array. Example declarations:
+            // 1)    Int arr[] = 2, 3, 1;
+            // 2)    Int arr[3];
+            // 3)    Int arr[3] = 2, 3 ,1;
+            // 4)    Int arr[unbound];
+            // 5)    Int arr[unbound] = 2, 3, 1;
+            
+            boolean bFirstType; // If the array declaration is the first type, then the number
+                                // of elements assigned will determine its max number of elements
+            boolean bSecondOrThirdType; // If the array declaration is the second or third type, then
+                                        // we have to call 'expr' to determine its declared size after
+                                        // we have put it in the symbol table / storage manager
+            bFirstType = false;
+            bSecondOrThirdType = false;
+            
+            // Create an array to be declared and set its type
+            ResultArray resArray = new ResultArray();
+            resArray.type = declareType;
+            
+            // Move to the '[' and determine the type of array declaration
+            scan.getNext();
+            
+            // Check for the first type of array declaration statement
+            if(scan.nextToken.tokenStr.equals("]"))
+            {
+                bFirstType = true;
+                resArray.structure = STIdentifier.FIXED_ARRAY;
+                resArray.maxElem = 0; // This will change depending on how many elements
+                                      // we initialize the array with
+                
+                // Move to the token after the ']' and check that there is a '='
+                scan.getNext();
+                scan.getNext();
+                if(! scan.currentToken.tokenStr.equals("="))
+                {
+                    error("Expected '=' for initialization of array, found '%s'", scan.currentToken);
+                }
+            }
+            // Check for the fourth and fifth types of array declaration statements
+            else if(scan.nextToken.tokenStr.equals("unbound"))
+            {
+                resArray.structure = STIdentifier.UNBOUNDED_ARRAY;
+                
+                // Check that the token after 'unbound' is a ']'
+                scan.getNext();
+                scan.getNext();
+                if(! scan.currentToken.tokenStr.equals("]"))
+                {
+                    error("Expected ']', found '%s'", scan.currentToken.tokenStr);
+                }
+                // Move to the token after ']'
+                scan.getNext();
+            }
+            // Otherwise, we have the second and third types of array declaration statements
+            else
+            {
+                resArray.structure = STIdentifier.FIXED_ARRAY;
+                bSecondOrThirdType = true;
+                
+            }
+            
+            // Declare the array variable by placing in the symbol table
+            STIdentifier STArrayVariable = new STIdentifier(variableStr, Token.OPERAND, declareType, STIdentifier.NOT_A_PARAMETER
+                                                                       , resArray.structure, STIdentifier.LOCAL);
+            symbolTable.putSymbol(variableStr, STArrayVariable);
+            
+            // Also need to store the array in the storage manager
+            symbolTable.storageManager.putResultArray(this, variableStr, resArray);
+            
+            // In the case of the second or third types of array declaration statements, the
+            // array size is determined by a call to 'expr'. However, 'expr' must already have
+            // knowledge of the declared array; so, we declay the array as in the above lines,
+            // and set its max size afterwards
+            if(bSecondOrThirdType)
+            {
+                // In these two declaration types, we want to call 'expr' to get the value of
+                // the size. In order to make that parsing easier, we need to call 'expr' with
+                // the current token on the array identifier; we will let 'expr' know that we
+                // only want the value in the brackets, not the array element at the index of
+                // that value
+                scan.setPosition(declareToken);
+                bDeclaringArray = true;
+                ResultValue resSize = expr();
+                this.iParseTokenLineNr = declareToken.iSourceLineNr;
+                System.err.println("Before Utility.coerce call");
+                
+                Utility.coerce(this, Token.INTEGER, resSize, "declared size of array");
+                
+                System.err.println("After Utility.coerce call");
+                resArray.maxElem = Integer.parseInt(resSize.value);
+                System.err.println("Max elem: " + resArray.maxElem);
+                bDeclaringArray = false;
+            }
+            
+            // There may be a value list to initialize the array with
+            if(scan.currentToken.tokenStr.equals("="))
+            {
+                // Go to the token after the '='
+                scan.getNext();
+                
+                // Start initializing at index zero
+                int iIndex = 0;
+                
+                // Keep assigning indices of the array, beginning at index zero, as long as there are
+                // comma-separated values that are coercible to the type of the array
+                do
+                {
+                    // The value list must consist of operands that are not identifiers
+                    if((scan.currentToken.primClassif != Token.OPERAND) || (scan.currentToken.subClassif == Token.IDENTIFIER))
+                    {
+                        error("Expected a value coercible to type '%s', found '%s'"
+                              , Token.getType(this, resArray.type), scan.currentToken.tokenStr);
+                    }
+                    
+                    // Get the token as a result value and attempt to coerce to the type of the array
+                    ResultValue resVal = scan.currentToken.toResultValue(this);
+                    Utility.coerce(this, resArray.type, resVal, "array initialization");
+                    
+                    // If we are parsing the first type of array declaration statement, the
+                    // number of values determine the size of the array
+                    if(bFirstType)
+                    {
+                        // This was initially set to 0, so every valid value we add to the
+                        // array will simultaneously increase the size of the array
+                        resArray.maxElem++;
+                    }
+                    
+                    // Index needs to be a result value
+                    ResultValue resIndex = new ResultValue();
+                    resIndex.value = Integer.toString(iIndex);
+                    
+                    // Assign the array element at the current index
+                    symbolTable.storageManager.arrayAssign(this, variableStr, resVal, resIndex);
+                    
+                    iIndex++;
+                    
+                }while(scan.getNext().equals(","));
+                 
+            }
+        }
+        // We are not declaring an array; we are declaring a primitive variable
+        else
+        {
+            // Put the declared variable in the symbol table
+            STIdentifier STVariable = new STIdentifier(variableStr, Token.OPERAND, declareType, STIdentifier.NOT_A_PARAMETER
+                                                                  , STIdentifier.PRIMITVE, STIdentifier.LOCAL);
+            symbolTable.putSymbol(variableStr, STVariable);
+            
+            // Move to the token after the operand
+            scan.getNext();
         }
         
-        // There was no assignment, so declare statement must be followed by ';'
+        // The declaration statement must be followed by ';'
         if(! scan.getNext().equals(";"))
         {
             error("Expected ';' after declaration statement");
@@ -612,12 +762,12 @@ public class Parser
         Stack<Token> postfixStack = new Stack<Token>(); // Stack to hold the tokens as they are added to post-fix expr
         Stack<ResultValue> resultStack = new Stack<ResultValue>(); // Stack to hold values as they are
                                                                    // evaluated from the post-fix stack
-        boolean expectingOperand = true; // Used to determine that the order of operators and operands
+        boolean bExpectingOperand = true; // Used to determine that the order of operators and operands
                                          // from the infix expression is valid
         boolean bFoundAnOperator = false; // If the debugger for an expression is turned on, we only want to
                                           // print expression results if they had at least on operator
         boolean bFoundRtParen = false; // Indicates that a ')' before a ':' or ';' was found
-        String exprDelimiters = ",:;"; // The delimiters for an expression
+        String exprDelimiters = ",:;="; // The delimiters for an expression
         
         // Get the next token
         scan.getNext();
@@ -631,14 +781,68 @@ public class Parser
             {
                 case Token.OPERAND:
                     // Error if we were expecting an operator
-                    if(! expectingOperand)
+                    if(! bExpectingOperand)
                     {
                         error("Expecting an operator, found operand '%s'", token.tokenStr);
                     }
-                    // Add the operand to our post-fix list
-                    outList.add(scan.currentToken);
-                    // Now we are expecting the next token to be a binary operator
-                    expectingOperand = false;
+                    
+                    // If the operand is not an identifier, just add to the post-fix list
+                    if(token.subClassif != Token.IDENTIFIER)
+                    {
+                        outList.add(token);
+                        bExpectingOperand = false;
+                        break;
+                    }
+                    
+                    // Check that the identifier has been declared
+                    STEntry STEntryResult = symbolTable.getSymbol(token.tokenStr);
+                    if(STEntryResult == null)
+                    {
+                        error("Variable '%s' has not been declared", token.tokenStr);
+                    }
+                    
+                    // Get the stucture type
+                    int iStructure = ((STIdentifier)STEntryResult).structure;
+                    
+                    // Check if this identifier is an array, array element, 
+                    // or just a primitive and set the appropriate token field
+                    if(iStructure == STIdentifier.PRIMITVE)
+                    {
+                        token.identifierType = Token.NOT_AN_ARRAY;
+                        // It is just a primitive variable so add it to the post-fix list
+                        outList.add(scan.currentToken);
+                        // We just got an operand so the next token should not be an operand
+                        bExpectingOperand = false;
+                    }
+                    // In this case, the token is an array or array element
+                    else
+                    {
+                        // This is an array element reference if there are brackets
+                        if(scan.nextToken.tokenStr.equals("["))
+                        {
+                            token.identifierType = Token.ARRAY_ELEM;
+                            // Need to remove the bracket; the corresponding ']' will
+                            // match up with the array's identifier token
+                            scan.getNext();
+                            // Because we just had a separator '[', the next token
+                            // should be an operand
+                            bExpectingOperand = true;
+                            // We need to parse the expression inside the brackets, so
+                            // treat the array identifier as an operator an put on the
+                            // post-fix stack
+                            postfixStack.push(token);
+                        }
+                        // Otherwise, this is an array
+                        else
+                        {
+                            token.identifierType = Token.ARRAY_REF;
+                            // Because there was no bracket, the next token should not be an operand
+                            bExpectingOperand = false;
+                            // Even though this is an array, we can treat the reference like we would
+                            // for a primitive variable and put it in the outlist
+                            outList.add(token);
+                        }
+                    }
                     break;
                     
                 case Token.OPERATOR:
@@ -648,7 +852,7 @@ public class Parser
                     // Error if we were expecting an operand and we got a binary operator
                     // (e.g., x = 4 * * 5 is incorrect, while x = 4 * - 5 is correct
                     // since the "-" is a unary operator in the second case)
-                    if(expectingOperand && token.subClassif == Token.BINARY)
+                    if(bExpectingOperand && token.subClassif == Token.BINARY)
                     {
                         error("Expecting an operand, found operator '%s'", token.tokenStr);
                     }
@@ -668,7 +872,7 @@ public class Parser
                     // Add the operator to our post-fix list
                     postfixStack.push(token);
                     // Now we are expecting the next token to be an operand or a binary operator
-                    expectingOperand = true;
+                    bExpectingOperand = true;
                     break;
                     
                 case Token.SEPARATOR:
@@ -677,7 +881,7 @@ public class Parser
                         case "(":
                             // Error if we were expecting an operator and found a "("
                             // (e.g., 3 (4 + 6) is invalid, while 3 * (4 + 6) is valid)
-                            if(! expectingOperand)
+                            if(! bExpectingOperand)
                             {
                                 error("Expecting an operator before '('");
                             }
@@ -686,7 +890,7 @@ public class Parser
                         case ")":
                             // Error if we were expecting an operand and found a ")"
                             // (e.g., 3 * (4 + ) is invalid, while 3 * (4 + 6) is valid)
-                            if(expectingOperand)
+                            if(bExpectingOperand)
                             {
                                 error("Expecting an operand before ')'");
                             }
@@ -706,7 +910,7 @@ public class Parser
                                 break;
                             }
                             
-                            boolean bFoundParen = false;// Signifies if we found the matching left parenthesis
+                            boolean bFoundParen = false; // Signifies if we found the matching left parenthesis
                             
                             // Remove from the stack until the matching parenthesis is found
                             while(! postfixStack.isEmpty())
@@ -718,6 +922,14 @@ public class Parser
                                     bFoundParen = true;
                                     break;
                                 }
+                                
+                                // Find a '[' before the '(' should be an error. One example:
+                                //    4 * (3 + arr[x * y)]
+                                if((popped.primClassif == Token.OPERAND) && (popped.subClassif == Token.IDENTIFIER)
+                                                                         && (popped.identifierType == Token.ARRAY_ELEM))
+                                {
+                                    error("Expected ']' before ')'");
+                                }
                                 outList.add(popped);
                             }
                             
@@ -727,6 +939,44 @@ public class Parser
                                 error("Could not find matching '('. May be missing ';' or ':'?");
                             }
                             break;  //Break out of case ")"
+                            
+                        case "]":
+                            // Error if we were expecting an operand and found a "]"
+                            // (e.g., 'arr[4 + ]' is invalid, while 'arr[4 + 3]' is valid)
+                            if(bExpectingOperand)
+                            {
+                                error("Expecting an operand before ']'");
+                            }
+                            
+                            boolean bFoundArray = false; // Signifies if we found the matching array token
+                            
+                            // Remove from the stack until the matching array token is found
+                            while(! postfixStack.isEmpty())
+                            {
+                                Token popped = postfixStack.pop();
+                                // Check if the token was the matching array token
+                                if((popped.primClassif == Token.OPERAND) && (popped.subClassif == Token.IDENTIFIER)
+                                                                         && (popped.identifierType == Token.ARRAY_ELEM))
+                                {
+                                    bFoundArray = true;
+                                }
+                                
+                                // Finding a '(' before the '[' should be an error. One example:
+                                //    arr[x * (4 + y])
+                                if(popped.tokenStr.equals("("))
+                                {
+                                    error("Expected ')' before ']'");
+                                }
+                                outList.add(popped);
+                            }
+                            
+                            // Otherwise, check that we found the array in the stack
+                            // which signifies that we found the matching '[' 
+                            if(! bFoundArray)
+                            {
+                                error("Could not find matching '['");
+                            }
+                            break;
                         default:
                             error("Invalid separator, found '%s'", token.tokenStr);
                     }
@@ -754,14 +1004,32 @@ public class Parser
             // Should not have any left parenthesis
             if(popped.tokenStr.equals("("))
             {
-                error("Missing ')'. If not, may be missing ';' or ':'?");
+                // The second part of this error message is in regards to a
+                // possible error from an expression call from a print statement
+                errorLineNr(popped.iSourceLineNr, "Missing ')'. If not, may be missing ';' or ':'");
+            }
+            
+            // Also should not have any left brackets (i.e., an array element reference)
+            if(popped.identifierType == Token.ARRAY_ELEM)
+            {
+                errorLineNr(popped.iSourceLineNr, "Missing ']'");
             }
             outList.add(popped);
+        }
+        
+        // If declaring an array, we don't want to be accessing that array. We want the result of
+        // the expression to be a value that will be used for the declaring the size of the array.
+        // So, we just remove the array identifier token from the post-fix expression.
+        if(bDeclaringArray)
+        {
+            Token lastToken = outList.get(outList.size() - 1);
+            outList.remove(lastToken);
         }
         
         // Evaluate the post-fix expression
         for(Token outToken : outList)
         {
+            System.err.println("Token: " + outToken.tokenStr); // TODO remove this
             // Set the current parsing line number, for error messages
             this.iParseTokenLineNr = outToken.iSourceLineNr;
             
@@ -901,7 +1169,12 @@ public class Parser
                     break;
             }
         }
-        
+
+        // There may not have even been an expression
+        if(resultStack.isEmpty())
+        {
+            error("Expected an expression before '%s'", scan.currentToken.tokenStr);
+        }
         ResultValue resReturnVal = resultStack.pop();
         
         // Print the debug information for the result of the current expression

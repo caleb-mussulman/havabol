@@ -7,6 +7,7 @@ public class Token
     public int subClassif = 0;
     public int iSourceLineNr = 0;
     public int iColPos = 0;
+    public int identifierType = -1;
     // Constants for primClassif
     public static final int OPERAND    = 1; // constants, identifier
     public static final int OPERATOR   = 2; // + - * / < > = ! 
@@ -33,6 +34,10 @@ public class Token
     // Constants for OPERATOR's subclassif (number of operands)
     public static final int UNARY      = 15;
     public static final int BINARY     = 16;
+    // Constants for determining if an operand is an array or array element
+    public static final int ARRAY_REF    = 41;
+    public static final int ARRAY_ELEM   = 42;
+    public static final int NOT_AN_ARRAY = 43;
     
     // array of primClassif string values for the constants
     public static final String[] strPrimClassifM = 
@@ -247,6 +252,7 @@ public class Token
      * -----------------------------------------------------
      *      Symbol      Token Precedence    Stack Precedence
      * -----------------------------------------------------
+     *      [           16                  0
      *      (           15                  2
      *      u-          12                  12
      *      ^           11                  10
@@ -265,7 +271,7 @@ public class Token
      * @return                  the precedence value
      * @throws ParserException  if this method was called with an invalid token
      */
-    private int getPrecedence(Parser parse, boolean stackPrecedence) throws ParserException
+    private int getPrecedence(Parser parse, boolean bStackPrecedence) throws ParserException
     {
         // We should only call this method if the token is an operator or separator
         if(! ((this.primClassif == Token.OPERATOR) || (this.primClassif == Token.SEPARATOR)) )
@@ -279,9 +285,20 @@ public class Token
         // Determine which operator the token is, and return its corresponding precedence value
         switch(this.tokenStr)
         {
+            case "[":
+                // Precedence if '[' is already in post-fix stack
+                if(bStackPrecedence)
+                {
+                    return 0;
+                }
+                // Precedence if '[' is not yet in post-fix stack
+                else
+                {
+                    return 16;
+                }
             case "(":
                 // Precedence if '(' is already in post-fix stack
-                if(stackPrecedence)
+                if(bStackPrecedence)
                 {
                     return 2;
                 }
@@ -303,7 +320,7 @@ public class Token
                 }
             case "^":
                 // Precedence if '^' is already in post-fix stack
-                if(stackPrecedence)
+                if(bStackPrecedence)
                 {
                     return 10;
                 }
