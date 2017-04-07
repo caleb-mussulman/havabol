@@ -681,22 +681,14 @@ public class Parser
                 bDeclaringArray = true;
                 ResultValue resSize = expr();
                 this.iParseTokenLineNr = declareToken.iSourceLineNr;
-                System.err.println("Before Utility.coerce call");
-                
                 Utility.coerce(this, Token.INTEGER, resSize, "declared size of array");
-                
-                System.err.println("After Utility.coerce call");
                 resArray.maxElem = Integer.parseInt(resSize.value);
-                System.err.println("Max elem: " + resArray.maxElem);
                 bDeclaringArray = false;
             }
             
             // There may be a value list to initialize the array with
             if(scan.currentToken.tokenStr.equals("="))
             {
-                // Go to the token after the '='
-                scan.getNext();
-                
                 // Start initializing at index zero
                 int iIndex = 0;
                 
@@ -704,6 +696,9 @@ public class Parser
                 // comma-separated values that are coercible to the type of the array
                 do
                 {
+                    // Get the token after the '=' or ','
+                    scan.getNext();
+                    
                     // The value list must consist of operands that are not identifiers
                     if((scan.currentToken.primClassif != Token.OPERAND) || (scan.currentToken.subClassif == Token.IDENTIFIER))
                     {
@@ -727,14 +722,14 @@ public class Parser
                     // Index needs to be a result value
                     ResultValue resIndex = new ResultValue();
                     resIndex.value = Integer.toString(iIndex);
+                    resIndex.type = Token.INTEGER;
                     
                     // Assign the array element at the current index
                     symbolTable.storageManager.arrayAssign(this, variableStr, resVal, resIndex);
                     
                     iIndex++;
                     
-                }while(scan.getNext().equals(","));
-                 
+                }while(scan.getNext().equals(",")); 
             }
         }
         // We are not declaring an array; we are declaring a primitive variable
@@ -746,11 +741,35 @@ public class Parser
             symbolTable.putSymbol(variableStr, STVariable);
             
             // Move to the token after the operand
-            //scan.getNext();
+            scan.getNext();
+            
+            // There may be a value to initialize the variable with
+            if(scan.currentToken.tokenStr.equals("="))
+            {
+                // Go to the token after '='
+                scan.getNext();
+                
+                // The value must be an operand that is not an identifier
+                if((scan.currentToken.primClassif != Token.OPERAND) || (scan.currentToken.subClassif == Token.IDENTIFIER))
+                {
+                    error("Expected a value coercible to type '%s', found '%s'"
+                          , Token.getType(this, declareType), scan.currentToken.tokenStr);
+                }
+                
+                // Get the token as a result value and attempt to coerce to the type of the array
+                ResultValue resVal = scan.currentToken.toResultValue(this);
+                Utility.coerce(this, declareType, resVal, "variable initialization");
+                
+                // Store the value for the variable
+                symbolTable.storeVariableValue(this, variableStr, resVal);
+                
+                // Move to the token after the value
+                scan.getNext();
+            }
         }
         
         // The declaration statement must be followed by ';'
-        if(! scan.getNext().equals(";"))
+        if(! scan.currentToken.tokenStr.equals(";"))
         {
             error("Expected ';' after declaration statement");
         }
@@ -1029,7 +1048,6 @@ public class Parser
         // Evaluate the post-fix expression
         for(Token outToken : outList)
         {
-            System.err.println("Token: " + outToken.tokenStr); // TODO remove this
             // Set the current parsing line number, for error messages
             this.iParseTokenLineNr = outToken.iSourceLineNr;
             

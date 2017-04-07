@@ -118,7 +118,7 @@ public class StorageManager
             errParse.error("Assignment of '%s' to '%s'['%s'] is out of bounds ", resultValue.value, symbol, index.value);
         }
         //Setting a value to an index that is beyond the contiguous size of the array.
-        if(iIndex > resultArray.valueList.size())
+        if(iIndex >= resultArray.valueList.size())
         {
             //Pad the arrayList with null values to initialize an index that's beyond continuous space.
             for(int i = resultArray.valueList.size(); i <= iIndex; i++)
