@@ -270,6 +270,12 @@ public class Scanner
             nextToken.primClassif = Token.OPERAND;
             nextToken.subClassif = Token.STRING;
             
+            // The string may be a valid Date token
+            if(Utility.isValidDate(nextToken.tokenStr))
+            {
+            	nextToken.subClassif = Token.DATE;
+            }
+            
             return currentToken.tokenStr;
         }
         
