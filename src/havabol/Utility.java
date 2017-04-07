@@ -32,6 +32,23 @@ public class Utility
     public static final int AND                = 37;
     public static final int OR                 = 38;
     
+    private static Set<String> dates = new HashSet<String>();
+    static {
+        for (int year = 0000; year < 9999; year++) {
+            for (int month = 1; month <= 12; month++) {
+                for (int day = 1; day <= daysInMonth(year, month); day++) {
+                    StringBuilder date = new StringBuilder();
+                    date.append(String.format("%04d", year));
+                    date.append("-");
+                    date.append(String.format("%02d", month));
+                    date.append("-");
+                    date.append(String.format("%02d", day));
+                    dates.add(date.toString());
+                }
+            }
+        }
+    }
+    
     @SuppressWarnings("serial")
     public final static Map<Integer, String> logicalOperator = Collections.unmodifiableMap(new HashMap<Integer, String>(){{
                                                                put(31, "=="); put(32, "!="); put(33, "<"); put(34, ">");
@@ -606,6 +623,40 @@ public class Utility
     }
     
     /**
+     * Parses an input date to see if it is of form yyyy-mm-dd
+     * mm and dd must have a 0 in front of them if it is a single integer date.
+     * @param date
+     * @return
+     */
+    public static boolean isValidDate(String date)
+    {
+        if (date.length() != 10)
+        {
+            return false;
+        }
+        
+        if (date.matches("\\d{4}-\\d{2}-\\d{2}"))
+        {
+            int year = Integer.parseInt(date.substring(0, 4));
+            int month = Integer.parseInt(date.substring(5,7));
+            if (month > 12 || month == 0)
+            {
+                return false;
+            }
+            int daysMonth = daysInMonth(year, month);
+            int day = Integer.parseInt(date.substring(8, 10));
+            if (day == 0 || day > daysMonth)
+            {
+                return false;
+            }
+            
+            return true;
+        }
+        
+        return false;
+    }
+    
+    /**
      ******************************** START OF FUNCTIONS ***************************************************
      */
     
@@ -742,6 +793,12 @@ public class Utility
      */
     public static void coerce(Parser parser, int coerceType, ResultValue resval, String operation) throws Exception
     {
+        // Same type so there is nothing to coerce.
+        if (coerceType == resval.type)
+        {
+            return;
+        }
+        
         // Check the type to coerce to
         if (coerceType == Token.INTEGER)
         {
@@ -850,6 +907,27 @@ public class Utility
         else if(coerceType == Token.DATE)
         {
             // TODO when we add date types
+            // Coerce to a DATE
+            switch(resval.type)
+            {
+                case Token.STRING:
+                    // The result value is a STRING to be coerced into a DATE
+                    
+                    // See if the string is a valid date.
+                    if(isValidDate(resval.value))
+                    {
+                        resval.type = Token.DATE;
+                    }
+                    // String is not a valid boolean value
+                    else
+                    {
+                        parser.errorWithCurrent("Unable to coerce value '%s' of type 'STRING' into type 'DATE' for operation '%s'"
+                                                , resval.value, operation);
+                    }
+                    break;
+                default:
+                    parser.errorWithCurrent("Illegal operation: attempted to coerce type '%s' into type 'DATE'", Token.getType(parser, resval.type));
+            }
         }
         else if(coerceType == Token.STRING)
         {
@@ -890,5 +968,39 @@ public class Utility
         resReturn.value = resParam.value;
         resReturn.structure = resParam.structure;
         return resReturn;
+    }
+    
+    
+    /**
+     * Outputs the appropriate number of days in a month based on the month and the year.
+     * It needs the year to determine leap years that happen in February(2)
+     * @param year - The calendar year as an integer.
+     * @param month - The calendar month as an integer.
+     * @return integer representing the number of days in a particular month.
+     */
+    private static int daysInMonth(int year, int month) {
+        int daysInMonth;
+        switch (month) {
+            case 1:
+            case 3:
+            case 5:
+            case 7:
+            case 8:
+            case 10:
+            case 12:
+                daysInMonth = 31;
+                break;
+            case 2:
+                if (((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0)) {
+                    daysInMonth = 29;
+                } else {
+                    daysInMonth = 28;
+                }
+                break;
+            default:
+                // returns 30 even for nonexistant months 
+                daysInMonth = 30;
+        }
+        return daysInMonth;
     }
 }
