@@ -32,23 +32,6 @@ public class Utility
     public static final int AND                = 37;
     public static final int OR                 = 38;
     
-    private static Set<String> dates = new HashSet<String>();
-    static {
-        for (int year = 0000; year < 9999; year++) {
-            for (int month = 1; month <= 12; month++) {
-                for (int day = 1; day <= daysInMonth(year, month); day++) {
-                    StringBuilder date = new StringBuilder();
-                    date.append(String.format("%04d", year));
-                    date.append("-");
-                    date.append(String.format("%02d", month));
-                    date.append("-");
-                    date.append(String.format("%02d", day));
-                    dates.add(date.toString());
-                }
-            }
-        }
-    }
-    
     @SuppressWarnings("serial")
     public final static Map<Integer, String> logicalOperator = Collections.unmodifiableMap(new HashMap<Integer, String>(){{
                                                                put(31, "=="); put(32, "!="); put(33, "<"); put(34, ">");

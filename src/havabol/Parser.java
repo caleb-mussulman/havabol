@@ -746,7 +746,7 @@ public class Parser
             symbolTable.putSymbol(variableStr, STVariable);
             
             // Move to the token after the operand
-            scan.getNext();
+            //scan.getNext();
         }
         
         // The declaration statement must be followed by ';'
