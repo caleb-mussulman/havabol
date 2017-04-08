@@ -64,7 +64,7 @@ public class StorageManager
     /**
      * Stores an array into the StorageManager HashMap sm.
      * <p>
-     * @param errParse    - Used for error checking
+     * @param errParse    - Used for error handling
      * @param symbol      - Key for the ResultArray (Array name in Havabol)
      * @param resultArray - Storing a ResultArray reference as the value.
      * @throws Exception  - ...
@@ -77,6 +77,7 @@ public class StorageManager
     /**
      * Gets a reference to the ResultArray Object within the HashTable sm.
      * <p>
+     * @param errParse - Used for error handling
      * @param symbol - Key for the ResultArray (Array Variable name in Havabol)
      * @return       - ResultArray Object Reference from HashTable sm.
      */
@@ -103,15 +104,16 @@ public class StorageManager
      *  Symbol = x
      *  resultValue = 200
      *  index = 2
-     * @param errParse
-     * @param symbol
-     * @param resultValue
-     * @param index
-     * @throws Exception
+     * @param errParse    - Used for error handling
+     * @param symbol      - Key for ResultArray (Array Variable name in Havabol)
+     * @param resultValue - Source value to be set within the Array.
+     * @param index       - Index reference to the position in the Array.
+     * @throws Exception  - ...
      */
     void arrayAssign(Parser errParse, String symbol, ResultValue resultValue, ResultValue index) throws Exception {
 
         ResultArray resultArray;
+        //getResultArray check if the resultArray exists already, no need to check in this function.
         resultArray = getResultArray(errParse, symbol);
 
         //Coerce the index to an integer ALWAYS.
@@ -163,6 +165,7 @@ public class StorageManager
                     resultArray.valueList.add(i, resultArray.scaledValue);
                 }
                 //This array has not previously been Scaled (bScaled = false)
+                //Fill with nulls instead of scaledValue
                 else
                 {
                     resultArray.valueList.add(i, null);
