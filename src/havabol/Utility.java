@@ -742,7 +742,7 @@ public class Utility
 
         if(resultArray.structure == STIdentifier.UNBOUNDED_ARRAY)
         {
-            parser.error("Array is of structure Unbounded, can not resolve MAXELEM");
+            parser.errorWithCurrent("Array is of structure Unbounded, can not resolve MAXELEM");
         }
 
         // Create a new resultValue to return and initialize its attributes.
@@ -759,36 +759,87 @@ public class Utility
     }
     
     /**
+     * TODO : Needs to support a value list (e.g. gradePt IN {4, 3, 2, 1, 0} )
      * Searches an array resultArray for a value resval contained in it.
      * Upon finding it a truthy or falsey value are returned to the caller.
      * @param parser - Responsible for handling error messages.
      * @param resval - The value being searched for.
      * @param resultArray - The array that a value is being located in.
-     * @return true or false.
+     * @return Havabol T or F.
      * @throws ParserException
      */
-    public static boolean IN(Parser parser, ResultValue resval, ResultArray resultArray) throws ParserException
+    public static ResultValue IN(Parser parser, ResultValue resval, ResultArray resultArray) throws ParserException
     {
         if (resultArray.structure != STIdentifier.FIXED_ARRAY ||
             resultArray.structure != STIdentifier.UNBOUNDED_ARRAY)
         {
-            parser.errorWithCurrent("Cannot find %s in type %s.", resval.value, Token.getType(parser, resultArray.type));
+            parser.errorWithCurrent("Cannot start search for type %s in type %s.", resval.value, Token.getType(parser, resultArray.type));
         }
         
         if (resval.structure != STIdentifier.PRIMITVE)
         {
-            parser.errorWithCurrent("Cannot search for type %s in %s.", Token.getType(parser, resval.type),
+            parser.errorWithCurrent("Cannot start search for type %s in %s.", Token.getType(parser, resval.type),
                     Token.getType(parser, resultArray.type));
         }
         
+        ResultValue resReturn = new ResultValue();
+        
         if (resultArray.valueList.contains(resval.value))
         {
-            return true;
+            resReturn.value = "T";
+            resReturn.type = Token.BOOLEAN;
+            resReturn.structure = STIdentifier.PRIMITVE;
         }
         else
         {
-            return false;
+            resReturn.value = "F";
+            resReturn.type = Token.BOOLEAN;
+            resReturn.structure = STIdentifier.PRIMITVE;
         }
+        
+        return resReturn;
+    }
+    
+    /**
+     * TODO : Needs to support a value list (e.g. gradePt NOTIN {4, 3, 2, 1, 0} )
+     * Searches an array resultArray to determine if a value is not contained in the array.
+     * Upon finding it a truthy or falsey value are returned to the caller.
+     * @param parser - Responsible for handling error messages.
+     * @param resval - The value being searched for.
+     * @param resultArray - The array that a value is being located in.
+     * @return Havabol T or F.
+     * @throws ParserException
+     */
+    public static ResultValue NOTIN(Parser parser, ResultValue resval, ResultArray resultArray) throws ParserException
+    {
+            if (resultArray.structure != STIdentifier.FIXED_ARRAY ||
+                resultArray.structure != STIdentifier.UNBOUNDED_ARRAY)
+            {
+                parser.errorWithCurrent("Cannot start search for type %s in type %s.", resval.value, Token.getType(parser, resultArray.type));
+            }
+            
+            if (resval.structure != STIdentifier.PRIMITVE)
+            {
+                parser.errorWithCurrent("Cannot start search for type %s in %s.", Token.getType(parser, resval.type),
+                        Token.getType(parser, resultArray.type));
+            }
+            
+            ResultValue resReturn = new ResultValue();
+            
+            if (!resultArray.valueList.contains(resval.value))
+            {
+                resReturn.value = "T";
+                resReturn.type = Token.BOOLEAN;
+                resReturn.structure = STIdentifier.PRIMITVE;
+            }
+            else
+            {
+                resReturn.value = "F";
+                resReturn.type = Token.BOOLEAN;
+                resReturn.structure = STIdentifier.PRIMITVE;
+            }
+            
+            return resReturn;
     }
     
     
