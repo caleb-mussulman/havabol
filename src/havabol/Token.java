@@ -274,28 +274,34 @@ public class Token
     private int getPrecedence(Parser parse, boolean bStackPrecedence) throws ParserException
     {
         // We should only call this method if the token is an operator or separator
-        if(! ((this.primClassif == Token.OPERATOR) || (this.primClassif == Token.SEPARATOR)) )
+        if(! ((this.primClassif == Token.OPERATOR) || (this.primClassif == Token.SEPARATOR)
+           || ((this.primClassif == Token.OPERAND) && (this.subClassif == Token.IDENTIFIER))))
         {
             // User's havabol code should NEVER get this error. This error is for debugging and
             // if it occurs, it is because we wrote an improper call to this method
-            String diagnosticTxt = String.format("Improper call to 'Token.precedence' for token '%s' that has primary"
-                    + "classification '%s'", this.tokenStr, Token.strPrimClassifM[this.primClassif]);
-            throw new ParserException(this.iSourceLineNr + 1, diagnosticTxt, "");
+            parse.errorLineNr(this.iSourceLineNr + 1, "Improper call to 'Token.precedence' for token '%s' "
+                    + "that has primary classification '%s'", this.tokenStr, Token.strPrimClassifM[this.primClassif]);
         }
-        // Determine which operator the token is, and return its corresponding precedence value
+        
+        // If the separator was a '[', the identifier for that
+        // corresponding '[' was pushed onto the stack instead
+        if(this.primClassif == Token.OPERAND)
+        {
+            // Precedence if '[' is already in post-fix stack
+            if(bStackPrecedence)
+            {
+                return 0;
+            }
+            // Precedence if '[' is not yet in post-fix stack
+            else
+            {
+                return 16;
+            }
+        }
+        
+        // Determine which operator/separator the token is, and return its corresponding precedence value
         switch(this.tokenStr)
         {
-            case "[":
-                // Precedence if '[' is already in post-fix stack
-                if(bStackPrecedence)
-                {
-                    return 0;
-                }
-                // Precedence if '[' is not yet in post-fix stack
-                else
-                {
-                    return 16;
-                }
             case "(":
                 // Precedence if '(' is already in post-fix stack
                 if(bStackPrecedence)

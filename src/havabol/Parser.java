@@ -16,9 +16,9 @@ public class Parser
                                       // In the case of functions, we want it to act as a delimiter
                                       // for the functions parameters, so this value would be set
                                       // to true, so that we don't try to find the matching '('
-    public boolean bDeclaringArray; // Used when calling 'expr' to parse the declared size of the array
-                                    // Indicates that we want to evaluate the expression in the brackets
-                                    // and not the array element reference
+    public boolean bGettingArraySize; // Used when calling 'expr' to parse the declared size of the array
+                                      // Indicates that we want to evaluate the expression in the brackets
+                                      // and not the array element reference
     
     Parser(Scanner scan, SymbolTable symbolTable)
     {
@@ -28,7 +28,7 @@ public class Parser
         this.bShowAssign = false;
         this.bShowExpr = false;
         this.bExpectingRtParen = false;
-        this.bDeclaringArray = false;
+        this.bGettingArraySize = false;
     }
     
     // This is a temporary method so we can still see the token output
@@ -423,6 +423,8 @@ public class Parser
      */
     public void assignStmt(boolean bExec) throws Exception
     {
+        boolean bArrayElemAssign; // Indicates if this is an assignment to an array/string index (i.e., there
+                                  // are a pair of brackets indicating an element reference)
         int iAssignLineNr; // line number for beginning of assignment statement
         iAssignLineNr = scan.currentToken.iSourceLineNr;
         
@@ -443,8 +445,37 @@ public class Parser
         }
         String variableStr = scan.currentToken.tokenStr;
         
-        // Get the assignment operator and check it
-        scan.getNext();
+        ResultValue resIndex = new ResultValue(); // If we are assigning to an array element,
+                                                  // this will be the value of the index
+        bArrayElemAssign = false; // If this is an array element assignment, we need to know
+                                  // later on after we have parsed past the brackets
+        
+        // Check if the token after the variable is a '['
+        if(scan.nextToken.tokenStr.equals("["))
+        {
+            // We found brackets
+            bArrayElemAssign = true;
+            
+            // Get rid of the
+            // This is an assignment to an array/string index, so we need to get the value of the index.
+            // We do this by calling 'expr' and indicating that we want the value in between the brackets
+            // and not the element of the array/string at that index.
+            
+            bGettingArraySize = true;
+            resIndex = expr();
+            this.iParseTokenLineNr = scan.currentToken.iSourceLineNr;
+            Utility.coerce(this, Token.INTEGER, resIndex, "declared size of array");
+            bGettingArraySize = false;
+            // TODO STOPPED WORKING HERE
+        }
+        // If there was a '[', the call to 'expr' will land the current token on what
+        // should be the operator; if not, we need to move to that next token
+        else
+        {
+            scan.getNext();
+        }
+        
+        // We should currently be on an assignment operator
         if(scan.currentToken.primClassif != Token.OPERATOR)
         {
             /*
@@ -465,16 +496,109 @@ public class Parser
         switch(operatorStr)
         {
             case "=":
+                // Different types of assignment
+                // 1)   array = array
+                // 2)   array = scalar
+                // 3)   array[index] = scalar
+                // 4)   string[index] = string
+                // 5)   scalar = scalar
+                
+                // Get the target variable and check that it has been declared
                 STIdentifier STVariable = (STIdentifier) symbolTable.getSymbol(variableStr);
-                resAssign = expr();
-                // If the variable and value types don't match, then attempt to coerce the
-                // type of the value to the type of the variable
-                if(STVariable.dclType != resAssign.type)
+                if(STVariable == null)
                 {
-                    Utility.coerce(this, STVariable.dclType, resAssign, "=");
+                    error("Variable '%s' has not been declared", variableStr);
                 }
-                symbolTable.storeVariableValue(this, variableStr, resAssign);
+                // Get the source of the assignment
+                resAssign = expr();
+                
+                // For the first, second, and third assignment types, the target will involve an array
+                if(STVariable.structure != STIdentifier.PRIMITVE)
+                {
+                    // 1) If the source is an array, then we have array to array assignment
+                    if(resAssign.structure != STIdentifier.PRIMITVE)
+                    {
+                        
+                    }
+                    // The source is a primitive type
+                    else
+                    {
+                        // 2) If there were no brackets after the target variable,
+                        //    then this is scalar to array assignment
+                        if(! bArrayElemAssign)
+                        {
+                            // Ensure that the source is the same type as the array
+                            Utility.coerce(this, STVariable.dclType, resAssign, "=");
+                            symbolTable.storageManager.scalarAssign(this, variableStr, resAssign);
+                        }
+                        // 3) There were brackets after the target variable,
+                        //    so this is an assignment to an array index
+                        else
+                        {
+                            // Ensure that the source is the same type as the array
+                            Utility.coerce(this, STVariable.dclType, resAssign, "=");
+                            symbolTable.storageManager.arrayAssign(this, variableStr, resAssign, resIndex);
+                        }
+                    }
+                }
+                // For the fourth and fifth assignment types, the target is a primitive type
+                else
+                {
+                    // 4) If there were brackets after the target variable, it must be a string index
+                    if(bArrayElemAssign)
+                    {
+                        // Indexing a primitive is only valid for string types
+                        if(STVariable.dclType != Token.STRING)
+                        {
+                            error("Indexing of a primitive variable is only valid for type 'STRING'"
+                                  + ", found variable of type '%s'", STVariable.dclType);
+                        }
+                        
+                        // Ensure that the source is a string as well
+                        Utility.coerce(this, STVariable.dclType, resAssign, "=");
+                        // Get the string value of the variable
+                        ResultValue resString = symbolTable.retrieveVariableValue(this, variableStr);
+                        
+                        // Get the index as a numeric value
+                        Numeric numIndex = new Numeric(this, resIndex, variableStr, "index");
+                        
+                        // If the index is negative, convert to its corresponding positive subscript
+                        if(numIndex.integerValue < 0)
+                        {
+                            numIndex.integerValue = numIndex.integerValue + resString.value.length();
+                        }
+                        
+                        // Now determine if the index is within bounds for the string
+                        if(numIndex.integerValue < 0 || numIndex.integerValue >= resString.value.length())
+                        {
+                            error("Index value of '%s' out of bounds for STRING variable '%s' with value '%s'"
+                                  , resIndex.value, variableStr, resString.value);
+                        }
+                        
+                        // Get the part of the original string up until where the new strings starts (may be empty string)
+                        String beginning = resString.value.substring(0, numIndex.integerValue);
+                        
+                        // Get the part of the original string after the end of the inserted string (may be empty string)
+                        int iStartOfEnd = beginning.length() + resAssign.value.length();
+                        String end = "";
+                        if(iStartOfEnd < resString.value.length())
+                        {
+                            end = resString.value.substring(iStartOfEnd, resString.value.length()); 
+                        }
+                        
+                        // Create the new string
+                        resString.value = beginning + resAssign.value + end;
+                    }
+                    // 5) Otherwise, this is a regular assignment to a primitive
+                    else
+                    {
+                        // Ensure that the value is the same type as the variable
+                        Utility.coerce(this, STVariable.dclType, resAssign, "=");
+                        symbolTable.storeVariableValue(this, variableStr, resAssign);
+                    }
+                }
                 break;
+                
             case "-=":
                 resOp2 = expr();
                 // Get the value of the target variable
@@ -525,9 +649,6 @@ public class Parser
      * NOTE: Unless/until user-defined functions are implemented,
      * each variable will be declared with LOCAL scope and
      * NOT_A_PARAMETER for its parameter passing type
-     * -------------------------------------------------------------
-     * PROGRAM 3 ONLY: all variables are declared with primitive type
-     * TODO NEED TO CHANGE FOR PROGRAM 4
      * -------------------------------------------------------------
      * @param bExec      indicates whether the code should be executed or ignored
      * @throws Exception the first token is not a declaration type
@@ -678,12 +799,13 @@ public class Parser
                 // only want the value in the brackets, not the array element at the index of
                 // that value
                 scan.setPosition(declareToken);
-                bDeclaringArray = true;
+                bGettingArraySize = true;
+                scan.getNext(); // Setting 'bGettingArraySize' will cause 'expr' to not get the next token
                 ResultValue resSize = expr();
                 this.iParseTokenLineNr = declareToken.iSourceLineNr;
                 Utility.coerce(this, Token.INTEGER, resSize, "declared size of array");
                 resArray.maxElem = Integer.parseInt(resSize.value);
-                bDeclaringArray = false;
+                bGettingArraySize = false;
             }
             
             // There may be a value list to initialize the array with
@@ -789,7 +911,13 @@ public class Parser
         String exprDelimiters = ",:;="; // The delimiters for an expression
         
         // Get the next token
-        scan.getNext();
+        // If declaring an array or if an array element is the target of an assignment,
+        // then expression was called while currently on the correct token. In this
+        // case, we don't want to get the next token.
+        if(! bGettingArraySize)
+        {
+            scan.getNext();
+        }
         
         // TODO For now, the delimiter for an expression is only "," ";" or ":"
         // Get the next token as long as it isn't an expression delimiter
@@ -819,19 +947,35 @@ public class Parser
                     {
                         error("Variable '%s' has not been declared", token.tokenStr);
                     }
-                    
-                    // Get the stucture type
-                    int iStructure = ((STIdentifier)STEntryResult).structure;
+                    STIdentifier STVariable = (STIdentifier) STEntryResult;
                     
                     // Check if this identifier is an array, array element, 
                     // or just a primitive and set the appropriate token field
-                    if(iStructure == STIdentifier.PRIMITVE)
+                    if(STVariable.structure == STIdentifier.PRIMITVE)
                     {
-                        token.identifierType = Token.NOT_AN_ARRAY;
-                        // It is just a primitive variable so add it to the post-fix list
-                        outList.add(scan.currentToken);
-                        // We just got an operand so the next token should not be an operand
-                        bExpectingOperand = false;
+                        // We may need to get an index of a string (for partial string assignment or for splices)
+                        if(STVariable.dclType == Token.STRING && scan.nextToken.tokenStr.equals("["))
+                        {
+                            token.identifierType = Token.ARRAY_ELEM;
+                            // Need to remove the bracket; the corresponding ']' will
+                            // match up with the string's identifier token
+                            scan.getNext();
+                            // Because we just got rid of a separator '[', the next token
+                            // should be an operand
+                            bExpectingOperand = true;
+                            // We need the expression inside the brackets, so treat the string
+                            // identifier as an operator and put it on the post-fix stack
+                            postfixStack.push(token);
+                        }
+                        else
+                        {
+                            token.identifierType = Token.NOT_AN_ARRAY;
+                            // It is just a primitive variable so add it to the post-fix list
+                            outList.add(scan.currentToken);
+                            // We just got an operand so the next token should not be an operand
+                            bExpectingOperand = false;
+                        }
+                        
                     }
                     // In this case, the token is an array or array element
                     else
@@ -847,7 +991,7 @@ public class Parser
                             // should be an operand
                             bExpectingOperand = true;
                             // We need to parse the expression inside the brackets, so
-                            // treat the array identifier as an operator an put on the
+                            // treat the array identifier as an operator and put on the
                             // post-fix stack
                             postfixStack.push(token);
                         }
@@ -944,8 +1088,7 @@ public class Parser
                                 
                                 // Find a '[' before the '(' should be an error. One example:
                                 //    4 * (3 + arr[x * y)]
-                                if((popped.primClassif == Token.OPERAND) && (popped.subClassif == Token.IDENTIFIER)
-                                                                         && (popped.identifierType == Token.ARRAY_ELEM))
+                                if((popped.primClassif == Token.OPERAND) && (popped.subClassif == Token.IDENTIFIER))
                                 {
                                     error("Expected ']' before ')'");
                                 }
@@ -958,6 +1101,13 @@ public class Parser
                                 error("Could not find matching '('. May be missing ';' or ':'?");
                             }
                             break;  //Break out of case ")"
+                            
+                        case "[":
+                            // A '[' should only follow an array variable or a string variable. When
+                            // this happens, we throw the '[' away and use the actual variable as the
+                            // '['. So, if a '[' is encountered, we have not thrown it away, so it is an error
+                            error("Expected an array variable or a variable of type 'STRING' before '['");
+                            break;
                             
                         case "]":
                             // Error if we were expecting an operand and found a "]"
@@ -974,8 +1124,7 @@ public class Parser
                             {
                                 Token popped = postfixStack.pop();
                                 // Check if the token was the matching array token
-                                if((popped.primClassif == Token.OPERAND) && (popped.subClassif == Token.IDENTIFIER)
-                                                                         && (popped.identifierType == Token.ARRAY_ELEM))
+                                if((popped.primClassif == Token.OPERAND) && (popped.subClassif == Token.IDENTIFIER))
                                 {
                                     bFoundArray = true;
                                 }
@@ -1039,7 +1188,7 @@ public class Parser
         // If declaring an array, we don't want to be accessing that array. We want the result of
         // the expression to be a value that will be used for the declaring the size of the array.
         // So, we just remove the array identifier token from the post-fix expression.
-        if(bDeclaringArray)
+        if(bGettingArraySize)
         {
             Token lastToken = outList.get(outList.size() - 1);
             outList.remove(lastToken);
@@ -1060,7 +1209,36 @@ public class Parser
                     // before putting it on the result stack
                     if(outToken.subClassif == Token.IDENTIFIER)
                     {
-                        resultStack.push(symbolTable.retrieveVariableValue(this, outToken.tokenStr));
+                        // If the identifier is an array/string element reference, we need to
+                        // get the element at the given index. The index would be whatever 
+                        // expression had been evaluated inside the brackets
+                        if(outToken.identifierType == Token.ARRAY_ELEM)
+                        {
+                            STEntry STVarEntry = symbolTable.getSymbol(outToken.tokenStr);
+                            if(STVarEntry == null)
+                            {
+                                // This should only happen if I incorrectly evaluated the infix expression
+                                error("Variable '%s' has not been declared", outToken.tokenStr);
+                            }
+                            STIdentifier STVariable = (STIdentifier) STVarEntry;
+                            
+                            // If the variable is primitive, it is a string index
+                            if(STVariable.structure == STIdentifier.PRIMITVE)
+                            {
+                                
+                            }
+                            // Otherwise, the variable is an array and we the element at the given index
+                            else
+                            {
+                                ResultValue resIndex = resultStack.pop();
+                                // TODO Use storage manager to get the element from the array and put back on stack
+                                // MAKE SURE TO GET A COPY AND NOT A REFERENCE
+                            }
+                        }
+                        else
+                        {
+                            resultStack.push(symbolTable.retrieveVariableValue(this, outToken.tokenStr));
+                        }
                     }
                     // Operand is not an identifier, so just put the operand on the result stack
                     else

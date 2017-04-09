@@ -64,7 +64,7 @@ public class Numeric {
 		            break;
 		        default:
 		            // Can not create a numeric out of something that is not an INTEGER OR FLOAT
-		            parser.errorWithCurrent("The %s of operation '%s' has type '%s' and value '%s', must have type 'INTEGER' or 'FLOAT'"
+		            parser.errorWithCurrent("The %s of '%s' has type '%s' and value '%s', must have type 'INTEGER' or 'FLOAT'"
                                             , operandDescription, operator, Token.getType(parser, resultValue.type), resultValue.value);
 		    }
 		}
@@ -72,7 +72,7 @@ public class Numeric {
 		// This should only happen if we implemented something incorrectly
 		catch(NumberFormatException e)
 		{
-		    parser.errorWithCurrent("Could not parse %s of operation '%s' into 'INTEGER' or 'FLOAT', found '%s' of type '%s'"
+		    parser.errorWithCurrent("Could not parse %s of '%s' into 'INTEGER' or 'FLOAT', found '%s' of type '%s'"
 		                            , operandDescription, operator, resultValue.value, Token.getType(parser, resultValue.type));
 		}
 	}

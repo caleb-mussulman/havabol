@@ -15,7 +15,7 @@ public class Scanner
                                                                 put('n', '\n'); put('t', '\t'); put('a', (char)0x07);          }});
     public final static List<String> tokensPrecedingUnaryMinus = Collections.unmodifiableList(Arrays.asList("=", "-=", "+=", "+"
                                                                  , "-", "*", "/", "^", ">", "<", ">=", "<=", "!=", "#", "and"
-                                                                 , "or", "not", "if", "select", "while", "when", "(", ","));
+                                                                 , "or", "not", "if", "select", "while", "when", "(", "[", ","));
     public String sourceFileNm;
     public ArrayList<String> sourceLineM;
     public SymbolTable symbolTable;
