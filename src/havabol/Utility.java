@@ -252,7 +252,7 @@ public class Utility
     /**
      * Compares 2 result values' together based on a given operation.
      * <p>
-     * @param parser - used for logging error messages.
+     * @param parser    - used for logging error messages.
      * @param operation - Binary operator (==, !=, <, >, <=, >=)
      * @param resParam1 - Object containing result value 1
      * @param resParam2 - Object containing result value 2
@@ -709,6 +709,7 @@ public class Utility
      * FIXED or UNBOUNDED
      * <p>
      * Returning a ResultValue that holds the number of elements in the Havabol Array
+     * @param parser      - Responsible for handling error messages.
      * @param resultArray - A ResultArray object reference -- A Havabol Array.
      * @return            - The number of elements in the array
      */
@@ -732,7 +733,7 @@ public class Utility
 
     /**
      * TODO: Cover this with Caleb
-     * @param errParse
+     * @param parser - responsible for handling error messages.
      * @param resultArray
      * @return
      */
@@ -762,8 +763,8 @@ public class Utility
      * TODO : Needs to support a value list (e.g. gradePt IN {4, 3, 2, 1, 0} )
      * Searches an array resultArray for a value resval contained in it.
      * Upon finding it a truthy or falsey value are returned to the caller.
-     * @param parser - Responsible for handling error messages.
-     * @param resval - The value being searched for.
+     * @param parser      - Responsible for handling error messages.
+     * @param resval      - The value being searched for.
      * @param resultArray - The array that a value is being located in.
      * @return Havabol T or F.
      * @throws ParserException
@@ -801,11 +802,11 @@ public class Utility
     }
     
     /**
-     * TODO : Needs to support a value list (e.g. gradePt NOTIN {4, 3, 2, 1, 0} )
+     * TODO : Needs to support a value list (e.g. fruit NOTIN {"apple", "orange", "clark"} )
      * Searches an array resultArray to determine if a value is not contained in the array.
      * Upon finding it a truthy or falsey value are returned to the caller.
-     * @param parser - Responsible for handling error messages.
-     * @param resval - The value being searched for.
+     * @param parser      - Responsible for handling error messages.
+     * @param resval      - The value being searched for.
      * @param resultArray - The array that a value is being located in.
      * @return Havabol T or F.
      * @throws ParserException
@@ -1025,10 +1026,12 @@ public class Utility
         }
     }
 
+    
     /**
-     * TODO: DOCUMENTATION FOR THIS FUNCTION
-     * @param resParam
-     * @return
+     * Returns a fresh result value that is soley used for the purpose of storing a passed in result so that the original result
+     * value is not manipulated resulting in data being overwritten.
+     * @param resParam - The result value that we want to make a copy of.
+     * @return a new result value with the contents of resParam.
      */
     public static ResultValue getResultValueCopy(ResultValue resParam)
     {
@@ -1043,7 +1046,7 @@ public class Utility
     /**
      * Outputs the appropriate number of days in a month based on the month and the year.
      * It needs the year to determine leap years that happen in February(2)
-     * @param year - The calendar year as an integer.
+     * @param year  - The calendar year as an integer.
      * @param month - The calendar month as an integer.
      * @return integer representing the number of days in a particular month.
      */
@@ -1067,7 +1070,7 @@ public class Utility
                 }
                 break;
             default:
-                // returns 30 even for nonexistant months 
+                // This should never really be reached.
                 daysInMonth = 30;
         }
         return daysInMonth;
