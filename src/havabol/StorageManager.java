@@ -110,7 +110,7 @@ public class StorageManager
      * @param index       - Index reference to the position in the Array.
      * @throws Exception  - ...
      */
-    void arrayAssign(Parser errParse, String symbol, ResultValue resultValue, ResultValue index) throws Exception {
+    void arrayAssignElem(Parser errParse, String symbol, ResultValue resultValue, ResultValue index) throws Exception {
 
         ResultArray resultArray;
         //getResultArray check if the resultArray exists already, no need to check in this function.
@@ -138,13 +138,14 @@ public class StorageManager
             errParse.error("Assignment of '%s' to '%s'['%s'] is out of bounds"
                           , resultValue.value, symbol, index.value);
         }
-
+        
+        /*
         //Negative subscripts do not work for UNBOUNDED arrays.
         if(resultArray.structure == STIdentifier.UNBOUNDED_ARRAY && iIndex < 0)
         {
             errParse.error("'%s' is negative, invalid subscript for Unbounded Array '%s'"
-                          , index.value, symbol);
-        }
+                    , index.value, symbol);
+        }*/
 
         //Setting a value to an index that is beyond the current contiguous size of the array.
         if(iIndex >= resultArray.valueList.size())
@@ -211,6 +212,64 @@ public class StorageManager
                 resultArray.valueList.set(iIndex, resultValue);
             }
         }
+    }
+
+
+    /**
+     * TODO: Error cases have to be thought out.
+     *
+     * Gets the reference to the ResultValue object at the specific index within ResultArray.valueList
+     * <p>
+     * @param errParse     - Used for error handling.
+     * @param arraySymbol  - Key for ResultArray (Array Variable name in Havabol)
+     * @param resIndex     - The position in the ResultArray.valueList being retrieved.
+     * @return resultValue - The reference to the ResultValue object in the ResultArray.valueList
+     * @throws Exception   - ...
+     */
+    ResultValue getArrayElem(Parser errParse, String arraySymbol, ResultValue resIndex) throws Exception
+    {
+
+        ResultValue resultValue;
+        ResultArray resultArray;
+        //Get the array from the HashTable -- will check if its already in the SM
+        resultArray = getResultArray(errParse, arraySymbol);
+
+        //Index should ALWAYS be an Token.INTEGER.
+        if(resIndex.type != Token.INTEGER)
+        {
+            Utility.coerce(errParse, Token.INTEGER, resIndex, "ArrayElementReference");
+        }
+
+        int iIndex = Integer.parseInt(resIndex.value);
+
+        int  iTmp_Index = 0;
+
+        //If we have a negative subscript...
+        //We convert the negative subscript to its corresponding non-negative index.
+        if(iIndex < 0)
+        {
+            iTmp_Index = resultArray.valueList.size() + iIndex;
+        }
+
+        if((resultArray.structure == STIdentifier.FIXED_ARRAY) && ((iIndex > resultArray.maxElem-1) || (iTmp_Index < 0)))
+        {
+            errParse.error("Reference to '%s'['%s'] is out of bounds"
+                          ,arraySymbol , resIndex.value);
+        }
+
+        //If it's negative then we are going to
+        if(iIndex < 0)
+        {
+            resultValue = resultArray.valueList.get(iTmp_Index);
+        }
+        else
+        {
+            resultValue = resultArray.valueList.get(iIndex);
+
+        }
+
+        return resultValue;
+
     }
 
     /**
@@ -293,7 +352,7 @@ public class StorageManager
             //filling to target's size.
             for(int i = 0; i < target.valueList.size(); i++)
             {
-                target.valueList.set(i, source.valueList.get(i));
+                target.valueList.set(i, Utility.getResultValueCopy(source.valueList.get(i)));
             }
         }
         //Target Equal or Larger, fill to source's size.
@@ -302,7 +361,7 @@ public class StorageManager
             //filling to source's size.
             for(int i = 0; i < source.valueList.size(); i++)
             {
-                target.valueList.set(i, source.valueList.get(i));
+                target.valueList.set(i, Utility.getResultValueCopy(source.valueList.get(i)));
             }
         }
     }
