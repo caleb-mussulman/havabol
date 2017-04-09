@@ -712,20 +712,20 @@ public class Utility
      * @param resultArray - A ResultArray object reference -- A Havabol Array.
      * @return            - The number of elements in the array
      */
-    public static ResultValue ELEM(Parser errParse, ResultArray resultArray)
+    public static ResultValue ELEM(Parser parser, ResultArray resultArray)
     {
         int tmp;
 
-        //Create a new resultValue to return and initialize its attributes
+        // Create a new resultValue to return and initialize its attributes
         ResultValue resultValue = new ResultValue();
         resultValue.type = Token.INTEGER;   //This will always be an integer.
         resultValue.structure = STIdentifier.PRIMITVE;
         resultValue.terminatingStr = "";
 
-        //The highest populated subscript + 1, in ArrayList's is simply the what the .size() function returns.
-        tmp = resultArray.valueList.size();     //Returns the number of Elements in the array.
+        // The highest populated subscript + 1, in ArrayList's is simply the what the .size() function returns.
+        tmp = resultArray.valueList.size();     // Returns the number of Elements in the array.
 
-        resultValue.value = String.valueOf(tmp); //Converts integer value to a string.
+        resultValue.value = String.valueOf(tmp); // Converts integer value to a string.
 
         return resultValue;
     }
@@ -736,27 +736,62 @@ public class Utility
      * @param resultArray
      * @return
      */
-    public static ResultValue MAXELEM(Parser errParse, ResultArray resultArray) throws ParserException
+    public static ResultValue MAXELEM(Parser parser, ResultArray resultArray) throws ParserException
     {
         int tmp;
 
         if(resultArray.structure == STIdentifier.UNBOUNDED_ARRAY)
         {
-            errParse.error("Array is of structure Unbounded, can not resolve MAXELEM");
+            parser.error("Array is of structure Unbounded, can not resolve MAXELEM");
         }
 
-        //Create a new resultValue to return and initalize its attributes.
+        // Create a new resultValue to return and initialize its attributes.
         ResultValue resultValue = new ResultValue();
         resultValue.type = Token.INTEGER;
         resultValue.structure = STIdentifier.PRIMITVE;
         resultValue.terminatingStr = "";
 
-        //Parser has already initalized maxElem within the resultArray
+        // Parser has already initialized maxElem within the resultArray
         tmp = resultArray.maxElem;
         resultValue.value = String.valueOf(tmp);
 
         return resultValue;
     }
+    
+    /**
+     * Searches an array resultArray for a value resval contained in it.
+     * Upon finding it a truthy or falsey value are returned to the caller.
+     * @param parser - Responsible for handling error messages.
+     * @param resval - The value being searched for.
+     * @param resultArray - The array that a value is being located in.
+     * @return true or false.
+     * @throws ParserException
+     */
+    public static boolean IN(Parser parser, ResultValue resval, ResultArray resultArray) throws ParserException
+    {
+        if (resultArray.structure != STIdentifier.FIXED_ARRAY ||
+            resultArray.structure != STIdentifier.UNBOUNDED_ARRAY)
+        {
+            parser.errorWithCurrent("Cannot find %s in type %s.", resval.value, Token.getType(parser, resultArray.type));
+        }
+        
+        if (resval.structure != STIdentifier.PRIMITVE)
+        {
+            parser.errorWithCurrent("Cannot search for type %s in %s.", Token.getType(parser, resval.type),
+                    Token.getType(parser, resultArray.type));
+        }
+        
+        if (resultArray.valueList.contains(resval.value))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    
+    
     /**
      ******************************** HELPER FUNCTIONS ***********************************************
      */
@@ -890,7 +925,6 @@ public class Utility
         }
         else if(coerceType == Token.DATE)
         {
-            // TODO when we add date types
             // Coerce to a DATE
             switch(resval.type)
             {
@@ -936,7 +970,7 @@ public class Utility
         }
         else
         {
-            parser.errorWithCurrent("Illegal operation: attempted to coerce value '%s' into unknown type represented by '%d'", resval.value, resval.type);
+            parser.errorWithCurrent("Illegal operation: attempted to coerce value '%s' into unknown type represented by '%d'", resval.value, Token.getType(parser, resval.type));
         }
     }
 
