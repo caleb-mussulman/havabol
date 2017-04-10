@@ -1726,9 +1726,28 @@ public class Parser
         // Indicate to the parser that we are expecting the special ')' at the end
         this.bExpectingRtParen = true;
         
+        boolean bFirstTime; // Need to check that each expression was delimited by ',', except for the
+                            // first time we enter the loop, since the current token will be on a '('
+        bFirstTime = true;
+        
         // Print each comma-separated expression until we hit the special ')' before the ';'
         while(scan.currentToken.primClassif != Token.RT_PAREN)
         {
+            // If this is not the first time in the loop, then the
+            // previous expression should have been terminated by ','
+            if(! bFirstTime)
+            {
+                if(! scan.currentToken.tokenStr.equals(","))
+                {
+                    error("Unexpected delimiter in parameter to function 'print', found '%s'", scan.currentToken.tokenStr);
+                }
+            }
+            // If it is the first time, just continue
+            else
+            {
+                bFirstTime = false;
+            }
+            
             ResultValue resVal = expr();
             System.out.printf("%s ", resVal.value);
             
