@@ -1,0 +1,36 @@
+// Expressions
+print("p4Expr.txt");
+Int two = 2;
+Int three = 3;
+Int four = 4;
+Int five = 5;
+print("constants: 3 + 4 * 5 =", 3+4*5);
+print("variables: 3 + 4 * 5 =", three+four*five);
+
+print("constants: 2 * 3 + 4 =", 2 * 3 + 4);
+print("mix: 2 * 3 + 4 =", 2 * three + 4);
+
+print("12 / 4 * 3 = ", 12 / 4 * three);
+
+print("4 + (5 - 6) * 2 =", 4 + (5 - 6) * 2 );
+
+print("2 ^ 2 ^ 3 = ", 2 ^ 2 ^ 3);
+
+print("two + (12-4*2/4) - 1 =", two + (12-4*2/4) - 1);
+
+if three*four > four+five:
+    print("right:", three*four, ">", 4+5);
+else:
+    print("wrong:", three*four, ">", 4+5,  "should be T");
+endif;
+
+if "1" # "2" > 4+5:
+    print("wrong: string", "1" # "2", ">", 4+5, "should be F");
+else:
+    print("right: string", "1" # "2", ">", 4+5);
+endif;
+String strA = "Climb";
+String strB = "every";
+String strC;
+strC = strA # " " # strB # " mountain";
+print("strC is", strC);

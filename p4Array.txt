@@ -1,0 +1,102 @@
+// arrays, element assignment, for loops
+// do simple variables still work?
+print("p4Array.txt");
+Int iSimp = 50;
+print ("iSimp=", iSimp);
+
+print("Array C with elements printed using constant subscripts");
+Int iCM[10] = 10, 20, 30, 40, 50, 60;
+print("\tC", iCM[0], iCM[1], iCM[2]);
+
+print("Array B with expressions for subscripts");
+Int iBM[] = 10, 20, 30;
+iSimp = 0;
+print("\tB", iBM[iSimp], 10*iBM[iSimp+1], iBM[1+iSimp+1]);
+
+print("Array B with elements replaced");
+iSimp=1;
+iBM[iSimp] = 100;
+iBM[iSimp+1] = 200;
+print("\tB.2", iBM[0], iBM[iSimp], iBM[iSimp+1]);
+
+print("Array F with arrays of arrays");
+Int iFM[] = 10, 20, 30, 40, 50, 0, 1, 2, 3,4,5;
+iSimp = 1;
+print("F", iFM[iSimp-1], iFM[iFM[6]], iFM[(iSimp+2)-1]/10, iFM[iFM[(iSimp+2)-1]/10]
+    , iFM[2*4], iFM[2+iFM[2*4]-1]);
+// BM[iBM[0]-8]);
+print("iAM originally does not have any elements");
+Int iAM[10];
+print("iAm number of elements is", ELEM(iAM));
+iSimp = 1;
+iAM[iSimp] = 100; // not an error
+print("\tA", iAM[1]);
+
+// for loops
+print("for loop for val in iCM");
+for iVal in iCM:
+    print("\t", iVal);
+endfor;
+Int i;
+print("counting for loop");
+for i = 0 to ELEM(iCM):
+    print("\t", iCM[i]);
+endfor;
+
+print("counting for loop by 2, implicit variable k");
+for k = 0 to ELEM(iCM) by 2:
+    print("\t", iCM[k]);
+endfor;
+
+print("Unsorted array");
+Int iDM[20] = 60,30,20,10,5,50,70,25,35,45,15;
+Int iTemp;
+for iTemp in iDM:
+    print("\t", iTemp);
+endfor;
+
+print("Nested for loops, sorting the array");
+Bool bChange;
+Int j;
+for i=0 to ELEM(iDM)-1:
+    bChange = F;
+    for j=0 to ELEM(iDM)-i-1 by 1:
+        if iDM[j+1] < iDM[j]:
+           iTemp = iDM[j+1];
+           iDM[j+1] = iDM[j];
+           iDM[j] = iTemp;
+           bChange = T;
+        endif;
+    endfor;
+    if not bChange:
+        print("\tready to leave, i=", i);
+        // break;
+    endif;
+endfor; 
+print("sorted array");
+for i=0 to ELEM(iDM):
+    print("\t", iDM[i]);
+endfor;
+
+// Assign a value to the entire array
+print("Scalar assignment to an array");
+String strM[10];
+strM = "oh yes";
+for oneStr in strM:
+    print("\t", oneStr);
+endfor;
+// Copy the array
+Int iCopyAM[5];
+iCopyAM = iDM;  // copy the values to the array stop when we have filled it.
+print("copy of the sorted array, but with just 5 elements");
+for iTemp in iCopyAM:
+    print("\t", iTemp);
+endfor;
+
+// Copy the array
+Int iCopyBM[30];
+iCopyBM = iDM;  // copy the values to the array stop when we run out of values
+print("copy of the sorted array, but with just 11 elements not 30");
+for iTemp in iCopyBM:
+    print("\t", iTemp);
+endfor;

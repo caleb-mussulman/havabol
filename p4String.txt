@@ -1,0 +1,17 @@
+// p4String.txt
+print("p4String.txt");
+String sA = "Pike";
+sA[2] = "p";
+print("Replaced 'Pike' in slot 2 with 'p' giving", sA);
+
+sA = "dog house";
+sA[0] = "l";
+print("Replaced 'dog house' in slot 0 with 'l' giving", sA);
+Int i = 2;
+String sB = "brace";
+sB[i*2] = "elet";
+print("Replaced 'brace' in slot", i*2, "with 'elet' giving"
+    , sB);
+
+String sC = "Maynard";
+print("sC=", sC, "falling apart is", sC[0], sC[24/2/3], sC[(2^4*3-6)/7]);

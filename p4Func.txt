@@ -1,0 +1,45 @@
+// Builtin function tests
+print("p4Func.txt");
+String name = "Anita";
+print("name=", name, "length=", LENGTH(name));
+
+name = name # " " # "Byte";
+print("name=", name, "length=", LENGTH(name));
+
+name = "Joe";
+print("concat name=", name#' '#"King", "length=", LENGTH(name#' '#"King"));
+
+Float gradeM[10] = 100, 99, 70.5;  // max elements of 10, but 
+                                   // only 3 populated
+print("gradeM has max elements of", MAXELEM(gradeM)
+    , " and", ELEM(gradeM), " are populated");
+
+Float temperatureM[] = 54, 60, 75, 89, 65, 49; // max elements of 6
+print("temperatureM has max elements of", MAXELEM(temperatureM)
+    , " and", ELEM(temperatureM), " are populated");
+
+String nameM[20];                  // max elements of 20, not populated
+print("nameM has max elements of", MAXELEM(nameM)
+    , " and", ELEM(nameM), " are populated");
+ 
+Int value = 5;
+Int arrayM[value * 5];         // max elements of 25
+print("arrayM has max elements of", MAXELEM(arrayM)
+    , " and", ELEM(arrayM), " are populated");
+
+Int weirdM[] = 10, "20", 30.5; // All of these are valid coercions to Int
+print("weirdM has max elements of", MAXELEM(weirdM)
+    , " and", ELEM(weirdM), " are populated");
+
+String name = "Joe";
+print("concat name=", name#' '#"King", "length=", LENGTH(name#' '#"King"));  
+
+name = "Lee";
+print("concat name=", name#' '#"King", "length=", LENGTH(name#' '#"King")); 
+print("1+LENGTH('Lee King')*2=", 1+LENGTH(name#' '#"King")*2);
+
+String str = "";
+print("str=", str, "SPACES(str)=", SPACES(str));
+str = ' ';
+print("str=", str, "SPACES(str)=", SPACES(str));
+print("str=", str, "LENGTH(SPACES(str))=", LENGTH(SPACES(str)));

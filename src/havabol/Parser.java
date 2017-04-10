@@ -466,7 +466,6 @@ public class Parser
             this.iParseTokenLineNr = scan.currentToken.iSourceLineNr;
             Utility.coerce(this, Token.INTEGER, resIndex, "declared size of array");
             bGettingArraySize = false;
-            // TODO STOPPED WORKING HERE
         }
         // If there was a '[', the call to 'expr' will land the current token on what
         // should be the operator; if not, we need to move to that next token
@@ -518,7 +517,8 @@ public class Parser
                     // 1) If the source is an array, then we have array to array assignment
                     if(resAssign.structure != STIdentifier.PRIMITVE)
                     {
-                        
+                        // TODO Need to add coercion for array to array assignments
+                        symbolTable.storageManager.ArrayToArrayAssign(this, variableStr, resAssign.value);
                     }
                     // The source is a primitive type
                     else
@@ -537,7 +537,7 @@ public class Parser
                         {
                             // Ensure that the source is the same type as the array
                             Utility.coerce(this, STVariable.dclType, resAssign, "=");
-                            symbolTable.storageManager.arrayAssign(this, variableStr, resAssign, resIndex);
+                            symbolTable.storageManager.arrayAssignElem(this, variableStr, resAssign, resIndex);
                         }
                     }
                 }
@@ -571,7 +571,7 @@ public class Parser
                         // Now determine if the index is within bounds for the string
                         if(numIndex.integerValue < 0 || numIndex.integerValue >= resString.value.length())
                         {
-                            error("Index value of '%s' out of bounds for STRING variable '%s' with value '%s'"
+                            error("Index '%s' out of bounds for 'STRING' variable '%s' with value '%s'"
                                   , resIndex.value, variableStr, resString.value);
                         }
                         
@@ -599,7 +599,7 @@ public class Parser
                 }
                 break;
                 
-            case "-=":
+            case "-=": // TODO Does not work with arrays
                 resOp2 = expr();
                 // Get the value of the target variable
                 resOp1 = symbolTable.retrieveVariableValue(this, variableStr);
@@ -608,7 +608,7 @@ public class Parser
                 // Assign the result to the variable
                 symbolTable.storeVariableValue(this, variableStr, resAssign);
                 break;
-            case "+=":
+            case "+=": // TODO Does not work with arrays
                 resOp2 = expr();
                 // Get the value of the target variable
                 resOp1 = symbolTable.retrieveVariableValue(this, variableStr);
@@ -736,6 +736,7 @@ public class Parser
             // Create an array to be declared and set its type
             ResultArray resArray = new ResultArray();
             resArray.type = declareType;
+            resArray.value = variableStr;
             
             // Move to the '[' and determine the type of array declaration
             scan.getNext();
@@ -789,7 +790,7 @@ public class Parser
             
             // In the case of the second or third types of array declaration statements, the
             // array size is determined by a call to 'expr'. However, 'expr' must already have
-            // knowledge of the declared array; so, we declay the array as in the above lines,
+            // knowledge of the declared array; so, we declare the array as in the above lines,
             // and set its max size afterwards
             if(bSecondOrThirdType)
             {
@@ -847,7 +848,7 @@ public class Parser
                     resIndex.type = Token.INTEGER;
                     
                     // Assign the array element at the current index
-                    symbolTable.storageManager.arrayAssign(this, variableStr, resVal, resIndex);
+                    symbolTable.storageManager.arrayAssignElem(this, variableStr, resVal, resIndex);
                     
                     iIndex++;
                     
@@ -919,7 +920,6 @@ public class Parser
             scan.getNext();
         }
         
-        // TODO For now, the delimiter for an expression is only "," ";" or ":"
         // Get the next token as long as it isn't an expression delimiter
         while(exprDelimiters.indexOf(scan.currentToken.tokenStr) < 0)
         {
@@ -1225,7 +1225,35 @@ public class Parser
                             // If the variable is primitive, it is a string index
                             if(STVariable.structure == STIdentifier.PRIMITVE)
                             {
+                                // Get the string
+                                ResultValue resString = symbolTable.retrieveVariableValue(this, outToken.tokenStr);
                                 
+                                // Get the index, coerce to and int type, and convert to a numeric
+                                ResultValue resIndex = resultStack.pop();
+                                Utility.coerce(this, Token.INTEGER, resIndex, "string indexing");
+                                Numeric numIndex = new Numeric(this, resIndex, outToken.tokenStr, "index");
+                                
+                                // If the index is negative, convert it to its corresponding positive index
+                                if(numIndex.integerValue < 0)
+                                {
+                                    numIndex.integerValue = numIndex.integerValue + resString.value.length();
+                                }
+                                
+                                // Ensure that the index is within the bounds of the string
+                                if(numIndex.integerValue < 0 || numIndex.integerValue >= resString.value.length())
+                                {
+                                    error("Index '%s' out of bounds for 'STRING' variable '%s' with value '%s'"
+                                            , resIndex.value, outToken.tokenStr, resString.value);
+                                }
+                                
+                                // Create the result value that will hold the indexed character
+                                ResultValue resChar = new ResultValue();
+                                resChar.value = Character.toString(resString.value.charAt(numIndex.integerValue));
+                                resChar.type = Token.STRING;
+                                resChar.structure = STIdentifier.PRIMITVE;
+                                
+                                // Put the character that was indexed from the string onto the evaluation stack
+                                resultStack.push(resChar);
                             }
                             // Otherwise, the variable is an array and we the element at the given index
                             else
@@ -1233,6 +1261,16 @@ public class Parser
                                 ResultValue resIndex = resultStack.pop();
                                 // TODO Use storage manager to get the element from the array and put back on stack
                                 // MAKE SURE TO GET A COPY AND NOT A REFERENCE
+                                
+                                // Get the reference to the array's element at index 'resIndex'
+                                ResultValue resArrayElemRef;
+                                resArrayElemRef = symbolTable.storageManager.getArrayElem(this, outToken.tokenStr, resIndex);
+                                
+                                // We need a copy of the array's element, not a reference
+                                ResultValue resArrayElemCopy = Utility.getResultValueCopy(resArrayElemRef);
+                                
+                                // Put that copy of the array's element on the evaluation stack
+                                resultStack.push(resArrayElemCopy);
                             }
                         }
                         else
@@ -1369,7 +1407,16 @@ public class Parser
         // There may not have even been an expression
         if(resultStack.isEmpty())
         {
-            error("Expected an expression before '%s'", scan.currentToken.tokenStr);
+            // Just in case the last token was EOF, make a more clear error message
+            if(scan.currentToken.primClassif == Token.EOF)
+            {
+                error("Expected an expression before end of file");
+            }
+            else
+            {
+                error("Expected an expression before '%s'", scan.currentToken.tokenStr);
+            }
+            
         }
         ResultValue resReturnVal = resultStack.pop();
         
