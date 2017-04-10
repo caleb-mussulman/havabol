@@ -36,7 +36,14 @@ public class Parser
     // This is a temporary method so we can still see the token output
     public void parse() throws Exception
     {
-        statements(true);
+    	ResultValue resStmtsReturn;
+        resStmtsReturn = statements(true);
+        
+        // Check that execution ended from EOF
+        if(resStmtsReturn.type != Token.EOF)
+        {
+        	error("Unexpected control token, found '%s'", resStmtsReturn.terminatingStr);
+        }
     }
     
     /**
@@ -116,13 +123,16 @@ public class Parser
             // We hit the end of file
             if(scan.currentToken.primClassif == Token.EOF)
             {
-                // resValue's terminating string is initialized to empty for EOF
+                // Return EOF token
+            	resValue.type = Token.EOF;
+            	resValue.terminatingStr = "";
                 return resValue;
             }
             
             // Check if the current token is a end of flow token
             if((scan.currentToken.primClassif == Token.CONTROL) && (scan.currentToken.subClassif == Token.END))
             {
+            	resValue.type = Token.CONTROL;
                 resValue.terminatingStr = scan.currentToken.tokenStr;
                 return resValue;
             }
@@ -136,6 +146,11 @@ public class Parser
             else if(scan.currentToken.tokenStr.equals("while"))
             {
                 whileStmt(bExec);
+            }
+            // Current token is start of for statement
+            else if(scan.currentToken.tokenStr.equals("for"))
+            {
+            	forStmt(bExec);
             }
             // Current token is start of assignment statement
             else if((scan.currentToken.primClassif == Token.OPERAND) && (scan.currentToken.subClassif == Token.IDENTIFIER))
@@ -373,7 +388,7 @@ public class Parser
             if(resCond.type != Token.BOOLEAN)
             {
                 errorLineNr(whileToken.iSourceLineNr, "Expected a 'BOOLEAN' type for the evaluation of 'while' statement's condition"
-                           + ", found '%s' type", resCond.type);
+                           + ", found '%s' with type '%s'", resCond.value, Token.getType(this, resCond.type));
             }
             
             // Continue in the while loop as long as the expression evaluates to true
@@ -420,6 +435,11 @@ public class Parser
         {
             error("Expected ';' after 'endwhile'");
         }
+    }
+    
+    public void forStmt(boolean bExec) throws ParserException
+    {
+    	
     }
     
     /**
