@@ -651,21 +651,22 @@ public class Utility
      * @return A result value that contains information about the length of the string that was passed in.
      * @throws Exception
      */
-    public static ResultValue LEN(Parser parser, ResultValue string) throws Exception
+    public static ResultValue LENGTH(Parser parser, ResultValue resOp) throws Exception
     {
-        ResultValue stringresval = new ResultValue();
+        // Get a copy of the operand and attempt to coerce to a string
+        ResultValue resString = Utility.getResultValueCopy(resOp);
+        Utility.coerce(parser, Token.STRING, resString, "LENGTH");
         
-        if (stringresval.type != Token.STRING)
-        {
-            parser.errorWithCurrent("Cannot get length of type %s. Must be type string.", stringresval.type);
-        }
+        // Get the length of the string
+        int len = resString.value.length();
         
-        int len = string.value.length();
-        stringresval.value = String.valueOf(len);
-        stringresval.type = Token.INTEGER;
-        stringresval.structure = STIdentifier.PRIMITVE;
+        // Construct the return value using the length
+        ResultValue resLength = new ResultValue();
+        resLength.value = String.valueOf(len);
+        resLength.type = Token.INTEGER;
+        resLength.structure = STIdentifier.PRIMITVE;
         
-        return stringresval;
+        return resLength;
     }
     
     /**
@@ -677,29 +678,40 @@ public class Utility
      * @return Result value that contains T or F indicating if the string has spaces or is empty.
      * @throws Exception
      */
-    public static ResultValue SPACES(Parser parser, ResultValue string) throws Exception
+    public static ResultValue SPACES(Parser parser, ResultValue resOp) throws Exception
     {
-        ResultValue stringresval = new ResultValue();
+        // Get a copy of the operand and attempt to coerce to a string
+        ResultValue resString = Utility.getResultValueCopy(resOp);
+        Utility.coerce(parser, Token.STRING, resString, "LENGTH");
         
-        if (stringresval.type != Token.STRING)
-        {
-            parser.errorWithCurrent("Cannot make a check for spaces on type %s", stringresval.type);
-        }
+        ResultValue resSpaces = new ResultValue();
+        resSpaces.type = Token.BOOLEAN;
+        resSpaces.structure = STIdentifier.PRIMITVE;
         
-        if (stringresval.value.isEmpty() || stringresval.value.matches("\\s"))
+        // Determine if the string is empty
+        if(resString.value.isEmpty())
         {
-            stringresval.value = "T";
-            stringresval.type = Token.BOOLEAN;
-            stringresval.structure = STIdentifier.PRIMITVE;
+            resSpaces.value = "T";
         }
+        // The string is not empty, so check if it only contains spaces
         else
         {
-            stringresval.value = "F";
-            stringresval.type = Token.BOOLEAN;
-            stringresval.structure = STIdentifier.PRIMITVE;
+            // Assume the string initially only contains spaces
+            resSpaces.value = "T";
+            
+            // Check each character to find one that isn't a space
+            for(int i = 0; i < resString.value.length(); i++)
+            {
+                // If the character isn't a space, return false
+                if(! (resString.value.charAt(i) == ' '))
+                {
+                    resSpaces.value = "F";
+                    break;
+                }
+            }
         }
         
-        return stringresval;
+        return resSpaces;
     }
     
     /**
@@ -715,16 +727,13 @@ public class Utility
      */
     public static ResultValue ELEM(Parser parser, ResultArray resultArray)
     {
-        int tmp;
-
         // Create a new resultValue to return and initialize its attributes
         ResultValue resultValue = new ResultValue();
         resultValue.type = Token.INTEGER;   //This will always be an integer.
         resultValue.structure = STIdentifier.PRIMITVE;
-        resultValue.terminatingStr = "";
 
         // The highest populated subscript + 1, in ArrayList's is simply the what the .size() function returns.
-        tmp = resultArray.valueList.size();     // Returns the number of Elements in the array.
+        int tmp = resultArray.valueList.size();     // Returns the number of Elements in the array.
 
         resultValue.value = String.valueOf(tmp); // Converts integer value to a string.
 
@@ -739,21 +748,19 @@ public class Utility
      */
     public static ResultValue MAXELEM(Parser parser, ResultArray resultArray) throws ParserException
     {
-        int tmp;
-
+        // Unbounded arrays don't have a maximum element
         if(resultArray.structure == STIdentifier.UNBOUNDED_ARRAY)
         {
-            parser.errorWithCurrent("Array is of structure Unbounded, can not resolve MAXELEM");
+            parser.errorWithCurrent("Function 'MAXELEM' is undefined for unbounded arrays");
         }
 
         // Create a new resultValue to return and initialize its attributes.
         ResultValue resultValue = new ResultValue();
         resultValue.type = Token.INTEGER;
         resultValue.structure = STIdentifier.PRIMITVE;
-        resultValue.terminatingStr = "";
 
         // Parser has already initialized maxElem within the resultArray
-        tmp = resultArray.maxElem;
+        int tmp = resultArray.maxElem;
         resultValue.value = String.valueOf(tmp);
 
         return resultValue;

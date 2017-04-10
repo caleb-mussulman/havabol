@@ -1498,17 +1498,41 @@ public class Parser
                     // Function is a built-in function
                     if(outToken.subClassif == Token.BUILTIN)
                     {
+                        ResultValue resOp; // Used as the parameter for the function
+                        ResultArray resArrayOp; // Used for functions that require an array parameter
+                        
                         // Execute the appropriate function
                         switch(outToken.tokenStr)
                         {
                             case "LENGTH":
-                                
+                                resOp = resultStack.pop();
+                                resultStack.push(Utility.LENGTH(this, resOp));
                                 break;
                             case "SPACES":
+                                resOp = resultStack.pop();
+                                resultStack.push(Utility.SPACES(this, resOp));
                                 break;
                             case "ELEM":
+                                resOp = resultStack.pop();
+                                // Check that the operand is an array
+                                if(! (resOp instanceof ResultArray))
+                                {
+                                    error("Expected an array reference for the parameter to 'ELEM', found '%s'", resOp.value);
+                                }
+                                // Get the operand as a result array
+                                resArrayOp = (ResultArray) resOp;
+                                resultStack.push(Utility.ELEM(this, resArrayOp));
                                 break;
                             case "MAXELEM":
+                                resOp = resultStack.pop();
+                                // Check that the operand is an array
+                                if(! (resOp instanceof ResultArray))
+                                {
+                                    error("Expected an array reference for the parameter to 'MAXELEM', found '%s'", resOp.value);
+                                }
+                                // Get the operand as a result array
+                                resArrayOp = (ResultArray) resOp;
+                                resultStack.push(Utility.MAXELEM(this, resArrayOp));
                                 break;
                             default:
                                 // Only reached if we add a built-in function but haven't called it here
