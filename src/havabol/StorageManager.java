@@ -135,10 +135,10 @@ public class StorageManager
         // Attempting to assign to an index out of bounds.
         if((resultArray.structure == STIdentifier.FIXED_ARRAY) && ((iIndex > resultArray.maxElem-1) || (iTmp_Index < 0)))
         {
-            errParse.error("Assignment of '%s' to '%s'['%s'] is out of bounds"
+            errParse.error("Assignment of '%s' to array '%s'['%s'] is out of bounds"
                           , resultValue.value, symbol, index.value);
         }
-        
+
         /*
         //Negative subscripts do not work for UNBOUNDED arrays.
         if(resultArray.structure == STIdentifier.UNBOUNDED_ARRAY && iIndex < 0)
@@ -163,7 +163,7 @@ public class StorageManager
                         Utility.coerce(errParse, resultArray.type, resultArray.scaledValue, "ArrayAssignmentInvalidType");
                     }
 
-                    resultArray.valueList.add(i, resultArray.scaledValue);
+                    resultArray.valueList.add(i, Utility.getResultValueCopy(resultArray.scaledValue));
                 }
                 //This array has not previously been Scaled (bScaled = false)
                 //Fill with nulls instead of scaledValue
@@ -228,7 +228,6 @@ public class StorageManager
      */
     ResultValue getArrayElem(Parser errParse, String arraySymbol, ResultValue resIndex) throws Exception
     {
-
         ResultValue resultValue;
         ResultArray resultArray;
         //Get the array from the HashTable -- will check if its already in the SM
@@ -239,10 +238,9 @@ public class StorageManager
         {
             Utility.coerce(errParse, Token.INTEGER, resIndex, "ArrayElementReference");
         }
-
+        
         int iIndex = Integer.parseInt(resIndex.value);
-
-        int  iTmp_Index = 0;
+        int  iTmp_Index = iIndex;
 
         //If we have a negative subscript...
         //We convert the negative subscript to its corresponding non-negative index.
@@ -251,22 +249,33 @@ public class StorageManager
             iTmp_Index = resultArray.valueList.size() + iIndex;
         }
 
+        //Checking for out of bounds error
         if((resultArray.structure == STIdentifier.FIXED_ARRAY) && ((iIndex > resultArray.maxElem-1) || (iTmp_Index < 0)))
         {
-            errParse.error("Reference to '%s'['%s'] is out of bounds"
-                          ,arraySymbol , resIndex.value);
+            errParse.error("Reference to index '%s' for array '%s' is out of bounds"
+                          ,resIndex.value ,arraySymbol);
         }
 
-        //If it's negative then we are going to
-        if(iIndex < 0)
+        //If the index we are trying to reference is larger than the current size of the array list
+        if(iIndex >= resultArray.valueList.size())
         {
-            resultValue = resultArray.valueList.get(iTmp_Index);
+            //and the arrayList has previously been scaled...
+            if(resultArray.bScaled == true)
+            {
+                //Return the scaledValue to the user so it looks like they are referencing the position
+                //IMPORTANT NOTE: This position in the arrayList does not actually exist.
+                return Utility.getResultValueCopy(resultArray.scaledValue);
+            }
+            //the arrayList has NOT been scaled previously...
+            else
+            {
+                //Attempting to reference index to an uninitialized position in the array.
+                errParse.error("Reference to uninitialized index '%s' for array '%s'"
+                              , resIndex.value, arraySymbol);
+            }
         }
-        else
-        {
-            resultValue = resultArray.valueList.get(iIndex);
 
-        }
+        resultValue = resultArray.valueList.get(iTmp_Index);
 
         return resultValue;
 
