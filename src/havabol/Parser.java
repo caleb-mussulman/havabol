@@ -19,6 +19,8 @@ public class Parser
     public boolean bGettingArraySize; // Used when calling 'expr' to parse the declared size of the array
                                       // Indicates that we want to evaluate the expression in the brackets
                                       // and not the array element reference
+    public boolean bCalledExprFromStmts; // If 'expr' is called from 'statements', then we are on the current token
+                                         // and do not want to call scanner to get the next token
     
     Parser(Scanner scan, SymbolTable symbolTable)
     {
@@ -148,17 +150,35 @@ public class Parser
             // Current token is the start of a function call
             else if(scan.currentToken.primClassif == Token.FUNCTION)
             {
+                // Save the name of the function for error message
+                String functionName = scan.currentToken.tokenStr;
+                
                 // Function is a built-in function
                 if(scan.currentToken.subClassif == Token.BUILTIN)
                 {
                     // Execute the appropriate function
-                    switch(scan.currentToken.tokenStr)
+                    switch(functionName)
                     {
                         case "debug":
                             debug();
                             break;
                         case "print":
                             print(bExec);
+                            break;
+                        case "LENGTH":
+                        case "SPACES":
+                        case "ELEM":
+                        case "MAXELEM":
+                            // Handle the parsing of these functions in 'expr', but indicate that we are on the first
+                            // token of the expression, so 'expr' should not call scanner for the next token
+                            bCalledExprFromStmts = true;
+                            expr();
+                            bCalledExprFromStmts = false;
+                            // Check that the function statement ended with ';'
+                            if(! scan.getNext().equals(";"))
+                            {
+                                error("Expected ';' after call to function '%s'", functionName);
+                            }
                             break;
                         default:
                             // Only reached if we add a built-in function but haven't called it here
@@ -913,9 +933,11 @@ public class Parser
         
         // Get the next token
         // If declaring an array or if an array element is the target of an assignment,
-        // then expression was called while currently on the correct token. In this
+        // then 'expr' was called while currently on the correct token. In this
         // case, we don't want to get the next token.
-        if(! bGettingArraySize)
+        // Similarly, if 'statements' calls 'expr', then it is already on the
+        // current token, so we don't want to get the next one
+        if(! (bGettingArraySize || bCalledExprFromStmts))
         {
             scan.getNext();
         }
@@ -1075,14 +1097,24 @@ public class Parser
                             
                             boolean bFoundParen = false; // Signifies if we found the matching left parenthesis
                             
-                            // Remove from the stack until the matching parenthesis is found
+                            // Remove from the stack until the matching parenthesis is found.
+                            // In the case of function calls, the name of the function acts as the '('
                             while(! postfixStack.isEmpty())
                             {
                                 Token popped = postfixStack.pop();
+                                
                                 // Found matching parenthesis
                                 if(popped.tokenStr.equals("("))
                                 {
                                     bFoundParen = true;
+                                    break;
+                                }
+                                
+                                // Found matching function call's parenthesis
+                                if(popped.primClassif == Token.FUNCTION)
+                                {
+                                    bFoundParen = true;
+                                    outList.add(popped);
                                     break;
                                 }
                                 
@@ -1151,6 +1183,55 @@ public class Parser
                             error("Invalid separator, found '%s'", token.tokenStr);
                     }
                     break;  //Break out of case Token.SEPARATOR
+                    
+                case Token.FUNCTION:
+                    // Since a function will return an operand, the occurrence of
+                    // a function should be when an operand is expected
+                    if(! bExpectingOperand)
+                    {
+                        error("Expecting an operator, found '%s'", token.tokenStr);
+                    }
+                    // Since we will throw away the '(', the next expected infix token should be an operand as well
+                    
+                    // Function is a built-in function
+                    if(token.subClassif == Token.BUILTIN)
+                    {
+                        // Execute the appropriate function
+                        switch(token.tokenStr)
+                        {
+                            // The 'debug' and 'print' functions are statements and
+                            // should only be called from 'statements'
+                            case "debug":
+                                error("Call to 'debug' function should not be nested inside an expression");
+                                break;
+                            case "print":
+                                error("Call to 'print' function should not be nested inside an expression");
+                                break;
+                            case "LENGTH":
+                            case "SPACES":
+                            case "ELEM":
+                            case "MAXELEM":
+                                // Check that there is a '(' after the function name
+                                if(! scan.getNext().equals("("))
+                                {
+                                    error("Expected '(' after '%s'", token.tokenStr);
+                                }
+                                
+                                // The function name will act as the '('
+                                postfixStack.push(token);
+                                break;
+                            default:
+                                // Only reached if we add a built-in function but haven't called it here
+                                error("Unknown built-in function: '%s'", scan.currentToken.tokenStr);
+                        }
+                    }
+                    // Function is a user-defined function
+                    else
+                    {
+                        error("User-defined functions have not been implemented yet");
+                    }
+                    break;
+                    
                 default:
                     error("Unrecognized argument for expression, found '%s'. May be missing ';' or ':'?", token.tokenStr);
             }
@@ -1410,6 +1491,34 @@ public class Parser
                                 // and forgot to add its appropriate case in this switch statement
                                 errorWithCurrent("Unrecognized operator, found '%s'", outToken.tokenStr);
                         }
+                    }
+                    break;
+                    
+                case Token.FUNCTION:
+                    // Function is a built-in function
+                    if(outToken.subClassif == Token.BUILTIN)
+                    {
+                        // Execute the appropriate function
+                        switch(outToken.tokenStr)
+                        {
+                            case "LENGTH":
+                                
+                                break;
+                            case "SPACES":
+                                break;
+                            case "ELEM":
+                                break;
+                            case "MAXELEM":
+                                break;
+                            default:
+                                // Only reached if we add a built-in function but haven't called it here
+                                error("Unknown built-in function: '%s'", scan.currentToken.tokenStr);
+                        }
+                    }
+                    // Function is a user-defined function
+                    else
+                    {
+                        error("User-defined functions have not been implemented yet");
                     }
                     break;
             }
