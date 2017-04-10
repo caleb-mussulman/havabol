@@ -1127,6 +1127,8 @@ public class Parser
                                 if((popped.primClassif == Token.OPERAND) && (popped.subClassif == Token.IDENTIFIER))
                                 {
                                     bFoundArray = true;
+                                    outList.add(popped);
+                                    break;
                                 }
                                 
                                 // Finding a '(' before the '[' should be an error. One example:
@@ -1193,7 +1195,16 @@ public class Parser
             Token lastToken = outList.get(outList.size() - 1);
             outList.remove(lastToken);
         }
-        
+        /*
+        //-----
+        System.err.println("---start---");
+        for(Token t : outList)
+        {
+            System.err.println(t.tokenStr);
+        }
+        System.err.println("----end----");
+        //-----
+        */
         // Evaluate the post-fix expression
         for(Token outToken : outList)
         {
@@ -1587,6 +1598,8 @@ public class Parser
         {
             ResultValue resVal = expr();
             System.out.printf("%s ", resVal.value);
+            
+            // TODO check that the comma was delimiting
             
             // If the scanner is printing token information, print a
             // '\n'; otherwise, there will be output formatting errors
