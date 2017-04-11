@@ -660,6 +660,7 @@ public class Parser
                         {
                             error("Expected 'endfor' for 'for' beginning on line %d", forToken.iSourceLineNr);
                         }
+                        
                         // 'for' must be followed by a ';'
                         if(! scan.getNext().equals(";"))
                         {
@@ -670,14 +671,59 @@ public class Parser
                         scan.setPosition(forToken);
                         skipTo(forToken.iSourceLineNr, "for", ":");
                     }
-                    
                     // There are no more characters in the string, so go to the 'endfor'
                     resStmts = statements(false);
                 }
                 // 3) If the result is not a primitive, then the 'for' loop is element iteration over an array
                 else
                 {
+                    // Save the returned expression as a result array type
+                    ResultArray resArray = (ResultArray) resExpr;
                     
+                    // TODO Not sure if this is the correct number of times we iterate?
+                    //      Do I need to check how many elements have been initialized?
+                    // Save the maximum size to iterate over
+                    int iArraySize = resArray.valueList.size();
+                    
+                    for(int i = 0; i < iArraySize; i++)
+                    {
+                        // Get the current element of the array
+                        ResultValue resArrayElem = resArray.valueList.get(i);
+                        
+                        // Only iterate if there was actually an element at that index
+                        if(resArrayElem != null)
+                        {
+                            // Declare the previously given variable
+                            STIdentifier STItem= new STIdentifier(variableStr, Token.OPERAND, Token.STRING, STIdentifier.NOT_A_PARAMETER
+                                    , STIdentifier.PRIMITVE, STIdentifier.LOCAL);
+                            symbolTable.putSymbol(variableStr, STItem);
+                            
+                            // Get a copy of the array's element and store it as the variable's value
+                            ResultValue resArrayElemCopy = Utility.getResultValueCopy(resArrayElem);
+                            symbolTable.storeVariableValue(this, variableStr, resArrayElemCopy);
+                            
+                            // Execute the statements after the 'for' parameters
+                            resStmts = statements(true);
+                            
+                            // 'for' control block must end with 'endfor'
+                            if(! resStmts.terminatingStr.equals("endfor"))
+                            {
+                                error("Expected 'endfor' for 'for' beginning on line %d", forToken.iSourceLineNr);
+                            }
+                            
+                            // 'for' must be followed by a ';'
+                            if(! scan.getNext().equals(";"))
+                            {
+                                error("Expected ';' after 'endfor'");
+                            }
+                            
+                            // Move back to the 'for' and skip past the initialization of its parameters
+                            scan.setPosition(forToken);
+                            skipTo(forToken.iSourceLineNr, "for", ":");
+                        }
+                    }
+                    // We iterated over all the valid elements, so go to the 'endfor'
+                    resStmts = statements(false);
                 }
             }
             // 4) If we have a 'from', then the 'for' loop is iteration over a string by a specified delimiter
@@ -701,12 +747,13 @@ public class Parser
             // Ignore the statements after the 'for' parameters
             resStmts = statements(false);
         }
-
+        
         // 'for' control block must end with 'endfor'
         if(! resStmts.terminatingStr.equals("endfor"))
         {
             error("Expected 'endfor' for 'for' beginning on line %d", forToken.iSourceLineNr);
         }
+        
         // 'endfor' must be followed by a ';'
         if(! scan.getNext().equals(";"))
         {
