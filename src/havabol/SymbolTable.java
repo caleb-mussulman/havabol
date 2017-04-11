@@ -151,6 +151,11 @@ public class SymbolTable
         ht.put("for", new STControl("for",Token.CONTROL,Token.FLOW));
         ht.put("while", new STControl("while",Token.CONTROL,Token.FLOW));
         
+        ht.put("to", new STControl("to", Token.CONTROL, Token.END));
+        ht.put("by", new STControl("by", Token.CONTROL, Token.END));
+        ht.put("in", new STControl("in", Token.CONTROL, Token.END));
+        ht.put("from", new STControl("from", Token.CONTROL, Token.END));
+        
         ht.put("enddef",new STControl("enddef",Token.CONTROL, Token.END));
         ht.put("endif", new STControl("endif",Token.CONTROL,Token.END));
         ht.put("else", new STControl("else",Token.CONTROL,Token.END));

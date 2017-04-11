@@ -36,13 +36,13 @@ public class Parser
     // This is a temporary method so we can still see the token output
     public void parse() throws Exception
     {
-    	ResultValue resStmtsReturn;
+        ResultValue resStmtsReturn;
         resStmtsReturn = statements(true);
         
         // Check that execution ended from EOF
         if(resStmtsReturn.type != Token.EOF)
         {
-        	error("Unexpected control token, found '%s'", resStmtsReturn.terminatingStr);
+            error("Unexpected control token, found '%s'", resStmtsReturn.terminatingStr);
         }
     }
     
@@ -124,15 +124,15 @@ public class Parser
             if(scan.currentToken.primClassif == Token.EOF)
             {
                 // Return EOF token
-            	resValue.type = Token.EOF;
-            	resValue.terminatingStr = "";
+                resValue.type = Token.EOF;
+                resValue.terminatingStr = "";
                 return resValue;
             }
             
             // Check if the current token is a end of flow token
             if((scan.currentToken.primClassif == Token.CONTROL) && (scan.currentToken.subClassif == Token.END))
             {
-            	resValue.type = Token.CONTROL;
+                resValue.type = Token.CONTROL;
                 resValue.terminatingStr = scan.currentToken.tokenStr;
                 return resValue;
             }
@@ -150,7 +150,7 @@ public class Parser
             // Current token is start of for statement
             else if(scan.currentToken.tokenStr.equals("for"))
             {
-            	forStmt(bExec);
+                forStmt(bExec);
             }
             // Current token is start of assignment statement
             else if((scan.currentToken.primClassif == Token.OPERAND) && (scan.currentToken.subClassif == Token.IDENTIFIER))
@@ -235,6 +235,12 @@ public class Parser
         {
             // We are executing (not ignoring)
             ResultValue resCond = expr();
+            
+            // The conditional expression should be delimited by ':'
+            if(! scan.currentToken.tokenStr.equals(":"))
+            {
+                error("Expected ':' after 'if' conditional expression, found '%s'", scan.currentToken.tokenStr);
+            }
             
             // The resulting condition must be a boolean value
             if(resCond.type != Token.BOOLEAN)
@@ -384,6 +390,12 @@ public class Parser
             // We are executing (not ignoring)
             ResultValue resCond = expr();
             
+            // The conditional expression should be delimited by ':'
+            if(! scan.currentToken.tokenStr.equals(":"))
+            {
+                error("Expected ':' after 'while' conditional expression, found '%s'", scan.currentToken.tokenStr);
+            }
+            
             // The resulting condition must be a boolean value
             if(resCond.type != Token.BOOLEAN)
             {
@@ -437,9 +449,186 @@ public class Parser
         }
     }
     
-    public void forStmt(boolean bExec) throws ParserException
+    /**
+     * Parses a 'for' control block
+     * Assumption: current token is on a 'for'
+     * <p>
+     * TODO add description
+     * <p>
+     * There are four different types of 'for' statements, each
+     * indicated by the initializations after the 'for' token:
+     *    1) for cv = sv to limit by incr: // counting for
+     *    2) for char in string:
+     *    3) for item in array:
+     *    4) for stringCV from string by delimiter:
+     * @param bExec
+     * @throws ParserException
+     */
+    public void forStmt(boolean bExec) throws Exception
     {
-    	
+        ResultValue resStmts = new ResultValue();
+        Token forToken;
+
+        // Save the 'for' token
+        forToken = scan.currentToken;
+
+        // Do we need to evaluate the parameters?
+        if(bExec)
+        {
+            // We are executing (not ignoring)
+
+            // Next token should be the control variable used in the loop
+            scan.getNext();
+            if(scan.currentToken.primClassif != Token.OPERAND || scan.currentToken.subClassif != Token.IDENTIFIER)
+            {
+                error("Expected a control variable after 'for', found '%s'", scan.currentToken.tokenStr);
+            }
+            String variableStr = scan.currentToken.tokenStr;
+            
+            // Get the token after the variable
+            scan.getNext();
+            
+            // Check for the first type of 'for' loop
+            if(scan.currentToken.tokenStr.equals("="))
+            {
+                // Get the source value for the control variable
+                ResultValue resSourceVal = expr();
+                
+                // The source value should be a primitive and coercible to an int type
+                if(resSourceVal.structure != STIdentifier.PRIMITVE)
+                {
+                    error("Expected a primitive value to assign to '%s', found array '%s'", variableStr, resSourceVal.value);
+                }
+                Utility.coerce(this, Token.INTEGER, resSourceVal, "for loop control variable initialization");
+                
+                // The token after the source value should be 'to'
+                if(! scan.currentToken.tokenStr.equals("to"))
+                {
+                    error("Expected 'to' after control variable initialization, found '%s'", scan.currentToken.tokenStr);
+                }
+                
+                // Get the limit
+                ResultValue resLimit = expr();
+                
+                // The limit value should be a primitive and coercible to an int type
+                if(resLimit.structure != STIdentifier.PRIMITVE)
+                {
+                    error("Expected a primitive value as the 'for' loop limit, found array '%s'", resLimit.value);
+                }
+                Utility.coerce(this, Token.INTEGER, resLimit, "for loop limit value");
+                
+                ResultValue resIncr; // The amount to increment the control variable by
+                
+                // There may be a 'by' token after the limit value indicating the increment amount
+                if(scan.currentToken.tokenStr.equals("by"))
+                {
+                    // Get the increment amount
+                    resIncr = expr();
+                    
+                    // The increment amount should be primitive and coercible to an int type
+                    if(resIncr.structure != STIdentifier.PRIMITVE)
+                    {
+                        error("Expected a primitive value as the 'for' loop increment amount, found array '%s'", resLimit.value);
+                    }
+                    Utility.coerce(this, Token.INTEGER, resIncr, "for loop increment value");
+                }
+                // If there is no 'by' token, then increment by 1 each iteration
+                else
+                {
+                    resIncr = new ResultValue();
+                    resIncr.value = "1";
+                    resIncr.type = Token.INTEGER;
+                    resIncr.structure = STIdentifier.PRIMITVE;
+                }
+                
+                // Declare the control variable and initialize to the source value
+                STIdentifier STControlVar = new STIdentifier(variableStr, Token.OPERAND, Token.INTEGER, STIdentifier.NOT_A_PARAMETER
+                                                                        , STIdentifier.PRIMITVE, STIdentifier.LOCAL);
+                symbolTable.putSymbol(variableStr, STControlVar);
+                symbolTable.storeVariableValue(this, variableStr, resSourceVal);
+                
+                // Get the control variable's value and limit's value as numerics
+                Numeric numControlVar = new Numeric(this, resSourceVal, "for", "control variable");
+                Numeric numLimit = new Numeric(this, resLimit, "for", "limit value");
+                
+                // Continue in the 'for' loop as long as 'controlVar < limit'
+                while(numControlVar.integerValue < numLimit.integerValue)
+                {
+                    // Execute the statements after the 'for'
+                    resStmts = statements(true);
+                    
+                    // 'for' control block must end with 'endfor'
+                    if(! resStmts.terminatingStr.equals("endfor"))
+                    {
+                        error("Expected 'endfor' for 'for' beginning on line %d, found %s", forToken.iSourceLineNr, resStmts.terminatingStr);
+                    }
+                    // 'for' must be followed by a ';'
+                    if(! scan.getNext().equals(";"))
+                    {
+                        error("Expected ';' after 'endfor'");
+                    }
+                    
+                    // The user may re-declare the control variable and change it's value or type
+                    
+                    // If the control variable was re-declared, check that it was initialized as well
+                    ResultValue resControlVarVal = symbolTable.retrieveVariableValue(this, variableStr);
+                    if(resControlVarVal == null)
+                    {
+                        error("Control variable '%s' was re-declared but not initialized", variableStr);
+                    }
+                    
+                    // Check that the control variable is still primitive and of type int
+                    if(resControlVarVal.structure != STIdentifier.PRIMITVE)
+                    {
+                        error("Control variable '%s' was redeclared as an array, must be primitive", variableStr);
+                    }
+                    Utility.coerce(this, Token.INTEGER, resControlVarVal, "for loop control variable");
+                    
+                    // Get the numeric value of the control variable's value
+                    numControlVar = new Numeric(this, resControlVarVal, "for", "control variable");
+                }
+                
+                // 'controlVar >= limit' so go to the 'endfor'
+                resStmts = statements(false);
+                
+            }
+            // Check for the second and third types of 'for' loops
+            else if(scan.currentToken.tokenStr.equals("in"))
+            {
+                
+            }
+            // Check for the fourth type of 'for' loop
+            else if(scan.currentToken.tokenStr.equals("from"))
+            {
+                
+            }
+            // Current token does not match any 'for' loop types
+            else
+            {
+                error("Expected '=', 'in', or 'from' after '%s', found '%s'", variableStr, scan.currentToken.tokenStr);
+            }
+        }
+        else
+        {
+            // We are ignoring execution
+
+            // Skip the 'for' parameters
+            skipTo(forToken.iSourceLineNr, "for", ":");
+            
+            // Ignore the statements after the 'for' parameters
+            resStmts = statements(false);
+        }
+
+        // 'for' control block must end with 'endfor'
+        if(! resStmts.terminatingStr.equals("endfor"))
+        {
+            error("Expected 'endfor' for 'for' beginning on line %d", forToken.iSourceLineNr);
+        }
+        // 'endfor' must be followed by a ';'
+        if(! scan.getNext().equals(";"))
+        {
+            error("Expected ';' after 'endfor'");
+        }
     }
     
     /**
@@ -751,7 +940,7 @@ public class Parser
         scan.getNext();
         if((scan.currentToken.primClassif != Token.OPERAND) || (scan.currentToken.subClassif != Token.IDENTIFIER))
         {
-            error("Expected a variable for the target of an declaration");
+            error("Expected a variable for the target of a declaration");
         }
         String variableStr = scan.currentToken.tokenStr;
         
@@ -817,7 +1006,6 @@ public class Parser
             {
                 resArray.structure = STIdentifier.FIXED_ARRAY;
                 bSecondOrThirdType = true;
-                
             }
             
             // Declare the array variable by placing in the symbol table
@@ -963,7 +1151,7 @@ public class Parser
         }
         
         // Get the next token as long as it isn't an expression delimiter
-        while(exprDelimiters.indexOf(scan.currentToken.tokenStr) < 0)
+        while((scan.currentToken.primClassif != Token.CONTROL) && (exprDelimiters.indexOf(scan.currentToken.tokenStr) < 0))
         {
             Token token = scan.currentToken;
             switch(token.primClassif)
