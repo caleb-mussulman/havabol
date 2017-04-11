@@ -57,6 +57,23 @@ public class SymbolTable
      */
     void putSymbol(String symbol, STEntry entry) 
     {
+        //TODO: Cover this with Caleb.
+        //IMORTANT NOTE: This function will ONLY be called upon the declaration of a new variable...
+        //               If that new variable has the same 'key' then we must remove the reference
+        //We already have that 'key' in the SymbolTable.
+        if(ht.containsKey(symbol))
+        {
+            //Check if there is a value for the corresponding StorageManager hashmap.
+            if(storageManager.sm.get(symbol) != null){
+                //There is a resultValue in the storageManager from a previous declaration. Remove that reference.
+
+                //Note: HashMap.put over-writes the <key, value> pair.
+                //Manually put the symbol back in with null as it's value.
+                storageManager.sm.put(symbol, null);
+            }
+            //Effectively changing the reference to the object
+        }
+        //If the symbol wasn't in the SymbolTable.ht already, declare it.
     	ht.put(symbol, entry);
     }
     
@@ -117,28 +134,6 @@ public class SymbolTable
         {
             errParse.error("Variable '%s' has not been declared", symbol);
         }
-    }
-
-    /**
-     *  Stores an
-     * @param errParse
-     * @param symbol
-     * @param resultArray
-     * @throws Exception
-     */
-    void storeArrayValue(Parser errParse, String symbol, ResultArray resultArray) throws Exception
-    {
-        //TODO: Should this function exist, or should storeVariableValue take care of storing ResultArrays in the SymbolTable?
-        if(ht.containsKey(symbol))
-        {
-
-        }
-        else
-        {
-            errParse.error("Array '%s' has not been delcared", symbol);
-        }
-
-
     }
 
     /**

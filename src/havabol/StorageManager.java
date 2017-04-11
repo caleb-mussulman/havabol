@@ -31,6 +31,7 @@ public class StorageManager
      */
     void putVariableValue(Parser errParse, String symbol, ResultValue value)
     {
+        //TODO: Check if <key,value> is already in the HT.?
         //Stores the object reference to a ResultValue.
         sm.put(symbol, value);
     }
@@ -238,7 +239,7 @@ public class StorageManager
         {
             Utility.coerce(errParse, Token.INTEGER, resIndex, "ArrayElementReference");
         }
-        
+
         int iIndex = Integer.parseInt(resIndex.value);
         int  iTmp_Index = iIndex;
 
@@ -256,7 +257,7 @@ public class StorageManager
                           ,resIndex.value ,arraySymbol);
         }
 
-        //If the index we are trying to reference is larger than the current size of the array list
+        //If the index we are trying to reference is larger or equal to the current size of the array list
         if(iIndex >= resultArray.valueList.size())
         {
             //and the arrayList has previously been scaled...
@@ -275,7 +276,15 @@ public class StorageManager
             }
         }
 
+        //The index is within bounds, but the value could still be null.
         resultValue = resultArray.valueList.get(iTmp_Index);
+
+        //Check if the value is null, if so, we error, the user does not ever see 'null'.
+        if(resultValue == null)
+        {
+            errParse.error("Reference to uninitialized index '%s' for array '%s'"
+                          , resIndex.value, arraySymbol);
+        }
 
         return resultValue;
 
