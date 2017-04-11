@@ -318,21 +318,30 @@ public class StorageManager
             {
                 //The ResultValue at ith position get's a copy of the Scalar ResultValue instead.
                 resultArray.valueList.set(i, Utility.getResultValueCopy(scalar));
-                //Set the ArrayList as bScaled = true and give it the default scaledValue
             }
         }
+        // For a fixed array, we need to assign the scalar to every index. The array list may
+        // not have all the corresponding indexes added (i.e., 0 <= currentArrayListSize <= maxElem).
+        // Perform the scalar assignment in two steps
+        //    1) Replace every index in the array list with a copy of the scalar
+        //    2) Add the necessary indexes to the array list (upto the max size) with a copy of the scalar
         else if(resultArray.structure == STIdentifier.FIXED_ARRAY)
         {
-
-            //For each ResultValue in resultArray.ValueList, change it's value and type (just in case)
-            //TODO: GET INFORMATION ABOUT MAXELEM AND CHANGE FOR LOOP CONDITION TO THE SIZE OF THE ANSWER FROM CLARK
-            for (int i = 0; i < resultArray.valueList.size(); i++)
+            int i;
+            int j;
+            
+            // Assign the scalar to every index already in the array list 
+            for (i = 0; i < resultArray.valueList.size(); i++)
             {
                 resultArray.valueList.set(i, Utility.getResultValueCopy(scalar));
-                //Set the ArrayList as bScaled = true and give it the default scaledValue
             }
-            //Store the altered resultArray back into the StorageManager HashTable.
-            putResultArray(errParse, symbol, resultArray);
+            
+            // Create new indexes in the array list to store a copy of the scalar,
+            // up to the size of the fixed size array
+            for(j = i; j < resultArray.maxElem; j++)
+            {
+                resultArray.valueList.add(j, Utility.getResultValueCopy(scalar));
+            }
         }
         //Undefined resultArray.structure
         else
@@ -364,23 +373,38 @@ public class StorageManager
         ResultArray source;
         source = getResultArray(errParse, sourceSymbol);
 
-        //Target is Smaller, fill to target's size.
-        if(target.valueList.size() < source.valueList.size())
+        int i;
+        int j;
+        
+        // For each index in the source array, assign its value to the target array as long as
+        // the index is within the bounds for the target array, and the target array's ArrayList
+        // has that index added
+        for(i = 0; i < source.valueList.size(); i++)
         {
-            //filling to target's size.
-            for(int i = 0; i < target.valueList.size(); i++)
+            // The source array has an element to add but the target array
+            // has not had that ArrayList index added yet
+            if(i >= target.valueList.size())
             {
-                target.valueList.set(i, Utility.getResultValueCopy(source.valueList.get(i)));
+                break;
             }
+            
+            // Assign a copy of the source array's index to the target array's index
+            target.valueList.set(i, Utility.getResultValueCopy(source.valueList.get(i)));
         }
-        //Target Equal or Larger, fill to source's size.
-        else if(target.valueList.size() >= source.valueList.size())
+        
+        // For each element of the source array, create that index in the target array
+        // (if the index is within its bounds) and assign the value at that index
+        for(j = i; j < source.valueList.size(); j++)
         {
-            //filling to source's size.
-            for(int i = 0; i < source.valueList.size(); i++)
+            // The current index of the source array is past the declared bounds for the
+            // target array, so don't create that index in the target array's ArrayList
+            if((target.structure == STIdentifier.FIXED_ARRAY) && (j == target.maxElem))
             {
-                target.valueList.set(i, Utility.getResultValueCopy(source.valueList.get(i)));
+                break;
             }
+            
+            // Assign a copy of the source array's index to the target array's index
+            target.valueList.add(j, Utility.getResultValueCopy(source.valueList.get(j)));
         }
     }
 }

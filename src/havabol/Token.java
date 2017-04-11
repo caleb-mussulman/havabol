@@ -275,7 +275,8 @@ public class Token
     {
         // We should only call this method if the token is an operator or separator
         if(! ((this.primClassif == Token.OPERATOR) || (this.primClassif == Token.SEPARATOR)
-           || ((this.primClassif == Token.OPERAND) && (this.subClassif == Token.IDENTIFIER))))
+          || ((this.primClassif == Token.OPERAND) && (this.subClassif == Token.IDENTIFIER))
+          ||  (this.primClassif == Token.FUNCTION)))
         {
             // User's havabol code should NEVER get this error. This error is for debugging and
             // if it occurs, it is because we wrote an improper call to this method
@@ -296,6 +297,22 @@ public class Token
             else
             {
                 return 16;
+            }
+        }
+        
+        // If the separator was a '(' for a function, the function name
+        // for that corresponding '(' was pushed onto the stack instead
+        if(this.primClassif == Token.FUNCTION)
+        {
+            // Precedence if function name is already in post-fix stack
+            if(bStackPrecedence)
+            {
+                return 2;
+            }
+            // Precedence if function name is not yet in post-fix stack
+            else
+            {
+                return 15;
             }
         }
         

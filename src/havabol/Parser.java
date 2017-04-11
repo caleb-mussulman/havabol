@@ -528,7 +528,7 @@ public class Parser
                     // The increment amount expression should be delimited by ':'
                     if(! scan.currentToken.tokenStr.equals(":"))
                     {
-                        error("Expected ':' after conditional expression for 'for' increment value, found '%s'", scan.currentToken.tokenStr);
+                        error("Expected ':' after 'for' increment value, found '%s'", scan.currentToken.tokenStr);
                     }
                     
                     // The increment amount should be primitive and coercible to an int type
@@ -549,7 +549,7 @@ public class Parser
                     // The limit amount expression should be delimited by ':'
                     if(! scan.currentToken.tokenStr.equals(":"))
                     {
-                        error("Expected ':' after expression for 'for' limit value, found '%s'", scan.currentToken.tokenStr);
+                        error("Expected ':' after 'for' limit value, found '%s'", scan.currentToken.tokenStr);
                     }
                 }
                 
@@ -729,7 +729,33 @@ public class Parser
             // 4) If we have a 'from', then the 'for' loop is iteration over a string by a specified delimiter
             else if(scan.currentToken.tokenStr.equals("from"))
             {
+                // Save the string to iterate over and check that it is primitive
+                ResultValue resIterStr = expr();
+                if(resIterStr.structure != STIdentifier.PRIMITVE)
+                {
+                    error("Expected a primitive string value to iterate over, found array '%s'", resIterStr.value);
+                }
                 
+                // The token after the string expression should be 'by'
+                if(! scan.currentToken.tokenStr.equals("by"))
+                {
+                    error("Expected 'by' after string expression following 'from', found '%s'", scan.currentToken.tokenStr);
+                }
+                
+                // Save the delimiting string and check that it is primitive
+                ResultValue resDelimStr = expr();
+                if(resDelimStr.structure != STIdentifier.PRIMITVE)
+                {
+                    error("Expected a primitive string value as the delimiter, found array '%s'", resDelimStr.value);
+                }
+                
+                // The expression should be delimited by ':'
+                if(! scan.currentToken.tokenStr.equals(":"))
+                {
+                    error("Expected ':' after expression following 'by', found '%s'", scan.currentToken.tokenStr);
+                }
+                
+                // TODO continue
             }
             // Current token does not match any 'for' loop types
             else
