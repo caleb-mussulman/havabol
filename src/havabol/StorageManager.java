@@ -283,7 +283,7 @@ public class StorageManager
         if(resultValue == null)
         {
             errParse.error("Reference to uninitialized index '%s' for array '%s'"
-                          , resIndex.value, arraySymbol);
+                    , resIndex.value, arraySymbol);
         }
 
         return resultValue;

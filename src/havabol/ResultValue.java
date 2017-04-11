@@ -10,7 +10,7 @@ package havabol;
  * subroutines (i.e. comparing the result type without initializing
  * it first). 
  *
- * @authors Taylor Brauer,
+ * @authors Taylor Brauer, Caleb Mussulman, Steven Cenci
  */
 
 public class ResultValue

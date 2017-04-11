@@ -3,8 +3,8 @@ package havabol;
 /**
  * @desc Converts a ResultValue into a Numeric so that arithmetic operations
  * can be performed on the result.
- *
- * @authors Taylor Brauer
+ *<p>
+ * @authors Taylor Brauer, Caleb Mussulman, Steven Cenci
  */
 public class Numeric {
 	

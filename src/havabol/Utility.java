@@ -5,7 +5,6 @@ import java.util.*;
 /**
  * @desc Performs an operation on two numerics, stores the result as a ResultValue,
  * and returns it to whatever called it.
- * <p>
  * This is used for behind the scenes operations that are not apparent to the
  * programmer.
  * <p>
@@ -15,13 +14,11 @@ import java.util.*;
  * endif:
  * The < operation is what this method handles.
  *
- * @authors Taylor Brauer
+ * @authors Taylor Brauer, Caleb Mussulman, Steven Cenci
  */
 public class Utility
 {
-    /*
-    * LOGICAL OPERATIONS
-    */
+    //LOGICAL OPERATIONS
     // Binary
     public static final int EQUAL              = 31;
     public static final int NOT_EQUAL          = 32;
@@ -36,13 +33,25 @@ public class Utility
     public final static Map<Integer, String> logicalOperator = Collections.unmodifiableMap(new HashMap<Integer, String>(){{
                                                                put(31, "=="); put(32, "!="); put(33, "<"); put(34, ">");
                                                                put(35, "<="); put(36, ">="); put(37, "and"); put(38, "or"); }});
-    
-    /*
-    * CLASS METHODS -- needs to deal with coercion.
-    */
-    // Assignment Operators (+=, -=, *=, /=)
+
+    /**
+     * Binary operation 'subtracting' two values (ResultValues) in Havabol.
+     * Follows numeric coerce rules.
+     * <p>
+     * @param parser              - Used for error handling.
+     * @param resParam1           - First value (object) for binary operation.
+     * @param resParam2           - Second value (object) for binary operation.
+     * @param operationCalledFrom - A description of the operation.
+     * @return                    - Returns a value (ResultValue Object Reference)
+     * @throws Exception          - ...
+     */
     public static ResultValue subtract(Parser parser, ResultValue resParam1, ResultValue resParam2, String operationCalledFrom) throws Exception
     {
+        if(resParam1 instanceof ResultArray || resParam2 instanceof ResultArray)
+        {
+            parser.error("Operation '-' expected Primitive parameters, Found '%s' and '%s' may be Array(s)"
+                         , resParam1.value, resParam2.value);
+        }
         // Must get a copy of the passed in result values so that the
         // original result value objects are not manipulated
         ResultValue resOp1 = Utility.getResultValueCopy(resParam1);
@@ -89,9 +98,27 @@ public class Utility
         }
         return res;
     }
-    
+
+    /**
+     * Binary operation 'addition' of two values (ResultValues) in Havabol.
+     * Follows numeric coerce rules.
+     * <p>
+     * @param parser              - Used for error handling.
+     * @param resParam1           - First value (object) for binary operation.
+     * @param resParam2           - Second value (object) for binary operation.
+     * @param operationCalledFrom - A description of the operation.
+     * @return                    - Returns a value (ResultValue Object Reference)
+     * @throws Exception          - ...
+     */
     public static ResultValue add(Parser parser, ResultValue resParam1, ResultValue resParam2, String operationCalledFrom) throws Exception
     {
+        //Binary operands may be of subclass ResultArray. This is not valid for this function.
+        if(resParam1 instanceof ResultArray || resParam2 instanceof ResultArray)
+        {
+            parser.error("Operation '+' expected Primitive parameters, Found '%s' and '%s' may be Array(s)"
+                    , resParam1.value, resParam2.value);
+        }
+
         // Must get a copy of the passed in result values so that the
         // original result value objects are not manipulated
         ResultValue resOp1 = Utility.getResultValueCopy(resParam1);
@@ -138,9 +165,27 @@ public class Utility
         }
         return res;
     }
-    
+
+    /**
+     * Binary operation 'multiplying' two values (ResultValues) in Havabol.
+     * Follows numeric coerce rules.
+     * <p>
+     * @param parser     - Used for error handling.
+     * @param resParam1  - First value (object) for binary operation.
+     * @param resParam2  - Second value (object) for binary operation.
+     * @return           - Returns a value (ResultValue Object Reference)
+     * @throws Exception - ...
+     */
     public static ResultValue multiply(Parser parser, ResultValue resParam1, ResultValue resParam2) throws Exception
     {
+
+        //Binary operands may be of subclass ResultArray. This is not valid for this function.
+        if(resParam1 instanceof ResultArray || resParam2 instanceof ResultArray)
+        {
+            parser.error("Operation '*' expected Primitive parameters, Found '%s' and '%s' may be Array(s)"
+                    , resParam1.value, resParam2.value);
+        }
+
         // Must get a copy of the passed in result values so that the
         // original result value objects are not manipulated
         ResultValue resOp1 = Utility.getResultValueCopy(resParam1);
@@ -187,9 +232,25 @@ public class Utility
         }
         return res;
     }
-    
+
+    /**
+     * Binary operation 'dividing' two values (ResultValues) in Havabol.
+     * Follows numeric coerce rules.
+     * <p>
+     * @param parser     - Used for error handling.
+     * @param resParam1  - First value (object) for binary operation.
+     * @param resParam2  - Second value (object) for binary operation.
+     * @return           - Returns a value (ResultValue Object Reference)
+     * @throws Exception - ...
+     */
     public static ResultValue divide(Parser parser, ResultValue resParam1, ResultValue resParam2) throws Exception
     {
+        //Binary operands may be of subclass ResultArray. This is not valid for this function.
+        if(resParam1 instanceof ResultArray || resParam2 instanceof ResultArray)
+        {
+            parser.error("Operation '/' expected Primitive parameters, Found '%s' and '%s' may be Array(s)"
+                    , resParam1.value, resParam2.value);
+        }
         // Must get a copy of the passed in result values so that the
         // original result value objects are not manipulated
         ResultValue resOp1 = Utility.getResultValueCopy(resParam1);
@@ -216,7 +277,7 @@ public class Utility
             {
                 parser.errorWithCurrent("Attempted to divide by zero");
             }
-            
+
             Double tempValue = nOp1.doubleValue / nOp2.doubleValue;
             
             // Store the new value of the operation
@@ -252,15 +313,21 @@ public class Utility
     /**
      * Compares 2 result values' together based on a given operation.
      * <p>
-     * @param parser    - used for logging error messages.
+     * @param parser    - Used for error handling.
      * @param operation - Binary operator (==, !=, <, >, <=, >=)
      * @param resParam1 - Object containing result value 1
      * @param resParam2 - Object containing result value 2
-     * @return A true or false Havabol value (e.g. "T" or "F")
+     * @return          - A true or false Havabol value (e.g. "T" or "F")
      * @throws Exception when a RS value fails to parse correctly.
      */
     public static ResultValue compare(Parser parser, int operation, ResultValue resParam1, ResultValue resParam2) throws Exception
     {
+        //Binary operands may be of subclass ResultArray. This is not valid for this function.
+        if(resParam1 instanceof ResultArray || resParam2 instanceof ResultArray)
+        {
+            parser.error("Comparision Operation: '%s' expected Primitive parameters, Found '%s' and '%s' may be Array(s)"
+                    ,logicalOperator.get(operation), resParam1.value, resParam2.value);
+        }
         // Must get a copy of the passed in result values so that the
         // original result value objects are not manipulated
         ResultValue resval1 = Utility.getResultValueCopy(resParam1);
@@ -497,9 +564,24 @@ public class Utility
         
         return resReturn;
     }
-    
+
+    /**
+     * Does a negation operation on a given ResultValue. (Inverse of ResultValue.value)
+     * Follows numeric coerce rules.
+     * <p>
+     * @param parser      - Used for error handling.
+     * @param resParam    - Value (object) for NOT operation.
+     * @return            - Returns a value (ResultValue Object Reference)
+     * @throws Exception  - ...
+     */
     public static ResultValue not(Parser parser, ResultValue resParam) throws Exception
     {
+        //Binary operands may be of subclass ResultArray. This is not valid for this function.
+        if(resParam instanceof ResultArray)
+        {
+            parser.error("Operation 'not' expected Primitive parameters, Found Array '%s'"
+                    , resParam.value);
+        }
         // Must get a copy of the passed in result value so that the
         // original result value object is not manipulated
         ResultValue resval = Utility.getResultValueCopy(resParam);
@@ -523,9 +605,30 @@ public class Utility
         
         return resval;
     }
-    
+
+    /**
+     * Does a String concatenation on 2 ResultValues (Strings in Havabol)
+     * Follows numeric coerce rules.
+     * <p>
+     *     Example:
+     *     String x = "Hello";
+     *     String y = "World";
+     *     String z = x # y; // Hello World
+     * @param parser              - Used for error handling.
+     * @param resParam1           - First value (object) for binary operation.
+     * @param resParam2           - Second value (object) for binary operation.
+     * @return                    - Returns a value (ResultValue Object Reference)
+     * @throws Exception          - ...
+     */
     public static ResultValue concat(Parser parser, ResultValue resParam1, ResultValue resParam2) throws Exception
     {
+        //Binary operands may be of subclass ResultArray. This is not valid for this function.
+        if(resParam1 instanceof ResultArray || resParam2 instanceof ResultArray)
+        {
+            parser.error("Operation '#' expected Primitive parameters, Found '%s' and '%s' may be Array(s)"
+                        , resParam1.value, resParam2.value);
+        }
+
         // Must get a copy of the passed in result values so that the
         // original result value objects are not manipulated
         ResultValue resval1 = Utility.getResultValueCopy(resParam1);
@@ -541,9 +644,27 @@ public class Utility
         
         return resReturn;
     }
-    
+
+    /**
+     * Does a mathematical negation operation on Numeric values. (Negative numbers)
+     * Simply does (ResultValue.value * -1) for the negation.
+     * Ensures numeric value.
+     * <p>
+     *     Example:
+     *     Int x = -6; //Negative Numbers
+     * @param parser      - Used for error handling.
+     * @param resParam    - Value (object) for UNARY operation.
+     * @return            - Returns a value (ResultValue Object Reference)
+     * @throws Exception  - ...
+     */
     public static ResultValue uminus(Parser parser, ResultValue resParam) throws Exception
     {
+        //Binary operands may be of subclass ResultArray. This is not valid for this function.
+        if(resParam instanceof ResultArray)
+        {
+            parser.error("Operation (unary) '-' expected Primitive parameters, Found Array '%s'"
+                        , resParam.value);
+        }
         // Must get a copy of the passed in result value so that the
         // original result value object is not manipulated
         ResultValue resval = Utility.getResultValueCopy(resParam);
@@ -562,9 +683,27 @@ public class Utility
         }
         return resval;
     }
-    
+
+    /**
+     * Does an exponentiation operation with 2 ResultValues.
+     * Ensures numeric values.
+     * <p>
+     *     Example:
+     *     Int x = 2^5; // 32
+     * @param parser     - Used for error handling.
+     * @param resParam1  - First value (object) for binary operation.
+     * @param resParam2  - Second value (object) for binary operation.
+     * @return           - Returns a value (ResultValue Object Reference)
+     * @throws Exception - ...
+     */
     public static ResultValue exponent(Parser parser, ResultValue resParam1, ResultValue resParam2) throws Exception
     {
+        //Binary operands may be of subclass ResultArray. This is not valid for this function.
+        if(resParam1 instanceof ResultArray || resParam2 instanceof ResultArray)
+        {
+            parser.error("Operation '^' expected Primitive parameters, Found '%s' and '%s' may be Array(s)"
+                        , resParam1.value, resParam2.value);
+        }
         // Must get a copy of the passed in result values so that the
         // original result value objects are not manipulated
         ResultValue resval1 = Utility.getResultValueCopy(resParam1);
@@ -608,8 +747,9 @@ public class Utility
     /**
      * Parses an input date to see if it is of form yyyy-mm-dd
      * mm and dd must have a 0 in front of them if it is a single integer date.
-     * @param date
-     * @return
+     * <p>
+     * @param  - date
+     * @return - ...
      */
     public static boolean isValidDate(String date)
     {
@@ -646,13 +786,21 @@ public class Utility
     /**
      * This takes in a string, creates a new Result Value, gets the size of the value in the passed in
      * ResultValue and assigns that value to the newly created Result Value as an Integer.
-     * @param parser - Used for sending error messages to the programmer.
-     * @param string - String that the programmer wants to get a count on.
-     * @return A result value that contains information about the length of the string that was passed in.
-     * @throws Exception
+     * <p>
+     * @param parser     - Used for sending error messages to the programmer.
+     * @return           - A result value that contains information about the length of the string that was passed in.
+     * @throws Exception - ...
      */
     public static ResultValue LENGTH(Parser parser, ResultValue resOp) throws Exception
     {
+        //resOp may be subclass ResultArray.
+        if(resOp instanceof ResultArray)
+        {
+            //function takes in a ResultValue. Not a ResultArray.
+            parser.error("Function 'LENGTH' expected Primitive parameter, Found Array '%s'"
+                        ,resOp.value);
+        }
+
         // Get a copy of the operand and attempt to coerce to a string
         ResultValue resString = Utility.getResultValueCopy(resOp);
         Utility.coerce(parser, Token.STRING, resString, "LENGTH");
@@ -673,13 +821,22 @@ public class Utility
      * This takes in a string, creates a new Result Value, checks to see if the string is empty or matches
      * to some white space, and returns true is during its check it does not encounter a non white space
      * character.
-     * @param parser - Used for sending error messages to the programmer.
-     * @param string - String that the programmer wants to check for spaces or empty.
-     * @return Result value that contains T or F indicating if the string has spaces or is empty.
-     * @throws Exception
+     * <p>
+     * @param parser     - Used for sending error messages to the programmer.
+     * @return           - Result value that contains T or F indicating if the string has spaces or is empty.
+     * @throws Exception - ...
      */
     public static ResultValue SPACES(Parser parser, ResultValue resOp) throws Exception
     {
+        //resOp may be subclass ResultArray
+        if(resOp instanceof ResultArray)
+        {
+            //function takes in a ResultValue. Not a ResultArray.
+            parser.error("Function 'SPACES' expected Primitive parameter, Found Array '%s'"
+                    ,resOp.value);
+        }
+
+
         // Get a copy of the operand and attempt to coerce to a string
         ResultValue resString = Utility.getResultValueCopy(resOp);
         Utility.coerce(parser, Token.STRING, resString, "LENGTH");
@@ -741,7 +898,8 @@ public class Utility
     }
 
     /**
-     * TODO: Cover this with Caleb
+     *
+     * <p>
      * @param parser - responsible for handling error messages.
      * @param resultArray
      * @return
@@ -770,6 +928,7 @@ public class Utility
      * TODO : Needs to support a value list (e.g. gradePt IN {4, 3, 2, 1, 0} )
      * Searches an array resultArray for a value resval contained in it.
      * Upon finding it a truthy or falsey value are returned to the caller.
+     * <p>
      * @param parser      - Responsible for handling error messages.
      * @param resval      - The value being searched for.
      * @param resultArray - The array that a value is being located in.
@@ -812,40 +971,48 @@ public class Utility
      * TODO : Needs to support a value list (e.g. fruit NOTIN {"apple", "orange", "clark"} )
      * Searches an array resultArray to determine if a value is not contained in the array.
      * Upon finding it a truthy or falsey value are returned to the caller.
-     * @param parser      - Responsible for handling error messages.
-     * @param resval      - The value being searched for.
-     * @param resultArray - The array that a value is being located in.
-     * @return Havabol T or F.
-     * @throws ParserException
+     * <p>
+     * @param parser           - Responsible for handling error messages.
+     * @param resval           - The value being searched for.
+     * @param resultArray      - The array that a value is being located in.
+     * @return                 - ResultValue Havabol boolean T or F.
+     * @throws ParserException - ...
      */
     public static ResultValue NOTIN(Parser parser, ResultValue resval, ResultArray resultArray) throws ParserException
     {
-            if (resultArray.structure != STIdentifier.FIXED_ARRAY ||
+        //Binary operands may be of subclass ResultArray. This is not valid for this function.
+        if(resval instanceof ResultArray)
+        {
+            parser.error("Operation 'NOTIN' expected Primitive parameters, Found Array '%s'"
+                        , resval.value);
+        }
+
+        if (resultArray.structure != STIdentifier.FIXED_ARRAY ||
                 resultArray.structure != STIdentifier.UNBOUNDED_ARRAY)
-            {
-                parser.errorWithCurrent("Cannot start search for type %s in type %s.", resval.value, Token.getType(parser, resultArray.type));
-            }
+        {
+            parser.errorWithCurrent("Cannot start search for type %s in type %s.", resval.value, Token.getType(parser, resultArray.type));
+        }
             
-            if (resval.structure != STIdentifier.PRIMITVE)
-            {
-                parser.errorWithCurrent("Cannot start search for type %s in %s.", Token.getType(parser, resval.type),
+        if (resval.structure != STIdentifier.PRIMITVE)
+        {
+            parser.errorWithCurrent("Cannot start search for type %s in %s.", Token.getType(parser, resval.type),
                         Token.getType(parser, resultArray.type));
-            }
+        }
             
-            ResultValue resReturn = new ResultValue();
+        ResultValue resReturn = new ResultValue();
             
-            if (!resultArray.valueList.contains(resval.value))
-            {
-                resReturn.value = "T";
-                resReturn.type = Token.BOOLEAN;
-                resReturn.structure = STIdentifier.PRIMITVE;
-            }
-            else
-            {
-                resReturn.value = "F";
-                resReturn.type = Token.BOOLEAN;
-                resReturn.structure = STIdentifier.PRIMITVE;
-            }
+        if (!resultArray.valueList.contains(resval.value))
+        {
+            resReturn.value = "T";
+            resReturn.type = Token.BOOLEAN;
+            resReturn.structure = STIdentifier.PRIMITVE;
+        }
+        else
+        {
+            resReturn.value = "F";
+            resReturn.type = Token.BOOLEAN;
+            resReturn.structure = STIdentifier.PRIMITVE;
+        }
             
             return resReturn;
     }
@@ -1037,8 +1204,9 @@ public class Utility
     /**
      * Returns a fresh result value that is soley used for the purpose of storing a passed in result so that the original result
      * value is not manipulated resulting in data being overwritten.
+     * <p>
      * @param resParam - The result value that we want to make a copy of.
-     * @return a new result value with the contents of resParam.
+     * @return         - A new result value with the contents of resParam.
      */
     public static ResultValue getResultValueCopy(ResultValue resParam)
     {
