@@ -525,6 +525,12 @@ public class Parser
                     // Get the increment amount
                     resIncr = expr();
                     
+                    // The increment amount expression should be delimited by ':'
+                    if(! scan.currentToken.tokenStr.equals(":"))
+                    {
+                        error("Expected ':' after conditional expression for 'for' increment value, found '%s'", scan.currentToken.tokenStr);
+                    }
+                    
                     // The increment amount should be primitive and coercible to an int type
                     if(resIncr.structure != STIdentifier.PRIMITVE)
                     {
@@ -539,6 +545,12 @@ public class Parser
                     resIncr.value = "1";
                     resIncr.type = Token.INTEGER;
                     resIncr.structure = STIdentifier.PRIMITVE;
+                    
+                    // The limit amount expression should be delimited by ':'
+                    if(! scan.currentToken.tokenStr.equals(":"))
+                    {
+                        error("Expected ':' after conditional expression for 'for' limit value, found '%s'", scan.currentToken.tokenStr);
+                    }
                 }
                 
                 // Declare the control variable and initialize to the source value
@@ -550,6 +562,13 @@ public class Parser
                 // Get the control variable's value and limit's value as numerics
                 Numeric numControlVar = new Numeric(this, resSourceVal, "for", "control variable");
                 Numeric numLimit = new Numeric(this, resLimit, "for", "limit value");
+                Numeric numIncr = new Numeric(this, resIncr, "for", "increment value");
+                
+                // If the user specified the increment amount, it should have been a positive integer value
+                if(numIncr.integerValue <= 0)
+                {
+                    error("The increment value for 'for' must be a positive integer, found '%s'", resIncr.value);
+                }
                 
                 // Continue in the 'for' loop as long as 'controlVar < limit'
                 while(numControlVar.integerValue < numLimit.integerValue)
@@ -586,6 +605,14 @@ public class Parser
                     
                     // Get the numeric value of the control variable's value
                     numControlVar = new Numeric(this, resControlVarVal, "for", "control variable");
+                    
+                    // Add the increment value to it
+                    numControlVar.integerValue += numIncr.integerValue;
+                    resControlVarVal.value = Integer.toString(numControlVar.integerValue);
+                    
+                    // Move back to the 'for' and skip past the initialization of its parameters
+                    scan.setPosition(forToken);
+                    skipTo(forToken.iSourceLineNr, "for", ":");
                 }
                 
                 // 'controlVar >= limit' so go to the 'endfor'
@@ -1491,6 +1518,8 @@ public class Parser
         {
             System.err.println(t.tokenStr);
         }
+        System.err.println(scan.currentToken.tokenStr);
+        System.err.println(scan.currentToken.primClassif);
         System.err.println("----end----");
         //-----
         */
@@ -1969,13 +1998,19 @@ public class Parser
             }
         }
         
+        // The parser should no longer be expecting a RT_PAREN
+        this.bExpectingRtParen = false;
+        
         // Print the newline, unless we had already printed one because
         // the scanner was printing token info
         if(! scan.bShowToken){
             System.out.print("\n");
         }
         
-        // Move to the ';' after the ')'
-        scan.getNext();
+        // Check that the print statement was ended by ';'
+        if(! scan.getNext().equals(";"))
+        {
+            error("Expected ';' after 'print' statement");
+        }
     }
 }
