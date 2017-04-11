@@ -488,7 +488,7 @@ public class Parser
             // Get the token after the variable
             scan.getNext();
             
-            // Check for the first type of 'for' loop
+            // 1) If we have a '=', then this is a counting 'for' loop
             if(scan.currentToken.tokenStr.equals("="))
             {
                 // Get the source value for the control variable
@@ -549,7 +549,7 @@ public class Parser
                     // The limit amount expression should be delimited by ':'
                     if(! scan.currentToken.tokenStr.equals(":"))
                     {
-                        error("Expected ':' after conditional expression for 'for' limit value, found '%s'", scan.currentToken.tokenStr);
+                        error("Expected ':' after expression for 'for' limit value, found '%s'", scan.currentToken.tokenStr);
                     }
                 }
                 
@@ -573,13 +573,13 @@ public class Parser
                 // Continue in the 'for' loop as long as 'controlVar < limit'
                 while(numControlVar.integerValue < numLimit.integerValue)
                 {
-                    // Execute the statements after the 'for'
+                    // Execute the statements after the 'for' parameters
                     resStmts = statements(true);
                     
                     // 'for' control block must end with 'endfor'
                     if(! resStmts.terminatingStr.equals("endfor"))
                     {
-                        error("Expected 'endfor' for 'for' beginning on line %d, found %s", forToken.iSourceLineNr, resStmts.terminatingStr);
+                        error("Expected 'endfor' for 'for' beginning on line %d", forToken.iSourceLineNr);
                     }
                     // 'for' must be followed by a ';'
                     if(! scan.getNext().equals(";"))
@@ -622,9 +622,65 @@ public class Parser
             // Check for the second and third types of 'for' loops
             else if(scan.currentToken.tokenStr.equals("in"))
             {
+                // Get the expression to iterate over, after the 'in' token
+                ResultValue resExpr = expr();
                 
+                // The expression should be delimited by ':'
+                if(! scan.currentToken.tokenStr.equals(":"))
+                {
+                    error("Expected ':' after expression following 'in', found '%s'", scan.currentToken.tokenStr);
+                }
+                
+                // 2) If the result is a primitive, then the 'for' loop is character iteration over a string
+                if(resExpr.structure == STIdentifier.PRIMITVE)
+                {
+                    // Save the string to iterate over
+                    String strIterate = resExpr.value;
+                    
+                    // Execute the statements in the 'for' loop for each character of the string
+                    for(int i = 0; i < strIterate.length(); i++)
+                    {
+                        // Get the current character of the string
+                        ResultValue resChar = new ResultValue();
+                        resChar.value = Character.toString(strIterate.charAt(i));
+                        resChar.type = Token.STRING;
+                        resChar.structure = STIdentifier.PRIMITVE;
+                        
+                        // Declare the variable and store the character as the value
+                        STIdentifier STChar = new STIdentifier(variableStr, Token.OPERAND, Token.STRING, STIdentifier.NOT_A_PARAMETER
+                                                                          , STIdentifier.PRIMITVE, STIdentifier.LOCAL);
+                        symbolTable.putSymbol(variableStr, STChar);
+                        symbolTable.storeVariableValue(this, variableStr, resChar);
+                        
+                        // Execute the statements after the 'for' parameters
+                        resStmts = statements(true);
+                        
+                        // 'for' control block must end with 'endfor'
+                        if(! resStmts.terminatingStr.equals("endfor"))
+                        {
+                            error("Expected 'endfor' for 'for' beginning on line %d", forToken.iSourceLineNr);
+                        }
+                        // 'for' must be followed by a ';'
+                        if(! scan.getNext().equals(";"))
+                        {
+                            error("Expected ';' after 'endfor'");
+                        }
+                        
+                        // Move back to the 'for' and skip past the initialization of its parameters
+                        scan.setPosition(forToken);
+                        skipTo(forToken.iSourceLineNr, "for", ":");
+                    }
+                    
+                    // There are no more characters in the string, so go to the 'endfor'
+                    resStmts = statements(false);
+                }
+                // 3) If the result is not a primitive, then the 'for' loop is element iteration over an array
+                else
+                {
+                    
+                }
             }
-            // Check for the fourth type of 'for' loop
+            // 4) If we have a 'from', then the 'for' loop is iteration over a string by a specified delimiter
             else if(scan.currentToken.tokenStr.equals("from"))
             {
                 
