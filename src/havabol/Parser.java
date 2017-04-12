@@ -680,12 +680,26 @@ public class Parser
                     // Save the returned expression as a result array type
                     ResultArray resArray = (ResultArray) resExpr;
                     
-                    // TODO Not sure if this is the correct number of times we iterate?
-                    //      Do I need to check how many elements have been initialized?
-                    // Save the maximum size to iterate over
-                    int iArraySize = resArray.valueList.size();
+                    int iForIterateNum; // The number of times to iterate over through the array
                     
-                    for(int i = 0; i < iArraySize; i++)
+                    /* TODO After program 5 is turned in change for loops such that:
+                     *      Fixed-size array: Iterate from 0 to max-size, if the element exists
+                     *      Unbounded  array: Iterate from 0 to sizeof ArrayList, checking
+                     *                        the ArrayList size every iteration
+                     */
+                    
+                    // Get the number of elements currently in the array
+                    iForIterateNum = 0;
+                    for(int i = 0; i < resArray.valueList.size(); i++)
+                    {
+                        ResultValue resCurrentElem = resArray.valueList.get(i);
+                        if(resCurrentElem != null)
+                        {
+                            iForIterateNum++;
+                        }
+                    }
+                    
+                    for(int i = 0; i < iForIterateNum; i++)
                     {
                         // Get the current element of the array
                         ResultValue resArrayElem = resArray.valueList.get(i);
