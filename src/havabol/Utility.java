@@ -1082,7 +1082,8 @@ public class Utility
                     }
                     break;
                 default:
-                    parser.errorWithCurrent("Illegal operation: attempted to coerce type '%s' into type 'INTEGER'", Token.getType(parser, resval.type));                    
+                    parser.errorWithCurrent("Unable to coerce value '%s' of type '%s' into type 'INTEGER' for operation '%s'"
+                                            , resval.value, Token.getType(parser, resval.type), operation);                    
             }
         }
         else if (coerceType == Token.FLOAT)
@@ -1122,7 +1123,8 @@ public class Utility
                     }
                     break;
                 default:
-                    parser.errorWithCurrent("Illegal operation: attempted to coerce type '%s' into type 'FLOAT'",Token.getType(parser, resval.type));
+                    parser.errorWithCurrent("Unable to coerce value '%s' of type '%s' into type 'FLOAT' for operation '%s'"
+                            , resval.value, Token.getType(parser, resval.type), operation);
             }
         }
         else if(coerceType == Token.BOOLEAN)
@@ -1146,7 +1148,8 @@ public class Utility
                     }
                     break;
                 default:
-                    parser.errorWithCurrent("Illegal operation: attempted to coerce type '%s' into type 'BOOLEAN'", Token.getType(parser, resval.type));
+                    parser.errorWithCurrent("Unable to coerce value '%s' of type '%s' into type 'BOOLEAN' for operation '%s'"
+                                            , resval.value, Token.getType(parser, resval.type), operation);
             }
         }
         else if(coerceType == Token.DATE)
@@ -1170,7 +1173,8 @@ public class Utility
                     }
                     break;
                 default:
-                    parser.errorWithCurrent("Illegal operation: attempted to coerce type '%s' into type 'DATE'", Token.getType(parser, resval.type));
+                    parser.errorWithCurrent("Unable to coerce value '%s' of type '%s' into type 'DATE' for operation '%s'"
+                                            , resval.value, Token.getType(parser, resval.type), operation);
             }
         }
         else if(coerceType == Token.STRING)
@@ -1196,7 +1200,7 @@ public class Utility
         }
         else
         {
-            parser.errorWithCurrent("Illegal operation: attempted to coerce value '%s' into unknown type represented by '%d'", resval.value, Token.getType(parser, resval.type));
+            parser.errorWithCurrent("Unable to coerce value '%s' into unknown type represented by '%d'", resval.value, resval.type);
         }
     }
 

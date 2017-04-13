@@ -390,7 +390,7 @@ public class StorageManager
             
             // Get a copy of the value at the source array's index, coerce, and store at target's index
             resSourceElem = Utility.getResultValueCopy(resArrSource.valueList.get(i));
-            String formatStr = String.format("array assignment from %s[%d]", resArrSource.value, i);
+            String formatStr = String.format("array to array assignment from %s[%d]", resArrSource.value, i);
             Utility.coerce(errParse, resArrTarget.type, resSourceElem, formatStr);
             resArrTarget.valueList.set(i, resSourceElem);
         }
@@ -408,7 +408,7 @@ public class StorageManager
             
             // Get a copy of the value at the source array's index, coerce, and store at target's index
             resSourceElem = Utility.getResultValueCopy(resArrSource.valueList.get(j));
-            String formatStr = String.format("array assignment from %s[%d]", resArrSource.value, j);
+            String formatStr = String.format("array to array assignment from %s[%d]", resArrSource.value, j);
             Utility.coerce(errParse, resArrTarget.type, resSourceElem, formatStr);
             resArrTarget.valueList.add(j, resSourceElem);
         }
