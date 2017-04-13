@@ -583,15 +583,9 @@ public class Utility
                     , resParam.value);
         }
         // Must get a copy of the passed in result value so that the
-        // original result value object is not manipulated
+        // original result value object is not manipulated, and coerce
         ResultValue resval = Utility.getResultValueCopy(resParam);
-        
-        // TODO may be able to coerce a string to a boolean first (need to talk to Clark)
-        // Can only perform the operation on a boolean value
-        if(resval.type != Token.BOOLEAN)
-        {
-            parser.errorWithCurrent("The operation 'not' is not defined for the type '%s'", Token.getType(parser, resval.type));
-        }
+        Utility.coerce(parser, Token.BOOLEAN, resval, "not");
         
         // Reverse the value of the boolean
         if (resval.value.equals("T"))
