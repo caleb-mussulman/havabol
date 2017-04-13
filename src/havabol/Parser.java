@@ -916,7 +916,7 @@ public class Parser
                     // 1) If the source is an array, then we have array to array assignment
                     if(resAssign.structure != STIdentifier.PRIMITVE)
                     {
-                        // TODO Need to add coercion for array to array assignments
+                        // Coercion takes place on each element within method 'ArrayToArrayAssign'
                         symbolTable.storageManager.ArrayToArrayAssign(this, variableStr, resAssign.value);
                     }
                     // The source is a primitive type
@@ -1731,8 +1731,6 @@ public class Parser
                             else
                             {
                                 ResultValue resIndex = resultStack.pop();
-                                // TODO Use storage manager to get the element from the array and put back on stack
-                                // MAKE SURE TO GET A COPY AND NOT A REFERENCE
                                 
                                 // Get the reference to the array's element at index 'resIndex'
                                 ResultValue resArrayElemRef;
@@ -2130,8 +2128,6 @@ public class Parser
             
             ResultValue resVal = expr();
             System.out.printf("%s ", resVal.value);
-            
-            // TODO check that the comma was delimiting
             
             // If the scanner is printing token information, print a
             // '\n'; otherwise, there will be output formatting errors

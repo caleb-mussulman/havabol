@@ -367,44 +367,50 @@ public class StorageManager
     void ArrayToArrayAssign(Parser errParse, String targetSymbol, String sourceSymbol) throws Exception
     {
 
-        ResultArray target;
-        target = getResultArray(errParse, targetSymbol);
-
-        ResultArray source;
-        source = getResultArray(errParse, sourceSymbol);
-
         int i;
         int j;
+        ResultValue resSourceElem;
+        ResultArray resArrTarget;
+        ResultArray resArrSource;
+        
+        resArrTarget = getResultArray(errParse, targetSymbol);
+        resArrSource = getResultArray(errParse, sourceSymbol);
         
         // For each index in the source array, assign its value to the target array as long as
         // the index is within the bounds for the target array, and the target array's ArrayList
         // has that index added
-        for(i = 0; i < source.valueList.size(); i++)
+        for(i = 0; i < resArrSource.valueList.size(); i++)
         {
             // The source array has an element to add but the target array
             // has not had that ArrayList index added yet
-            if(i >= target.valueList.size())
+            if(i >= resArrTarget.valueList.size())
             {
                 break;
             }
             
-            // Assign a copy of the source array's index to the target array's index
-            target.valueList.set(i, Utility.getResultValueCopy(source.valueList.get(i)));
+            // Get a copy of the value at the source array's index, coerce, and store at target's index
+            resSourceElem = Utility.getResultValueCopy(resArrSource.valueList.get(i));
+            String formatStr = String.format("array assignment from %s[%d]", resArrSource.value, i);
+            Utility.coerce(errParse, resArrTarget.type, resSourceElem, formatStr);
+            resArrTarget.valueList.set(i, resSourceElem);
         }
         
         // For each element of the source array, create that index in the target array
         // (if the index is within its bounds) and assign the value at that index
-        for(j = i; j < source.valueList.size(); j++)
+        for(j = i; j < resArrSource.valueList.size(); j++)
         {
             // The current index of the source array is past the declared bounds for the
             // target array, so don't create that index in the target array's ArrayList
-            if((target.structure == STIdentifier.FIXED_ARRAY) && (j == target.maxElem))
+            if((resArrTarget.structure == STIdentifier.FIXED_ARRAY) && (j == resArrTarget.maxElem))
             {
                 break;
             }
             
-            // Assign a copy of the source array's index to the target array's index
-            target.valueList.add(j, Utility.getResultValueCopy(source.valueList.get(j)));
+            // Get a copy of the value at the source array's index, coerce, and store at target's index
+            resSourceElem = Utility.getResultValueCopy(resArrSource.valueList.get(j));
+            String formatStr = String.format("array assignment from %s[%d]", resArrSource.value, j);
+            Utility.coerce(errParse, resArrTarget.type, resSourceElem, formatStr);
+            resArrTarget.valueList.add(j, resSourceElem);
         }
     }
 }
