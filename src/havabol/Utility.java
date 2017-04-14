@@ -760,9 +760,9 @@ public class Utility
             {
                 return false;
             }
-            int daysMonth = daysInMonth(year, month);
+            int daysPerMonth = daysInMonth(year, month);
             int day = Integer.parseInt(date.substring(8, 10));
-            if (day == 0 || day > daysMonth)
+            if (day == 0 || day > daysPerMonth)
             {
                 return false;
             }
@@ -771,6 +771,114 @@ public class Utility
         }
         
         return false;
+    }
+
+    /**
+     * TODO: Determine how to handle a negative number being returned inside the result value.
+     * TODO: This happens if date1 is of lesser value than date2.
+     * Compares 2 dates to calculate a difference in the number of days between the 2.
+     * @param parser - Used for error messages
+     * @param date1  - First date
+     * @param date2  - Second date
+     * @return - A result value object containing the difference in the 2 dates. This type is now an
+     * integer.
+     * @throws ParserException
+     */
+    public static ResultValue dateDiff(Parser parser, ResultValue date1, ResultValue date2) throws ParserException {
+        int julian1;
+        int julian2;
+        int result;
+        ResultValue dateDifference = new ResultValue();
+
+        if (!isValidDate(date1.value))
+        {
+            parser.errorWithCurrent("%s is not a valid date.", date1.value);
+        }
+
+        if (!isValidDate(date2.value))
+        {
+            parser.errorWithCurrent("%s is not a valid date.", date2.value);
+        }
+
+        // Compare to March
+        julian1 = dateToJulian(date1.value);
+        julian2 = dateToJulian(date2.value);
+
+        // # of days between the two dates
+        result = julian1 - julian2;
+
+        dateDifference.structure = STIdentifier.PRIMITVE;
+        dateDifference.type = Token.INTEGER;
+        dateDifference.value = String.valueOf(result);
+
+        return dateDifference;
+    }
+
+    /******************** dateToJulian ***********************************
+     public static int dateToJulian(String date)
+     Purpose:
+     Converts a date to a Julian Days value.  This will start numbering
+     at 1 for 0000-03-01. Making dates relaive to March 1st helps eliminate
+     some leap day issues.
+     Parameters:
+     String date        Date as a string in the form "yyyy-mm-dd"
+     Notes:
+     1 We replace the month with the number of months since March.
+     March is 0, Apr is 1, May is 2, ..., Jan is 10, Feb is 11.
+     2 Since Jan and Feb are before Mar, we subtract 1 from the year
+     for those months.
+     3 Jan 1 is 306 days from Mar 1.
+     4 The days per month is in a pattern that begins with March
+     and repeats every 5 months:
+     Mar 31 Aug 31 Jan 31
+     Apr 30 Sep 30
+     May 31 Oct 31
+     Jun 30 Nov 30
+     Jul 31 Dec 31
+     Therefore:
+     Mon  AdjMon  NumberDaysFromMarch (AdjMon*306 + 5)/10
+     Jan    10      306
+     Feb    11      337
+     Mar     0        0
+     Apr     1       31
+     May     2       61
+     Jun     3       92
+     Jul     4      122
+     Aug     5      153
+     Sep     6      184
+     Oct     7      214
+     Nov     8      245
+     Dec     9      275
+     5 Leap years are
+     years that are divisible by 4 and
+     either years that are not divisible by 100 or
+     years that are divisible by 400
+     Return Value:
+     the number of days since 0000-03-01 beginning with 1 for
+     0000-03-01.
+     **********************************************************************/
+    public static int dateToJulian(String date)
+    {
+        int year = Integer.parseInt(date.substring(0, 4));
+        int month = Integer.parseInt(date.substring(5,7));
+        int day = Integer.parseInt(date.substring(8, 10));
+
+        // Calculate number of days in 0000-03-01
+        int countDays;
+
+        if (month > 2)
+            month -= 3;
+        else
+        {
+            month += 9;
+            year--;
+        }
+
+        countDays = 365*year
+                + year/4 - year/100 + year/400
+                + (month * 306 + 5) / 10
+                + day;
+        return countDays;
     }
     
     /**
