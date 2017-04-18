@@ -918,6 +918,13 @@ public class Parser
                     // 1) If the source is an array, then we have array to array assignment
                     if(resAssign.structure != STIdentifier.PRIMITVE)
                     {
+                        // Array assignment to an array element is undefined
+                        if(bArrayElemAssign)
+                        {
+                            error("Assignment from array '%s' to array element '%s[%s]' is undefined"
+                                  , resAssign.value, variableStr, resIndex.value);
+                        }
+                        
                         // Coercion takes place on each element within method 'ArrayToArrayAssign'
                         symbolTable.storageManager.ArrayToArrayAssign(this, variableStr, resAssign.value);
                     }
