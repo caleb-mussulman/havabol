@@ -16,6 +16,7 @@ public class Token
     public static final int CONTROL    = 5; // TBD
     public static final int EOF        = 6; // EOF encountered
     public static final int RT_PAREN   = 7; // special ')' for delimiting functions
+    public static final int FUNC_ARGS  = 8; // indicates end of function arguments
     // Constants for OPERAND's subClassif
     public static final int IDENTIFIER = 1;
     public static final int INTEGER    = 2; // integer constant

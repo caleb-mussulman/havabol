@@ -12,10 +12,6 @@ public class Parser
                                 // of the current assignment
     public boolean bShowExpr; // Determines whether or not to print the result of the current
                               // expression (given that there was at least one operator)
-    public boolean bExpectingRtParen; // Determines how to treat the last ')' of an expression.
-                                      // In the case of functions, we want it to act as a delimiter
-                                      // for the functions parameters, so this value would be set
-                                      // to true, so that we don't try to find the matching '('
     public boolean bGettingArraySize; // Used when calling 'expr' to parse the declared size of the array
                                       // Indicates that we want to evaluate the expression in the brackets
                                       // and not the array element reference
@@ -23,7 +19,7 @@ public class Parser
                                          // and do not want to call scanner to get the next token
     // The following two lists are used as delimiters for 'expr'
     public final static List<String> assignmentTokens = Collections.unmodifiableList(Arrays.asList("=", "+=", "-=", "*=", "/="));
-    public final static List<String> exprDelimiters   = Collections.unmodifiableList(Arrays.asList(",", ":", ";")); // The delimiters for an expression
+    public final static List<String> exprDelimiters   = Collections.unmodifiableList(Arrays.asList(":", ";")); // The delimiters for an expression
     
     Parser(Scanner scan, SymbolTable symbolTable)
     {
@@ -32,7 +28,6 @@ public class Parser
         this.sourceFileNm = scan.sourceFileNm;
         this.bShowAssign = false;
         this.bShowExpr = false;
-        this.bExpectingRtParen = false;
         this.bGettingArraySize = false;
     }
     
@@ -174,33 +169,40 @@ public class Parser
                 // Function is a built-in function
                 if(scan.currentToken.subClassif == Token.BUILTIN)
                 {
-                    // Execute the appropriate function
-                    switch(functionName)
+                    // If we are not executing, then skip the function call
+                    if(! bExec)
                     {
-                        case "debug":
-                            debug();
-                            break;
-                        case "print":
-                            print(bExec);
-                            break;
-                        case "LENGTH":
-                        case "SPACES":
-                        case "ELEM":
-                        case "MAXELEM":
-                            // Handle the parsing of these functions in 'expr', but indicate that we are on the first
-                            // token of the expression, so 'expr' should not call scanner for the next token
-                            bCalledExprFromStmts = true;
-                            expr();
-                            bCalledExprFromStmts = false;
-                            // Check that the function statement ended with ';'
-                            if(! scan.getNext().equals(";"))
-                            {
-                                error("Expected ';' after call to function '%s'", functionName);
-                            }
-                            break;
-                        default:
-                            // Only reached if we add a built-in function but haven't called it here
-                            error("Unknown built-in function: '%s'", scan.currentToken.tokenStr);
+                        skipTo(scan.currentToken.iSourceLineNr, scan.currentToken.tokenStr, ";");
+                    }
+                    // Otherwise, execute the appropriate function
+                    else
+                    {
+                        
+                        switch(functionName)
+                        {
+                            case "debug":
+                                debug();
+                                break;
+                            case "print":
+                            case "LENGTH":
+                            case "SPACES":
+                            case "ELEM":
+                            case "MAXELEM":
+                                // Handle the parsing of these functions in 'expr', but indicate that we are on the first
+                                // token of the expression, so 'expr' should not call scanner for the next token
+                                bCalledExprFromStmts = true;
+                                expr();
+                                bCalledExprFromStmts = false;
+                                // Check that the function statement ended with ';'
+                                if(! scan.currentToken.tokenStr.equals(";"))
+                                {
+                                    error("Expected ';' after call to function '%s'", functionName);
+                                }
+                                break;
+                            default:
+                                // Only reached if we add a built-in function but haven't called it here
+                                error("Unknown built-in function: '%s'", scan.currentToken.tokenStr);
+                        }
                     }
                 }
             }
@@ -808,7 +810,7 @@ public class Parser
                         }
                         
                         // If we are at the last character of the string, need to increment by 2 so
-                        // we don't try to get the character after then end of the string
+                        // we don't try to get the character after the end of the string
                         if(iStartOfSubstring == (resIterStr.value.length() - 1))
                         {
                             iStartOfSubstring += 2;
@@ -1604,7 +1606,7 @@ public class Parser
                     }
                     // Add the operator to our post-fix list
                     postfixStack.push(token);
-                    // Now we are expecting the next token to be an operand or a binary operator
+                    // Now we are expecting the next token to be an operand or a unary operator
                     bExpectingOperand = true;
                     break;
                     
@@ -1626,21 +1628,6 @@ public class Parser
                             if(bExpectingOperand)
                             {
                                 error("Expecting an operand before ')'");
-                            }
-                            
-                            // In the case of function, the final ')' acts as a delimiter for the parameters
-                            // which may be multiple expressions. In this case, we don't want to find the
-                            // matching '(' (which would be the one right after the function name). So, a
-                            // function call will indicate that the last ')' is special through the
-                            // bExpectingRtParen value, and we find that ')' because it will be followed by
-                            // a ':' or ';'
-                            if(bExpectingRtParen && (":;".indexOf(scan.nextToken.tokenStr) >= 0))
-                            {
-                                // Re-classify this token to be the special kind of ')'
-                                scan.currentToken.primClassif = Token.RT_PAREN;
-                                // Indicate that we found such a ')'
-                                bFoundRtParen = true;
-                                break;
                             }
                             
                             boolean bFoundParen = false; // Signifies if we found the matching left parenthesis
@@ -1727,6 +1714,57 @@ public class Parser
                                 error("Could not find matching '['");
                             }
                             break;
+                            
+                        case ",":
+                            // Error if we were expecting an operand and found a ','
+                            // e.g., 'print(x + , "14")'
+                            if(bExpectingOperand)
+                            {
+                                error("Expecting an operand before ','");
+                            }
+                            
+                            // Commas are only valid for a function call
+                            boolean bFoundFunction = false;
+                            
+                            // Remove from the stack until the matching function call is found
+                            while(! postfixStack.isEmpty())
+                            {
+                                Token popped = postfixStack.pop();
+                                if(popped.primClassif == Token.FUNCTION)
+                                {
+                                    bFoundFunction = true;
+                                    
+                                    // We don't actually want to add the function to the
+                                    // post-fix list until the corresponding ')' is found
+                                    postfixStack.push(popped);
+                                    break;
+                                }
+                                
+                                // Finding a '(' before the ',' should be an error
+                                // e.g., 'print( x * (y + 3, "14" );'
+                                if(popped.tokenStr.equals("("))
+                                {
+                                    error("Expected ')' before ','");
+                                }
+                                
+                                // Find a '[' before the ',' should be an error
+                                // e.g., 'print( arr[x , "hello" );'
+                                if((popped.primClassif == Token.OPERAND) && (popped.subClassif == Token.IDENTIFIER))
+                                {
+                                    error("Expected ']' before ','");
+                                }
+                            }
+                            
+                            // Check that the matching function call was fond for the ','
+                            if(! bFoundFunction)
+                            {
+                                error("Expected a corresponding function call before ','");
+                            }
+                            
+                            // Now we are expecting the next token to be an operand or a unary operator
+                            bExpectingOperand = true;
+                            break;
+                            
                         default:
                             error("Invalid separator, found '%s'", token.tokenStr);
                     }
@@ -1753,8 +1791,6 @@ public class Parser
                                 error("Call to 'debug' function should not be nested inside an expression");
                                 break;
                             case "print":
-                                error("Call to 'print' function should not be nested inside an expression");
-                                break;
                             case "LENGTH":
                             case "SPACES":
                             case "ELEM":
@@ -1764,6 +1800,11 @@ public class Parser
                                 {
                                     error("Expected '(' after '%s'", token.tokenStr);
                                 }
+                                
+                                // Add a token to the post-fix list signifying the end of the function's parameters
+                                Token endFuncArgs = new Token();
+                                endFuncArgs.primClassif = Token.FUNC_ARGS;
+                                outList.add(endFuncArgs);
                                 
                                 // The function name will act as the '('
                                 postfixStack.push(token);
@@ -2054,14 +2095,29 @@ public class Parser
                         {
                             case "LENGTH":
                                 resOp = resultStack.pop();
+                                // Check that this was the only operand
+                                if(resultStack.pop().type != Token.FUNC_ARGS)
+                                {
+                                    error("Unexpected number of parameters for function 'LENGTH'");
+                                }
                                 resultStack.push(Utility.LENGTH(this, resOp));
                                 break;
                             case "SPACES":
                                 resOp = resultStack.pop();
+                                // Check that this was the only operand
+                                if(resultStack.pop().type != Token.FUNC_ARGS)
+                                {
+                                    error("Unexpected number of parameters for function 'LENGTH'");
+                                }
                                 resultStack.push(Utility.SPACES(this, resOp));
                                 break;
                             case "ELEM":
                                 resOp = resultStack.pop();
+                                // Check that this was the only operand
+                                if(resultStack.pop().type != Token.FUNC_ARGS)
+                                {
+                                    error("Unexpected number of parameters for function 'LENGTH'");
+                                }
                                 // Check that the operand is an array
                                 if(! (resOp instanceof ResultArray))
                                 {
@@ -2073,6 +2129,11 @@ public class Parser
                                 break;
                             case "MAXELEM":
                                 resOp = resultStack.pop();
+                                // Check that this was the only operand
+                                if(resultStack.pop().type != Token.FUNC_ARGS)
+                                {
+                                    error("Unexpected number of parameters for function 'LENGTH'");
+                                }
                                 // Check that the operand is an array
                                 if(! (resOp instanceof ResultArray))
                                 {
@@ -2082,9 +2143,36 @@ public class Parser
                                 resArrayOp = (ResultArray) resOp;
                                 resultStack.push(Utility.MAXELEM(this, resArrayOp));
                                 break;
+                            case "print":
+                                resOp = resultStack.pop();
+                                
+                                // The paramters for 'print' are in reverse order, so need to re-reverse them
+                                Stack<ResultValue> printParamStack = new Stack<ResultValue>();
+                                
+                                // Get values to print as long as we have not hit the end of the print statements parameters
+                                while(resOp.type != Token.FUNC_ARGS)
+                                {
+                                    printParamStack.push(resOp);
+                                    resOp = resultStack.pop();
+                                }
+                                
+                                // Print each parameter for the 'print' statement
+                                while(! printParamStack.isEmpty())
+                                {
+                                    ResultValue resPrintParam = printParamStack.pop();
+                                    System.out.printf("%s ", resPrintParam.value);
+                                    
+                                }
+                                System.out.printf("\n");
+                                
+                                // 'print' returns a VOID type
+                                ResultValue resPrintReturn = new ResultValue();
+                                resPrintReturn.type = Token.VOID;
+                                resultStack.push(resPrintReturn);
+                                break;
                             default:
                                 // Only reached if we add a built-in function but haven't called it here
-                                error("Unknown built-in function: '%s'", scan.currentToken.tokenStr);
+                                error("Unknown built-in function: '%s'", outToken.tokenStr);
                         }
                     }
                     // Function is a user-defined function
@@ -2092,6 +2180,14 @@ public class Parser
                     {
                         error("User-defined functions have not been implemented yet");
                     }
+                    break;
+                    
+                case Token.FUNC_ARGS:
+                    // Put this as a result value on the stack to indicate to the
+                    // corresponding function that it is at the end of its parameter list
+                    ResultValue resEndFuncArgs = new ResultValue();
+                    resEndFuncArgs.type = Token.FUNC_ARGS;
+                    resultStack.push(resEndFuncArgs);
                     break;
             }
         }
@@ -2239,87 +2335,6 @@ public class Parser
             default:
                 // Only reached if we add another debugger type and don't check for it
                 error("The case for debug type '%s' was never added to the debug method...", debugType);
-        }
-    }
-    
-    /**
-     * Prints a variable number of comma-separated expressions
-     * Assumption: current token is on a "print" token
-     * <p>
-     * This function will continually make a call to expr
-     * and print out the result for every comma-separated
-     * expression, until it finds the matching ')'
-     * @param bExec      whether or not we will execute the statements
-     * @throws Exception
-     */
-    public void print(boolean bExec) throws Exception
-    {
-        int iPrintLineNr; // line number for beginning of print statement
-        iPrintLineNr = scan.currentToken.iSourceLineNr;
-        
-        // Do we need to ignore execution of the printing?
-        if(! bExec)
-        {
-            // Skip to the end of the print statement
-            skipTo(iPrintLineNr, "print", ";");
-            return;
-        }
-        
-        // Get the next token and make sure it is "("
-        if(! scan.getNext().equals("("))
-        {
-            error("Expected '(' for 'print' function");
-        }
-        
-        // Indicate to the parser that we are expecting the special ')' at the end
-        this.bExpectingRtParen = true;
-        
-        boolean bFirstTime; // Need to check that each expression was delimited by ',', except for the
-                            // first time we enter the loop, since the current token will be on a '('
-        bFirstTime = true;
-        
-        // Print each comma-separated expression until we hit the special ')' before the ';'
-        while(scan.currentToken.primClassif != Token.RT_PAREN)
-        {
-            // If this is not the first time in the loop, then the
-            // previous expression should have been terminated by ','
-            if(! bFirstTime)
-            {
-                if(! scan.currentToken.tokenStr.equals(","))
-                {
-                    error("Unexpected delimiter in parameter to function 'print', found '%s'", scan.currentToken.tokenStr);
-                }
-            }
-            // If it is the first time, just continue
-            else
-            {
-                bFirstTime = false;
-            }
-            
-            ResultValue resVal = expr();
-            System.out.printf("%s ", resVal.value);
-            
-            // If the scanner is printing token information, print a
-            // '\n'; otherwise, there will be output formatting errors
-            if(scan.bShowToken)
-            {
-                System.out.printf("\n");
-            }
-        }
-        
-        // The parser should no longer be expecting a RT_PAREN
-        this.bExpectingRtParen = false;
-        
-        // Print the newline, unless we had already printed one because
-        // the scanner was printing token info
-        if(! scan.bShowToken){
-            System.out.print("\n");
-        }
-        
-        // Check that the print statement was ended by ';'
-        if(! scan.getNext().equals(";"))
-        {
-            error("Expected ';' after 'print' statement");
         }
     }
 }
