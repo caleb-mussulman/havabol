@@ -962,6 +962,13 @@ public class Parser
                                   + ", found variable of type '%s'", STVariable.dclType);
                         }
                         
+                        // Ensure that the source is a primitive
+                        if(resAssign.structure != STIdentifier.PRIMITVE)
+                        {
+                            error("Assignment from array '%s' to string index '%s[%s]' is undefined"
+                                  , resAssign.value, variableStr, resIndex.value);
+                        }
+                        
                         // Ensure that the source is a string as well
                         Utility.coerce(this, STVariable.dclType, resAssign, "=");
                         // Get the string value of the variable
@@ -1000,6 +1007,13 @@ public class Parser
                     // 5) Otherwise, this is a regular assignment to a primitive
                     else
                     {
+                        // Ensure that the source is a primitive
+                        if(resAssign.structure != STIdentifier.PRIMITVE)
+                        {
+                            error("Assignment from array '%s' to variable '%s' is undefined"
+                                  , resAssign.value, variableStr);
+                        }
+                        
                         // Ensure that the value is the same type as the variable
                         Utility.coerce(this, STVariable.dclType, resAssign, "=");
                         symbolTable.storeVariableValue(this, variableStr, resAssign);
@@ -1011,13 +1025,19 @@ public class Parser
                 // Get the second operand
                 resOp2 = expr();
                 
+                // Check that the second operand is primitive
+                if(resOp2.structure != STIdentifier.PRIMITVE)
+                {
+                    error("Operation '-=' expected a primitive source value, found array '%s'", resOp2.value);
+                }
+                
                 // Check if the target was an array element reference
                 if(STVariable.structure != STIdentifier.PRIMITVE)
                 {
                     // '-=' is defined for an array element (i.e., brackets) but not an array
                     if(! bArrayElemAssign)
                     {
-                        error("Operation '-=' is not defined for an array reference, found '%s'", variableStr);
+                        error("Operation '-=' is not defined for an array reference as target of assignment, found '%s'", variableStr);
                     }
                     // Get the value of the array element
                     resOp1 = symbolTable.storageManager.getArrayElem(this, variableStr, resIndex);
@@ -1041,13 +1061,19 @@ public class Parser
                 // Get the second operand
                 resOp2 = expr();
                 
+                // Check that the second operand is primitive
+                if(resOp2.structure != STIdentifier.PRIMITVE)
+                {
+                    error("Operation '+=' expected a primitive source value, found array '%s'", resOp2.value);
+                }
+                
                 // Check if the target was an array element reference
                 if(STVariable.structure != STIdentifier.PRIMITVE)
                 {
                     // '+=' is defined for an array element (i.e., brackets) but not an array
                     if(! bArrayElemAssign)
                     {
-                        error("Operation '+=' is not defined for an array reference, found '%s'", variableStr);
+                        error("Operation '+=' is not defined for an array reference as target of assignment, found '%s'", variableStr);
                     }
                     // Get the value of the array element
                     resOp1 = symbolTable.storageManager.getArrayElem(this, variableStr, resIndex);
