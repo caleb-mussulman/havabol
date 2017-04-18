@@ -21,7 +21,9 @@ public class Parser
                                       // and not the array element reference
     public boolean bCalledExprFromStmts; // If 'expr' is called from 'statements', then we are on the current token
                                          // and do not want to call scanner to get the next token
+    // The following two lists are used as delimiters for 'expr'
     public final static List<String> assignmentTokens = Collections.unmodifiableList(Arrays.asList("=", "+=", "-=", "*=", "/="));
+    public final static List<String> exprDelimiters   = Collections.unmodifiableList(Arrays.asList(",", ":", ";")); // The delimiters for an expression
     
     Parser(Scanner scan, SymbolTable symbolTable)
     {
@@ -770,7 +772,90 @@ public class Parser
                     error("Expected ':' after expression following 'by', found '%s'", scan.currentToken.tokenStr);
                 }
                 
-                // TODO continue
+                int iStartOfSubstring = 0;
+                int iEndOfSubstring = -1;
+                
+                // Execute the statements after the 'for' parameters as long as there is
+                // another copy of the delimiting string in the iteration string or we hit
+                // the end of the iteration string (special case when iteration string is empty)
+                while((iStartOfSubstring <= resIterStr.value.length()))
+                {
+                    // Declare the variable to store the string
+                    STIdentifier STString = new STIdentifier(variableStr, Token.OPERAND, Token.STRING, STIdentifier.NOT_A_PARAMETER
+                                                                        , STIdentifier.PRIMITVE, STIdentifier.LOCAL);
+                    symbolTable.putSymbol(variableStr, STString);
+                    
+                    // Store the entire string
+                    ResultValue resStringCV = new ResultValue();
+                    resStringCV.type = Token.STRING;
+                    resStringCV.structure = STIdentifier.PRIMITVE;
+                    symbolTable.storeVariableValue(this, variableStr, resStringCV);
+                    
+                    // If the delimiting string is empty, we will iterate character by character
+                    if(resDelimStr.value.isEmpty())
+                    {
+                        iEndOfSubstring = iStartOfSubstring + 1;
+                        
+                        // Need to cover a corner case where the iteration string is also empty
+                        if(resIterStr.value.isEmpty())
+                        {
+                            resStringCV.value = "";
+                        }
+                        // Otherwise, get the substring
+                        else
+                        {
+                            resStringCV.value = resIterStr.value.substring(iStartOfSubstring, iEndOfSubstring);
+                        }
+                        
+                        // If we are at the last character of the string, need to increment by 2 so
+                        // we don't try to get the character after then end of the string
+                        if(iStartOfSubstring == (resIterStr.value.length() - 1))
+                        {
+                            iStartOfSubstring += 2;
+                        }
+                        // Otherwise, go to the next character
+                        else
+                        {
+                            iStartOfSubstring += 1;
+                        }
+                    }
+                    // Otherwise, get a substring, up to the index of the next delimiting string
+                    else
+                    {
+                        iEndOfSubstring = resIterStr.value.indexOf(resDelimStr.value, iStartOfSubstring);
+                        
+                        // If there was no match or if we are on the last substring, the
+                        // 'indexOf' will have been negative
+                        if(iEndOfSubstring < 0)
+                        {
+                            iEndOfSubstring = resIterStr.value.length();
+                        }
+                        resStringCV.value = resIterStr.value.substring(iStartOfSubstring, iEndOfSubstring);
+                        iStartOfSubstring = iEndOfSubstring + resDelimStr.value.length();
+                    }
+                    
+                    // Execute the statements after the 'for' parameters
+                    resStmts = statements(true);
+                    
+                    // 'for' control block must end with 'endfor'
+                    if(! resStmts.terminatingStr.equals("endfor"))
+                    {
+                        error("Expected 'endfor' for 'for' beginning on line %d", forToken.iSourceLineNr);
+                    }
+                    
+                    // 'for' must be followed by a ';'
+                    if(! scan.getNext().equals(";"))
+                    {
+                        error("Expected ';' after 'endfor'");
+                    }
+                    
+                    // Move back to the 'for' and skip past the initialization of its parameters
+                    scan.setPosition(forToken);
+                    skipTo(forToken.iSourceLineNr, "for", ":");
+                }
+                
+                // The delimiter was the end of the string so go to the 'endfor'
+                resStmts = statements(false);
             }
             // Current token does not match any 'for' loop types
             else
@@ -1010,7 +1095,7 @@ public class Parser
                         // Ensure that the source is a primitive
                         if(resAssign.structure != STIdentifier.PRIMITVE)
                         {
-                            error("Assignment from array '%s' to variable '%s' is undefined"
+                            error("Assignment from array '%s' to primitive variable '%s' is undefined"
                                   , resAssign.value, variableStr);
                         }
                         
@@ -1390,7 +1475,7 @@ public class Parser
         boolean bFoundAnOperator = false; // If the debugger for an expression is turned on, we only want to
                                           // print expression results if they had at least on operator
         boolean bFoundRtParen = false; // Indicates that a ')' before a ':' or ';' was found
-        String exprDelimiters = ",:;"; // The delimiters for an expression
+        
         
         
         // Get the next token
@@ -1405,7 +1490,7 @@ public class Parser
         }
         
         // Get the next token as long as it isn't an expression delimiter
-        while((scan.currentToken.primClassif != Token.CONTROL) && (exprDelimiters.indexOf(scan.currentToken.tokenStr) < 0)
+        while((scan.currentToken.primClassif != Token.CONTROL) && (! exprDelimiters.contains(scan.currentToken.tokenStr))
                                                                && (! assignmentTokens.contains(scan.currentToken.tokenStr)))
         {
             Token token = scan.currentToken;
