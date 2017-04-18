@@ -21,6 +21,7 @@ public class Parser
                                       // and not the array element reference
     public boolean bCalledExprFromStmts; // If 'expr' is called from 'statements', then we are on the current token
                                          // and do not want to call scanner to get the next token
+    public final static List<String> assignmentTokens = Collections.unmodifiableList(Arrays.asList("=", "+=", "-=", "*=", "/="));
     
     Parser(Scanner scan, SymbolTable symbolTable)
     {
@@ -887,6 +888,13 @@ public class Parser
             error("Either undefined statement or missing assignment operator, found '%s'", scan.currentToken.tokenStr);
         }
         
+        // Get the target variable and check that it has been declared
+        STIdentifier STVariable = (STIdentifier) symbolTable.getSymbol(variableStr);
+        if(STVariable == null)
+        {
+            error("Variable '%s' has not been declared", variableStr);
+        }
+        
         String operatorStr = scan.currentToken.tokenStr;
         ResultValue resOp2;    // Result value of second operand
         ResultValue resOp1;    // Result value of first operand
@@ -901,12 +909,6 @@ public class Parser
                 // 4)   string[index] = string
                 // 5)   scalar = scalar
                 
-                // Get the target variable and check that it has been declared
-                STIdentifier STVariable = (STIdentifier) symbolTable.getSymbol(variableStr);
-                if(STVariable == null)
-                {
-                    error("Variable '%s' has not been declared", variableStr);
-                }
                 // Get the source of the assignment
                 resAssign = expr();
                 
@@ -998,27 +1000,75 @@ public class Parser
                 }
                 break;
                 
-            case "-=": // TODO Does not work with arrays
+            case "-=":
+                // Get the second operand
                 resOp2 = expr();
-                // Get the value of the target variable
-                resOp1 = symbolTable.retrieveVariableValue(this, variableStr);
-                // Subtract second operand from first operand
-                resAssign = Utility.subtract(this, resOp1, resOp2, "-=");
-                // Assign the result to the variable
-                symbolTable.storeVariableValue(this, variableStr, resAssign);
+                
+                // Check if the target was an array element reference
+                if(STVariable.structure != STIdentifier.PRIMITVE)
+                {
+                    // '-=' is defined for an array element (i.e., brackets) but not an array
+                    if(! bArrayElemAssign)
+                    {
+                        error("Operation '-=' is not defined for an array reference, found '%s'", variableStr);
+                    }
+                    // Get the value of the array element
+                    resOp1 = symbolTable.storageManager.getArrayElem(this, variableStr, resIndex);
+                    // Subtract second operand from first operand
+                    resAssign = Utility.subtract(this, resOp1, resOp2, "-=");
+                    // Assign the result to the array at the given index
+                    symbolTable.storageManager.arrayAssignElem(this, variableStr, resAssign, resIndex);
+                }
+                // Otherwise, the target was a primitive variable
+                else
+                {
+                    resOp1 = symbolTable.retrieveVariableValue(this, variableStr);
+                    // Subtract second operand from first operand
+                    resAssign = Utility.subtract(this, resOp1, resOp2, "-=");
+                    // Assign the result to the variable
+                    symbolTable.storeVariableValue(this, variableStr, resAssign);
+                }
                 break;
-            case "+=": // TODO Does not work with arrays
+                
+            case "+=":
+                // Get the second operand
                 resOp2 = expr();
-                // Get the value of the target variable
-                resOp1 = symbolTable.retrieveVariableValue(this, variableStr);
-                // Add both operands
-                resAssign = Utility.add(this, resOp1, resOp2, "+=");
-                // Assign the result to the variable
-                symbolTable.storeVariableValue(this, variableStr, resAssign);
+                
+                // Check if the target was an array element reference
+                if(STVariable.structure != STIdentifier.PRIMITVE)
+                {
+                    // '+=' is defined for an array element (i.e., brackets) but not an array
+                    if(! bArrayElemAssign)
+                    {
+                        error("Operation '+=' is not defined for an array reference, found '%s'", variableStr);
+                    }
+                    // Get the value of the array element
+                    resOp1 = symbolTable.storageManager.getArrayElem(this, variableStr, resIndex);
+                    // Subtract second operand from first operand
+                    resAssign = Utility.add(this, resOp1, resOp2, "+=");
+                    // Assign the result to the array at the given index
+                    symbolTable.storageManager.arrayAssignElem(this, variableStr, resAssign, resIndex);
+                }
+                // Otherwise, the target was a primitive variable
+                else
+                {
+                    resOp1 = symbolTable.retrieveVariableValue(this, variableStr);
+                    // Subtract second operand from first operand
+                    resAssign = Utility.add(this, resOp1, resOp2, "+=");
+                    // Assign the result to the variable
+                    symbolTable.storeVariableValue(this, variableStr, resAssign);
+                }
                 break;
+                
             default:
                 error("Expected assignment operator, found '%s'", operatorStr);
                 resAssign = new ResultValue(); // This will never be reached
+        }
+        
+        // The assignment statement must be followed by ';'
+        if(! scan.currentToken.tokenStr.equals(";"))
+        {
+            error("Expected ';' after assignment statement");
         }
         
         // Print the debug information for the variable and value of the assignment
@@ -1307,7 +1357,8 @@ public class Parser
         boolean bFoundAnOperator = false; // If the debugger for an expression is turned on, we only want to
                                           // print expression results if they had at least on operator
         boolean bFoundRtParen = false; // Indicates that a ')' before a ':' or ';' was found
-        String exprDelimiters = ",:;="; // The delimiters for an expression
+        String exprDelimiters = ",:;"; // The delimiters for an expression
+        
         
         // Get the next token
         // If declaring an array or if an array element is the target of an assignment,
@@ -1321,7 +1372,8 @@ public class Parser
         }
         
         // Get the next token as long as it isn't an expression delimiter
-        while((scan.currentToken.primClassif != Token.CONTROL) && (exprDelimiters.indexOf(scan.currentToken.tokenStr) < 0))
+        while((scan.currentToken.primClassif != Token.CONTROL) && (exprDelimiters.indexOf(scan.currentToken.tokenStr) < 0)
+                                                               && (! assignmentTokens.contains(scan.currentToken.tokenStr)))
         {
             Token token = scan.currentToken;
             switch(token.primClassif)
