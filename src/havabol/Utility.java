@@ -828,6 +828,8 @@ public class Utility
         int result;
         ResultValue dateAdj = null;
 
+        parser.error("Function 'dateAdj' has not been implemented yet");
+        
         if (!isValidDate(date1.value))
         {
             parser.errorWithCurrent("%s is not a valid date.", date1.value);
@@ -862,6 +864,8 @@ public class Utility
         int result;
         ResultValue dateAge = null;
 
+        parser.error("Function 'dateAge' has not been implemented yet");
+        
         if (!isValidDate(date1.value))
         {
             parser.errorWithCurrent("%s is not a valid date.", date1.value);

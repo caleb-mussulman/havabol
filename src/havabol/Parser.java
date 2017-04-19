@@ -2073,7 +2073,10 @@ public class Parser
                     // Function is a built-in function
                     if(outToken.subClassif == Token.BUILTIN)
                     {
-                        ResultValue resOp; // Used as the parameter for the function
+                        ResultValue resOp;      // Used as the parameter(s) for the functions
+                        ResultValue resOp1;
+                        ResultValue resOp2;
+                        ResultValue resEndArgs; // Used to hold the end-of-function-arguments token
                         ResultArray resArrayOp; // Used for functions that require an array parameter
                         
                         // Execute the appropriate function
@@ -2162,29 +2165,36 @@ public class Parser
                                 break;
                                 
                             case "dateDiff":
+                            case "dateAdj":
+                            case "dateAge":
                                 // Check that there are at least 3 items on stack before popping
                                 if(resultStack.size() < 3)
                                 {
-                                    error("Invalid number of parameters for function 'dateDiff', expected 2 parameters");
+                                    error("Invalid number of parameters for function '%s', expected 2 parameters", outToken.tokenStr);
                                 }
-                                // Get the two parameters
-                                ResultValue resOp2 = resultStack.pop();
-                                ResultValue resOp1 = resultStack.pop();
+                                // Get the two parameters for the date function
+                                resOp2 = resultStack.pop();
+                                resOp1 = resultStack.pop();
                                 // Get the end-of-function-arguments token
-                                ResultValue resEndArgs = resultStack.pop();
-                                // Check that these were the correct number of parameters
+                                resEndArgs = resultStack.pop();
+                                // Check that these were the correct number of parameters for the date function (should always be 2)
                                 if(resOp1.type == Token.FUNC_ARGS || resOp2.type == Token.FUNC_ARGS || resEndArgs.type != Token.FUNC_ARGS)
                                 {
-                                    error("Invalid number of parameters for function 'dateDiff', expected 2 parameters");
+                                    error("Invalid number of parameters for function '%s', expected 2 parameters", outToken.tokenStr);
                                 }
-                                // Evaluate function and put result back on stack
-                                resultStack.push(Utility.dateDiff(this, resOp1, resOp2));
-                                break;
-                                
-                            case "dateAdj":
-                                break;
-                                
-                            case "dateAge":
+                                // Evaluate the appropriate date function and put the result back on stack
+                                switch(outToken.tokenStr)
+                                {
+                                    case "dateDiff":
+                                        resultStack.push(Utility.dateDiff(this, resOp1, resOp2));
+                                        break;
+                                    case "dateAdj":
+                                        resultStack.push(Utility.dateAdj(this, resOp1, resOp2));
+                                        break;
+                                    case "dateAge":
+                                        resultStack.push(Utility.dateAge(this, resOp1, resOp2));
+                                        break;
+                                }
                                 break;
                                 
                             default:
