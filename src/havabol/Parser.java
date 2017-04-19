@@ -183,11 +183,7 @@ public class Parser
                             case "debug":
                                 debug();
                                 break;
-                            case "print":
-                            case "LENGTH":
-                            case "SPACES":
-                            case "ELEM":
-                            case "MAXELEM":
+                            default:
                                 // Handle the parsing of these functions in 'expr', but indicate that we are on the first
                                 // token of the expression, so 'expr' should not call scanner for the next token
                                 bCalledExprFromStmts = true;
@@ -199,9 +195,6 @@ public class Parser
                                     error("Expected ';' after call to function '%s'", functionName);
                                 }
                                 break;
-                            default:
-                                // Only reached if we add a built-in function but haven't called it here
-                                error("Unknown built-in function: '%s'", scan.currentToken.tokenStr);
                         }
                     }
                 }
@@ -2091,7 +2084,7 @@ public class Parser
                                 // Check that this was the only operand
                                 if(resultStack.pop().type != Token.FUNC_ARGS)
                                 {
-                                    error("Invalid number of parameters for function 'LENGTH'");
+                                    error("Invalid number of parameters for function 'LENGTH', expected 1 parameter");
                                 }
                                 resultStack.push(Utility.LENGTH(this, resOp));
                                 break;
@@ -2101,7 +2094,7 @@ public class Parser
                                 // Check that this was the only operand
                                 if(resultStack.pop().type != Token.FUNC_ARGS)
                                 {
-                                    error("Invalid number of parameters for function 'LENGTH'");
+                                    error("Invalid number of parameters for function 'SPACES', expected 1 parameter");
                                 }
                                 resultStack.push(Utility.SPACES(this, resOp));
                                 break;
@@ -2111,7 +2104,7 @@ public class Parser
                                 // Check that this was the only operand
                                 if(resultStack.pop().type != Token.FUNC_ARGS)
                                 {
-                                    error("Invalid number of parameters for function 'LENGTH'");
+                                    error("Invalid number of parameters for function 'ELEM', expected 1 parameter");
                                 }
                                 // Check that the operand is an array
                                 if(! (resOp instanceof ResultArray))
@@ -2128,7 +2121,7 @@ public class Parser
                                 // Check that this was the only operand
                                 if(resultStack.pop().type != Token.FUNC_ARGS)
                                 {
-                                    error("Invalid number of parameters for function 'LENGTH'");
+                                    error("Invalid number of parameters for function 'MAXELEM', expected 1 parameter");
                                 }
                                 // Check that the operand is an array
                                 if(! (resOp instanceof ResultArray))
@@ -2169,16 +2162,21 @@ public class Parser
                                 break;
                                 
                             case "dateDiff":
-                                // Check that there are exactly two parameters for 'dateDiff'
-                                if((resultStack.size() < 3) || (resultStack.elementAt(resultStack.size() - 3).type != Token.FUNC_ARGS))
+                                // Check that there are at least 3 items on stack before popping
+                                if(resultStack.size() < 3)
                                 {
-                                    error("Invalid number of parameters for function 'dateDiff'");
+                                    error("Invalid number of parameters for function 'dateDiff', expected 2 parameters");
                                 }
                                 // Get the two parameters
                                 ResultValue resOp2 = resultStack.pop();
                                 ResultValue resOp1 = resultStack.pop();
-                                // Remove the end-of-function-arguments token
-                                resultStack.pop();
+                                // Get the end-of-function-arguments token
+                                ResultValue resEndArgs = resultStack.pop();
+                                // Check that these were the correct number of parameters
+                                if(resOp1.type == Token.FUNC_ARGS || resOp2.type == Token.FUNC_ARGS || resEndArgs.type != Token.FUNC_ARGS)
+                                {
+                                    error("Invalid number of parameters for function 'dateDiff', expected 2 parameters");
+                                }
                                 // Evaluate function and put result back on stack
                                 resultStack.push(Utility.dateDiff(this, resOp1, resOp2));
                                 break;
