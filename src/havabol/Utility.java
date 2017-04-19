@@ -814,6 +814,74 @@ public class Utility
         return dateDifference;
     }
 
+    /**
+     * TODO: Do this
+     * @param parser
+     * @param date1
+     * @param date2
+     * @return
+     * @throws ParserException
+     */
+    public static ResultValue dateAdj(Parser parser, ResultValue date1, ResultValue date2) throws ParserException {
+        int julian1;
+        int julian2;
+        int result;
+        ResultValue dateAdj = null;
+
+        if (!isValidDate(date1.value))
+        {
+            parser.errorWithCurrent("%s is not a valid date.", date1.value);
+        }
+
+        if (!isValidDate(date2.value))
+        {
+            parser.errorWithCurrent("%s is not a valid date.", date2.value);
+        }
+
+        // Compare to March
+        julian1 = dateToJulian(date1.value);
+        julian2 = dateToJulian(date2.value);
+
+        // # of days between the two dates
+        result = julian1 - julian2;
+
+        return dateAdj;
+    }
+
+    /**
+     * TODO: Do this
+     * @param parser
+     * @param date1
+     * @param date2
+     * @return
+     * @throws ParserException
+     */
+    public static ResultValue dateAge(Parser parser, ResultValue date1, ResultValue date2) throws ParserException {
+        int julian1;
+        int julian2;
+        int result;
+        ResultValue dateAge = null;
+
+        if (!isValidDate(date1.value))
+        {
+            parser.errorWithCurrent("%s is not a valid date.", date1.value);
+        }
+
+        if (!isValidDate(date2.value))
+        {
+            parser.errorWithCurrent("%s is not a valid date.", date2.value);
+        }
+
+        // Compare to March
+        julian1 = dateToJulian(date1.value);
+        julian2 = dateToJulian(date2.value);
+
+        // # of days between the two dates
+        result = julian1 - julian2;
+
+        return dateAge;
+    }
+
     /******************** dateToJulian ***********************************
      public static int dateToJulian(String date)
      Purpose:
