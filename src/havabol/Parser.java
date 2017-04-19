@@ -770,6 +770,14 @@ public class Parser
                 int iStartOfSubstring = 0;
                 int iEndOfSubstring = -1;
                 
+                // In the case when the delimiting string is empty, we will iterate character by character
+                // If the iteration string is also empty, then there are no characters, so we don't want to
+                // enter the 'for' loop at all
+                if(resIterStr.value.isEmpty() && resDelimStr.value.isEmpty())
+                {
+                    iStartOfSubstring = 1; // This will prevent entering the below loop
+                }
+                
                 // Execute the statements after the 'for' parameters as long as there is
                 // another copy of the delimiting string in the iteration string or we hit
                 // the end of the iteration string (special case when iteration string is empty)
@@ -790,17 +798,7 @@ public class Parser
                     if(resDelimStr.value.isEmpty())
                     {
                         iEndOfSubstring = iStartOfSubstring + 1;
-                        
-                        // Need to cover a corner case where the iteration string is also empty
-                        if(resIterStr.value.isEmpty())
-                        {
-                            resStringCV.value = "";
-                        }
-                        // Otherwise, get the substring
-                        else
-                        {
-                            resStringCV.value = resIterStr.value.substring(iStartOfSubstring, iEndOfSubstring);
-                        }
+                        resStringCV.value = resIterStr.value.substring(iStartOfSubstring, iEndOfSubstring);
                         
                         // If we are at the last character of the string, need to increment by 2 so
                         // we don't try to get the character after the end of the string
@@ -1459,6 +1457,7 @@ public class Parser
         }
     }
     
+    // Add documentation...
     public ResultValue expr() throws Exception
     {
         ArrayList<Token> outList = new ArrayList<Token>(); // List to hold prefix expr
@@ -1655,7 +1654,6 @@ public class Parser
                                 outList.add(popped);
                             }
                             
-                            // TODO error message may change
                             if(! bFoundParen)
                             {
                                 error("Could not find matching '('. May be missing ';' or ':'?");
@@ -2193,7 +2191,6 @@ public class Parser
                                         break;
                                     case "dateAge":
                                         resultStack.push(Utility.dateAge(this, resOp1, resOp2));
-                                        break;
                                 }
                                 break;
                                 
