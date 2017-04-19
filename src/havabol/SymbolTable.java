@@ -181,6 +181,12 @@ public class SymbolTable
                         , Token.BUILTIN, 1));
         ht.put("debug", new STFunction("debug", Token.FUNCTION, Token.VOID
                       , Token.BUILTIN, 2));
+        ht.put("dateDiff", new STFunction("dateDiff", Token.FUNCTION, Token.INTEGER
+                         , Token.BUILTIN, 2));
+        ht.put("dateAdj", new STFunction("dateAdj", Token.FUNCTION, Token.DATE
+                        , Token.BUILTIN, 2));
+        ht.put("dateAge", new STFunction("dateAge", Token.FUNCTION, Token.INTEGER
+                        , Token.BUILTIN, 2));
         
         //==========================OPERATORS========================
         ht.put("and", new STOperator("and",Token.OPERATOR, Token.BINARY));

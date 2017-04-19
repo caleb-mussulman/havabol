@@ -1790,11 +1790,7 @@ public class Parser
                             case "debug":
                                 error("Call to 'debug' function should not be nested inside an expression");
                                 break;
-                            case "print":
-                            case "LENGTH":
-                            case "SPACES":
-                            case "ELEM":
-                            case "MAXELEM":
+                            default:
                                 // Check that there is a '(' after the function name
                                 if(! scan.getNext().equals("("))
                                 {
@@ -1809,9 +1805,6 @@ public class Parser
                                 // The function name will act as the '('
                                 postfixStack.push(token);
                                 break;
-                            default:
-                                // Only reached if we add a built-in function but haven't called it here
-                                error("Unknown built-in function: '%s'", scan.currentToken.tokenStr);
                         }
                     }
                     // Function is a user-defined function
@@ -2098,25 +2091,27 @@ public class Parser
                                 // Check that this was the only operand
                                 if(resultStack.pop().type != Token.FUNC_ARGS)
                                 {
-                                    error("Unexpected number of parameters for function 'LENGTH'");
+                                    error("Invalid number of parameters for function 'LENGTH'");
                                 }
                                 resultStack.push(Utility.LENGTH(this, resOp));
                                 break;
+                                
                             case "SPACES":
                                 resOp = resultStack.pop();
                                 // Check that this was the only operand
                                 if(resultStack.pop().type != Token.FUNC_ARGS)
                                 {
-                                    error("Unexpected number of parameters for function 'LENGTH'");
+                                    error("Invalid number of parameters for function 'LENGTH'");
                                 }
                                 resultStack.push(Utility.SPACES(this, resOp));
                                 break;
+                                
                             case "ELEM":
                                 resOp = resultStack.pop();
                                 // Check that this was the only operand
                                 if(resultStack.pop().type != Token.FUNC_ARGS)
                                 {
-                                    error("Unexpected number of parameters for function 'LENGTH'");
+                                    error("Invalid number of parameters for function 'LENGTH'");
                                 }
                                 // Check that the operand is an array
                                 if(! (resOp instanceof ResultArray))
@@ -2127,12 +2122,13 @@ public class Parser
                                 resArrayOp = (ResultArray) resOp;
                                 resultStack.push(Utility.ELEM(this, resArrayOp));
                                 break;
+                                
                             case "MAXELEM":
                                 resOp = resultStack.pop();
                                 // Check that this was the only operand
                                 if(resultStack.pop().type != Token.FUNC_ARGS)
                                 {
-                                    error("Unexpected number of parameters for function 'LENGTH'");
+                                    error("Invalid number of parameters for function 'LENGTH'");
                                 }
                                 // Check that the operand is an array
                                 if(! (resOp instanceof ResultArray))
@@ -2143,6 +2139,7 @@ public class Parser
                                 resArrayOp = (ResultArray) resOp;
                                 resultStack.push(Utility.MAXELEM(this, resArrayOp));
                                 break;
+                                
                             case "print":
                                 resOp = resultStack.pop();
                                 
@@ -2170,6 +2167,28 @@ public class Parser
                                 resPrintReturn.type = Token.VOID;
                                 resultStack.push(resPrintReturn);
                                 break;
+                                
+                            case "dateDiff":
+                                // Check that there are exactly two parameters for 'dateDiff'
+                                if((resultStack.size() < 3) || (resultStack.elementAt(resultStack.size() - 3).type != Token.FUNC_ARGS))
+                                {
+                                    error("Invalid number of parameters for function 'dateDiff'");
+                                }
+                                // Get the two parameters
+                                ResultValue resOp2 = resultStack.pop();
+                                ResultValue resOp1 = resultStack.pop();
+                                // Remove the end-of-function-arguments token
+                                resultStack.pop();
+                                // Evaluate function and put result back on stack
+                                resultStack.push(Utility.dateDiff(this, resOp1, resOp2));
+                                break;
+                                
+                            case "dateAdj":
+                                break;
+                                
+                            case "dateAge":
+                                break;
+                                
                             default:
                                 // Only reached if we add a built-in function but haven't called it here
                                 error("Unknown built-in function: '%s'", outToken.tokenStr);
