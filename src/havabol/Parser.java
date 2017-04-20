@@ -12,6 +12,7 @@ public class Parser
                                 // of the current assignment
     public boolean bShowExpr; // Determines whether or not to print the result of the current
                               // expression (given that there was at least one operator)
+    public boolean bShowPostfix; // Determines whether or not to print the result of the post-fix list
     public boolean bGettingArraySize; // Used when calling 'expr' to parse the declared size of the array
                                       // Indicates that we want to evaluate the expression in the brackets
                                       // and not the array element reference
@@ -28,6 +29,7 @@ public class Parser
         this.sourceFileNm = scan.sourceFileNm;
         this.bShowAssign = false;
         this.bShowExpr = false;
+        this.bShowPostfix = false;
         this.bGettingArraySize = false;
     }
     
@@ -177,7 +179,7 @@ public class Parser
                     // Otherwise, execute the appropriate function
                     else
                     {
-                        
+                        int iFunctionLineNr = scan.currentToken.iSourceLineNr; // line number that function call occurs on
                         switch(functionName)
                         {
                             case "debug":
@@ -192,7 +194,7 @@ public class Parser
                                 // Check that the function statement ended with ';'
                                 if(! scan.currentToken.tokenStr.equals(";"))
                                 {
-                                    error("Expected ';' after call to function '%s'", functionName);
+                                    errorLineNr(iFunctionLineNr, "Expected ';' after call to function '%s'", functionName);
                                 }
                                 break;
                         }
@@ -1945,20 +1947,16 @@ public class Parser
             outList.remove(lastToken);
         }
         
-        //-----
-        System.err.println("---start stack---");
-        for(Token t : postfixStack)
+        // This will be set from the 'debug' function
+        if(bShowPostfix)
         {
-            System.err.println(t.tokenStr);
+            System.err.println("---start list---");
+            for(Token t : outList)
+            {
+                System.err.println(t.tokenStr);
+            }
+            System.err.println("----end list----");
         }
-        System.err.println("----end stack----");
-        System.err.println("---start list---");
-        for(Token t : outList)
-        {
-            System.err.println(t.tokenStr);
-        }
-        System.err.println("----end list----");
-        //-----
         
         // Evaluate the post-fix expression
         for(Token outToken : outList)
@@ -2291,6 +2289,7 @@ public class Parser
                                         break;
                                     case "dateAge":
                                         resultStack.push(Utility.dateAge(this, resOp1, resOp2));
+                                        break;
                                 }
                                 break;
                                 
@@ -2414,7 +2413,7 @@ public class Parser
         // Get the debug type
         debugType = scan.getNext();
         // Make sure the debug type is valid
-        if(! Arrays.asList("Assign", "Expr", "Token").contains(debugType))
+        if(! Arrays.asList("Assign", "Expr", "Token", "Postfix").contains(debugType))
         {
             error("Invalid type for debug function, found '%s',", debugType);
         }
@@ -2463,6 +2462,11 @@ public class Parser
             case "Token":
                 scan.bShowToken = bDebug;
                 break;
+                
+            case "Postfix":
+                this.bShowPostfix = bDebug;
+                break;
+                
             default:
                 // Only reached if we add another debugger type and don't check for it
                 error("The case for debug type '%s' was never added to the debug method...", debugType);
