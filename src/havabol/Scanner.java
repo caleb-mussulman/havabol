@@ -189,8 +189,9 @@ public class Scanner
                         iColPos++;
                     }
                 }
-                // Check if at the beginning of comment
-                else if( ((iColPos + 1) < textCharM.length) && (textCharM[iColPos] == '/') && (textCharM[iColPos + 1] == '/') )
+                // Check if at the beginning of comment which can be '//' or '$'
+                else if( (((iColPos + 1) < textCharM.length) && (textCharM[iColPos] == '/') && (textCharM[iColPos + 1] == '/'))
+                          || ((iColPos < textCharM.length) && (textCharM[iColPos] == '$')) )
                 {
                     // Skip the rest of the comment by setting the column position past the end of the line.
                     // Next iteration of the loop will get the next line, if it exists
