@@ -5,10 +5,10 @@ import java.util.*;
 
 public class Scanner
 {
-    public final static String delimiters = " \t;:()\'\"=!<>+-*/[]#,^\n"; // terminate a token
+    public final static String delimiters = " \t;:()\'\"=!<>+-*/[]#,^\n{}"; // terminate a token
     public final static String whitespace = " \t\n";
     public final static String charOperators = "+-*/<>=!^#";
-    public final static String separators = "(),:;[]";
+    public final static String separators = "(),:;[]{}";
     @SuppressWarnings("serial")
     public final static Map<Character, Character> escapeChars = Collections.unmodifiableMap(new HashMap<Character, Character>(){{
                                                                 put('"', '"'); put('\'', '\''); put('\\', '\\');

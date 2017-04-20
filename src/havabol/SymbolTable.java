@@ -187,6 +187,10 @@ public class SymbolTable
                         , Token.BUILTIN, 2));
         ht.put("dateAge", new STFunction("dateAge", Token.FUNCTION, Token.INTEGER
                         , Token.BUILTIN, 2));
+        ht.put("IN", new STFunction("IN", Token.FUNCTION, Token.BOOLEAN
+                   , Token.BUILTIN, 2));
+        ht.put("NOTIN", new STFunction("NOTIN", Token.FUNCTION, Token.BOOLEAN
+                , Token.BUILTIN, 2));
         
         //==========================OPERATORS========================
         ht.put("and", new STOperator("and",Token.OPERATOR, Token.BINARY));

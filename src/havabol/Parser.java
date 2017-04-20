@@ -244,7 +244,7 @@ public class Parser
             if(resCond.type != Token.BOOLEAN)
             {
                 errorLineNr(iIfLineNr, "Expected a 'BOOLEAN' type for the evaluation of 'if' statement's condition"
-                            + ", found '%s' type", resCond.type);
+                            + ", found '%s' type", Token.getType(this, resCond.type));
             }
             
             // Did the condition return true?
@@ -1645,11 +1645,17 @@ public class Parser
                                     break;
                                 }
                                 
-                                // Find a '[' before the '(' should be an error. One example:
+                                // Error if we find a '[' before the '('
                                 //    4 * (3 + arr[x * y)]
                                 if((popped.primClassif == Token.OPERAND) && (popped.subClassif == Token.IDENTIFIER))
                                 {
                                     error("Expected ']' before ')'");
+                                }
+                                
+                                // Error if we find a '{' before the '('
+                                if(popped.tokenStr.equals("{"))
+                                {
+                                    error("Expected '}' before ')'");
                                 }
                                 outList.add(popped);
                             }
@@ -1689,12 +1695,19 @@ public class Parser
                                     break;
                                 }
                                 
-                                // Finding a '(' before the '[' should be an error. One example:
-                                //    arr[x * (4 + y])
+                                // Error if we find a '(' before the '['
+                                // e.g., 'arr[x * (4 + y])'
                                 if(popped.tokenStr.equals("("))
                                 {
                                     error("Expected ')' before ']'");
                                 }
+                                
+                                // Error if we find a '{' before the '['
+                                if(popped.tokenStr.equals("{"))
+                                {
+                                    error("Expected '}' before ']'");
+                                }
+                                
                                 outList.add(popped);
                             }
                             
@@ -1718,10 +1731,11 @@ public class Parser
                             boolean bFoundFunction = false;
                             
                             // Remove from the stack until the matching function call is found
+                            // For functions 'IN' and 'NOTIN', a comma separated value list begins with '{'
                             while(! postfixStack.isEmpty())
                             {
                                 Token popped = postfixStack.pop();
-                                if(popped.primClassif == Token.FUNCTION)
+                                if(popped.primClassif == Token.FUNCTION || popped.tokenStr.equals("{"))
                                 {
                                     bFoundFunction = true;
                                     
@@ -1744,6 +1758,9 @@ public class Parser
                                 {
                                     error("Expected ']' before ','");
                                 }
+                                
+                                // Token is not function or '{' so add to the post-fix list
+                                outList.add(popped);
                             }
                             
                             // Check that the matching function call was fond for the ','
@@ -1756,41 +1773,119 @@ public class Parser
                             bExpectingOperand = true;
                             break;
                             
+                        case "{":
+                            // A '{' should only follow 'IN' or 'NOTIN'
+                            Token lastToken = postfixStack.peek();
+                            if(! (lastToken.tokenStr.equals("IN") || lastToken.tokenStr.equals("NOTIN")))
+                            {
+                                error("Unexpected '{', only valid following 'IN' or 'NOTIN'");
+                            }
+                            postfixStack.push(token);
+                            break;
+                            
+                        case "}":
+                            // Error if we were expecting an operand and found a "}"
+                            // (e.g., '5 IN {14, 4, 3 + }'
+                            if(bExpectingOperand)
+                            {
+                                error("Expecting an operand before '}'");
+                            }
+                            
+                            boolean bFoundBracket = false; // Signifies if we found the matching left bracket
+                            
+                            // Remove from the stack until the matching bracket is found
+                            while(! postfixStack.isEmpty())
+                            {
+                                Token popped = postfixStack.pop();
+                                
+                                // Found matching bracket
+                                if(popped.tokenStr.equals("{"))
+                                {
+                                    bFoundBracket = true;
+                                    
+                                    // Create a token that signifies the end of a value list
+                                    Token endValueList = new Token();
+                                    endValueList.primClassif = Token.VALUE_LIST;
+                                    endValueList.tokenStr = "VALUE_LIST"; // This is simply to make my debugging of the post-fix list easier
+                                    outList.add(endValueList);
+                                    break;
+                                }
+                                
+                                // Error if we found a '('
+                                if((popped.tokenStr.equals("(")) || (popped.primClassif == Token.FUNCTION))
+                                {
+                                    error("Expected ')' before '}'");
+                                }
+                                
+                                // Error if we found a '['
+                                if((popped.primClassif == Token.OPERAND) && (popped.subClassif == Token.IDENTIFIER))
+                                {
+                                    error("Expected ']' before '}'");
+                                }
+                                
+                                outList.add(popped);
+                            }
+                            
+                            // Check that the matching function call was fond for the ','
+                            if(! bFoundBracket)
+                            {
+                                error("Could not find matching '{'");
+                            }
+                            break;
+                            
                         default:
                             error("Invalid separator, found '%s'", token.tokenStr);
                     }
                     break;  //Break out of case Token.SEPARATOR
                     
                 case Token.FUNCTION:
-                    // Since a function will return an operand, the occurrence of
-                    // a function should be when an operand is expected
-                    if(! bExpectingOperand)
-                    {
-                        error("Expecting an operator, found '%s'", token.tokenStr);
-                    }
-                    // Since we will throw away the '(', the next expected infix token should be an operand as well
-                    
                     // Function is a built-in function
                     if(token.subClassif == Token.BUILTIN)
                     {
+                        // A token signifying the end of the function's parameters
+                        Token endFuncArgs = new Token();
+                        endFuncArgs.primClassif = Token.FUNC_ARGS;
+                            
                         // Execute the appropriate function
                         switch(token.tokenStr)
                         {
-                            // The 'debug' and 'print' functions are statements and
-                            // should only be called from 'statements'
+                            // The 'debug' function is a statement and should only be called from 'statements'
                             case "debug":
                                 error("Call to 'debug' function should not be nested inside an expression");
                                 break;
+                                
+                            case "IN":
+                            case "NOTIN":
+                                // 'IN' and 'NOTIN' act more like operators, so we should
+                                // be expecting an operator in the infix expression
+                                if(bExpectingOperand)
+                                {
+                                    error("Expecting an operand, found '%s'", token.tokenStr);
+                                }
+                                
+                                // Add a token signifying the end of the value list
+                                outList.add(endFuncArgs);
+                                postfixStack.push(token);
+                                
+                                // These functions should be expecting an operand (a value list will evaluate to an operand)
+                                bExpectingOperand = true;
+                                break;
+                                
                             default:
+                                // Since all other functions will return an operand, the
+                                // occurrence of a function should be when an operand is expected
+                                if(! bExpectingOperand)
+                                {
+                                    error("Expecting an operator, found '%s'", token.tokenStr);
+                                }
+                                
                                 // Check that there is a '(' after the function name
                                 if(! scan.getNext().equals("("))
                                 {
                                     error("Expected '(' after '%s'", token.tokenStr);
                                 }
                                 
-                                // Add a token to the post-fix list signifying the end of the function's parameters
-                                Token endFuncArgs = new Token();
-                                endFuncArgs.primClassif = Token.FUNC_ARGS;
+                                // Add a token signifying the end of the function's parameters
                                 outList.add(endFuncArgs);
                                 
                                 // The function name will act as the '('
@@ -1849,18 +1944,22 @@ public class Parser
             Token lastToken = outList.get(outList.size() - 1);
             outList.remove(lastToken);
         }
-        /*
+        
         //-----
-        System.err.println("---start---");
+        System.err.println("---start stack---");
+        for(Token t : postfixStack)
+        {
+            System.err.println(t.tokenStr);
+        }
+        System.err.println("----end stack----");
+        System.err.println("---start list---");
         for(Token t : outList)
         {
             System.err.println(t.tokenStr);
         }
-        System.err.println(scan.currentToken.tokenStr);
-        System.err.println(scan.currentToken.primClassif);
-        System.err.println("----end----");
+        System.err.println("----end list----");
         //-----
-        */
+        
         // Evaluate the post-fix expression
         for(Token outToken : outList)
         {
@@ -1938,6 +2037,7 @@ public class Parser
                                 resultStack.push(resArrayElemCopy);
                             }
                         }
+                        // The identifier is not an array reference/string element reference
                         else
                         {
                             resultStack.push(symbolTable.retrieveVariableValue(this, outToken.tokenStr));
@@ -2194,6 +2294,11 @@ public class Parser
                                 }
                                 break;
                                 
+                            case "IN":
+                            case "NOTIN":
+                                
+                                break;
+                                
                             default:
                                 // Only reached if we add a built-in function but haven't called it here
                                 error("Unknown built-in function: '%s'", outToken.tokenStr);
@@ -2213,6 +2318,8 @@ public class Parser
                     resEndFuncArgs.type = Token.FUNC_ARGS;
                     resultStack.push(resEndFuncArgs);
                     break;
+                    
+                case Token.VALUE_LIST:
             }
         }
 

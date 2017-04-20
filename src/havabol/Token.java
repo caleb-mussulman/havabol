@@ -17,6 +17,7 @@ public class Token
     public static final int EOF        = 6; // EOF encountered
     public static final int RT_PAREN   = 7; // special ')' for delimiting functions
     public static final int FUNC_ARGS  = 8; // indicates end of function arguments
+    public static final int VALUE_LIST = 9; // indicates end of a braced value list
     // Constants for OPERAND's subClassif
     public static final int IDENTIFIER = 1;
     public static final int INTEGER    = 2; // integer constant
@@ -254,6 +255,7 @@ public class Token
      *      Symbol      Token Precedence    Stack Precedence
      * -----------------------------------------------------
      *      [           16                  0
+     *      {           15                  2
      *      (           15                  2
      *      u-          12                  12
      *      ^           11                  10
@@ -327,6 +329,17 @@ public class Token
                     return 2;
                 }
                 // Precedence if '(' is not yet in post-fix stack
+                else
+                {
+                    return 15;
+                }
+            case "{":
+                // Precedence if '{' is already in post-fix stack
+                if(bStackPrecedence)
+                {
+                    return 2;
+                }
+                // Precedence if '{' is not yet in post-fix stack
                 else
                 {
                     return 15;
