@@ -705,33 +705,21 @@ public class Utility
         
         String result = "";
         
-        if (resval1.type == Token.STRING)
+        Numeric nOp1 = new Numeric(parser, resval1, "^", "1st operand");
+        Numeric nOp2; 
+        
+        coerce(parser, resval1.type, resval2, "^");
+        nOp2 = new Numeric(parser, resval2, "^", "2nd operand");
+        
+        if (nOp1.type == Token.INTEGER)
         {
-            parser.errorWithCurrent("Cannot perform exponentiation on %s", resval1.type);
-        }
-        else if (resval1.type == Token.INTEGER)
-        {
-            Numeric nOp1 = new Numeric(parser, resval1, "^", "1st operand");
-            Numeric nOp2 = new Numeric(parser, resval2, "^", "2nd operand");
-            
             Double exponVal = Math.pow(nOp1.integerValue, nOp2.integerValue);
             result = String.valueOf(exponVal.intValue());
         }
-        else if (resval1.type == Token.FLOAT)
-        {
-            Numeric nOp1 = new Numeric(parser, resval1, "^", "1st operand");
-            Numeric nOp2 = new Numeric(parser, resval2, "^", "2nd operand");
-            
-            Double exponVal = Math.pow(nOp1.doubleValue, nOp2.doubleValue);
-            result = String.valueOf(exponVal);
-        }
-        else if (resval1.type == Token.BOOLEAN)
-        {
-            parser.errorWithCurrent("Cannot perform exponentiation on %s", resval1.type);
-        }
         else
         {
-            parser.errorWithCurrent("Taylor didn't add another case for uminus.");
+            Double exponVal = Math.pow(nOp1.doubleValue, nOp2.doubleValue);
+            result = String.valueOf(exponVal);
         }
         
         resval1.value = result;
@@ -1099,6 +1087,7 @@ public class Utility
     }
     
     /**
+     * Assumes that 'resval' is a primitive
      * TODO : Needs to support a value list (e.g. gradePt IN {4, 3, 2, 1, 0} )
      * Searches an array resultArray for a value resval contained in it.
      * Upon finding it a truthy or falsey value are returned to the caller.
@@ -1109,35 +1098,28 @@ public class Utility
      * @return Havabol T or F.
      * @throws ParserException
      */
-    public static ResultValue IN(Parser parser, ResultValue resval, ResultArray resultArray) throws ParserException
+    public static ResultValue IN(Parser parser, ResultValue resval, ResultArray resultArray) throws Exception
     {
-        if (resultArray.structure != STIdentifier.FIXED_ARRAY ||
-            resultArray.structure != STIdentifier.UNBOUNDED_ARRAY)
-        {
-            parser.errorWithCurrent("Cannot start search for type %s in type %s.", resval.value, Token.getType(parser, resultArray.type));
-        }
-        
-        if (resval.structure != STIdentifier.PRIMITVE)
-        {
-            parser.errorWithCurrent("Cannot start search for type %s in %s.", Token.getType(parser, resval.type),
-                    Token.getType(parser, resultArray.type));
-        }
-        
         ResultValue resReturn = new ResultValue();
+        resReturn.type = Token.BOOLEAN;
+        resReturn.structure = STIdentifier.PRIMITVE;
+        resReturn.value = "F";
         
-        if (resultArray.valueList.contains(resval.value))
+        for(ResultValue resArrElem : resultArray.valueList)
         {
-            resReturn.value = "T";
-            resReturn.type = Token.BOOLEAN;
-            resReturn.structure = STIdentifier.PRIMITVE;
+            if(resArrElem != null)
+            {
+                ResultValue resArrElemCopy = Utility.getResultValueCopy(resArrElem);
+                Utility.coerce(parser, resval.type, resArrElemCopy, "IN");
+                
+                if(resArrElemCopy.value.equals(resval.value))
+                {
+                    resReturn.value = "T";
+                    break;
+                }
+            }
         }
-        else
-        {
-            resReturn.value = "F";
-            resReturn.type = Token.BOOLEAN;
-            resReturn.structure = STIdentifier.PRIMITVE;
-        }
-        
+
         return resReturn;
     }
     

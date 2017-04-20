@@ -590,7 +590,8 @@ public class Parser
                     // The user may re-declare the control variable and change it's value or type
                     
                     // If the control variable was re-declared, check that it was initialized as well
-                    ResultValue resControlVarVal = symbolTable.retrieveVariableValue(this, variableStr);
+                    // TODO Change this ugly code...please
+                    ResultValue resControlVarVal = symbolTable.storageManager.sm.get(variableStr);
                     if(resControlVarVal == null)
                     {
                         error("Control variable '%s' was re-declared but not initialized", variableStr);
@@ -601,7 +602,7 @@ public class Parser
                     {
                         error("Control variable '%s' was redeclared as an array, must be primitive", variableStr);
                     }
-                    Utility.coerce(this, Token.INTEGER, resControlVarVal, "for loop control variable");
+                    Utility.coerce(this, Token.INTEGER, resControlVarVal, "for loop control variable comparison");
                     
                     // Get the numeric value of the control variable's value
                     numControlVar = new Numeric(this, resControlVarVal, "for", "control variable");
@@ -1808,7 +1809,8 @@ public class Parser
                                     // Create a token that signifies the end of a value list
                                     Token endValueList = new Token();
                                     endValueList.primClassif = Token.VALUE_LIST;
-                                    endValueList.tokenStr = "VALUE_LIST"; // This is simply to make my debugging of the post-fix list easier
+                                    endValueList.tokenStr = "VALUE_LIST"; // This is simply to make my debugging
+                                                                          // of the post-fix list easier
                                     outList.add(endValueList);
                                     break;
                                 }
@@ -1847,6 +1849,8 @@ public class Parser
                         // A token signifying the end of the function's parameters
                         Token endFuncArgs = new Token();
                         endFuncArgs.primClassif = Token.FUNC_ARGS;
+                        endFuncArgs.tokenStr = "FUNC_ARGS"; // This is simply to make my debugging
+                                                            // of the post-fix list easier
                             
                         // Execute the appropriate function
                         switch(token.tokenStr)
@@ -2295,7 +2299,66 @@ public class Parser
                                 
                             case "IN":
                             case "NOTIN":
+                                ResultValue resTopElem = resultStack.pop();
+                                ResultArray resArrValueList;
                                 
+                                // Check if the second parameter to the function is a value list
+                                if(resTopElem.type == Token.VALUE_LIST)
+                                {
+                                    // The stack contains a value list, so convert into an array
+                                    resArrValueList = new ResultArray();
+                                    resArrValueList.structure = STIdentifier.FIXED_ARRAY;
+                                    
+                                    // Keep adding values to from the value list to the array
+                                    while(! resultStack.isEmpty())
+                                    {
+                                        ResultValue popped = resultStack.pop();
+                                        
+                                        if(popped.type == Token.FUNC_ARGS)
+                                        {
+                                            break;
+                                        }
+                                        
+                                        // The value list should only consist of primitives
+                                        if(popped.structure != STIdentifier.PRIMITVE)
+                                        {
+                                            errorWithCurrent("The value list for '%s' can only consist of primitives, found array '%s'"
+                                                             , outToken.tokenStr, popped.value);
+                                        }
+                                        
+                                        resArrValueList.valueList.add(popped);
+                                    }
+                                }
+                                // The second parameter to the function is an array
+                                else
+                                {
+                                    // Check that the parameter is actually an array
+                                    if(resTopElem.structure == STIdentifier.PRIMITVE)
+                                    {
+                                        errorWithCurrent("Expected an array or value list after '%s', found '%s'"
+                                                         , outToken.tokenStr, resTopElem.value);
+                                    }
+                                    
+                                    resArrValueList = (ResultArray) resTopElem;
+                                }
+                                
+                                // Get the first parameter and check that it is a primitive
+                                ResultValue resElem = resultStack.pop();
+                                if(resElem.structure != STIdentifier.PRIMITVE)
+                                {
+                                    errorWithCurrent("Expected a primitive value as the first parameter for '%s', found array '%s'"
+                                                     , outToken.tokenStr, resElem.value);
+                                }
+                                
+                                ResultValue resBoolean = Utility.IN(this, resElem, resArrValueList);
+                                
+                                // If the function is 'NOTIN' just reverse the boolean result
+                                if(outToken.tokenStr.equals("NOTIN"))
+                                {
+                                    resBoolean = Utility.not(this, resBoolean);
+                                }
+                                
+                                resultStack.push(resBoolean);
                                 break;
                                 
                             default:
@@ -2319,6 +2382,12 @@ public class Parser
                     break;
                     
                 case Token.VALUE_LIST:
+                    // Put this as a result value on the stack to indicate to the
+                    // function 'IN' or 'NOTIN' that the second parameter is a value list
+                    // (i.e., all elements on the stack until FUNC_ARGS are part of the value list)
+                    ResultValue resValueList = new ResultValue();
+                    resValueList.type = Token.VALUE_LIST;
+                    resultStack.push(resValueList);
             }
         }
 
