@@ -1483,9 +1483,9 @@ public class Parser
             scan.getNext();
         }
         
-        // Get the next token as long as it isn't an expression delimiter
+        // Get the next token as long as it isn't an expression delimiter or the end of file
         while((scan.currentToken.primClassif != Token.CONTROL) && (! exprDelimiters.contains(scan.currentToken.tokenStr))
-                                                               && (! assignmentTokens.contains(scan.currentToken.tokenStr)))
+               && (scan.currentToken.primClassif != Token.EOF) && (! assignmentTokens.contains(scan.currentToken.tokenStr)))
         {
             Token token = scan.currentToken;
             switch(token.primClassif)
