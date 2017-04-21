@@ -858,10 +858,11 @@ public class Utility
 
     /**
      * TODO: Do this
-     * @param parser
-     * @param date1
-     * @param date2
-     * @return
+     * This takes two dates and returns only the number of years between the two.
+     * @param parser - Userd for error messages.
+     * @param date1  - First date, in date format.
+     * @param date2  - Second date, in date format.
+     * @return       - The number of years between the two dates stored in a result value that is of type integer.
      * @throws ParserException
      */
     public static ResultValue dateAge(Parser parser, ResultValue date1, ResultValue date2) throws ParserException
