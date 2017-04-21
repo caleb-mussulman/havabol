@@ -1,6 +1,8 @@
 package havabol;
 
+import java.text.ParseException;
 import java.util.*;
+import java.text.SimpleDateFormat;
 
 /**
  * @desc Performs an operation on two numerics, stores the result as a ResultValue,
@@ -608,11 +610,11 @@ public class Utility
      *     String x = "Hello";
      *     String y = "World";
      *     String z = x # y; // Hello World
-     * @param parser              - Used for error handling.
-     * @param resParam1           - First value (object) for binary operation.
-     * @param resParam2           - Second value (object) for binary operation.
-     * @return                    - Returns a value (ResultValue Object Reference)
-     * @throws Exception          - ...
+     * @param parser          - Used for error handling.
+     * @param resParam1       - First value (object) for binary operation.
+     * @param resParam2       - Second value (object) for binary operation.
+     * @return                - Returns a value (ResultValue Object Reference)
+     * @throws Exception      - ...
      */
     public static ResultValue concat(Parser parser, ResultValue resParam1, ResultValue resParam2) throws Exception
     {
@@ -764,20 +766,23 @@ public class Utility
     /**
      * TODO: Determine how to handle a negative number being returned inside the result value.
      * TODO: This happens if date1 is of lesser value than date2.
+     * TODO: Make sure that the inputs to the function are not arrays.
      * Compares 2 dates to calculate a difference in the number of days between the 2.
      * @param parser - Used for error messages
-     * @param date1  - First date
-     * @param date2  - Second date
+     * @param date1  - First date, in date format.
+     * @param date2  - Second date, in date format.
      * @return - A result value object containing the difference in the 2 dates. This type is now an
-     * integer.
+     *           integer.
      * @throws ParserException
      */
-    public static ResultValue dateDiff(Parser parser, ResultValue date1, ResultValue date2) throws ParserException {
+    public static ResultValue dateDiff(Parser parser, ResultValue date1, ResultValue date2) throws ParserException
+    {
         int julian1;
         int julian2;
         int result;
         ResultValue dateDifference = new ResultValue();
 
+        // Validate both inputs
         if (!isValidDate(date1.value))
         {
             parser.errorWithCurrent("%s is not a valid date.", date1.value);
@@ -803,37 +808,50 @@ public class Utility
     }
 
     /**
-     * TODO: Do this
-     * @param parser
-     * @param date1
-     * @param date2
-     * @return
+     * TODO: Convert a clark julian to a regular date. The julian might need to be converted to a double
+     * TODO: in order to pass it to Math.round()
+     * This method takes a date and manipulates it based on a positive or negative integer. It moves the date forward
+     * or backward in time based on the number input into the method.
+     * @param parser - Userd for error messages.
+     * @param date   - This is a date format.
+     * @param days   - This is the number of days adjacent to the date parameter. This is an integer that can be
+     *                 positive or negative which compares the date to the future or past respectively.
+     * @return       - A result array that is type DATE and contains a valid date string as its value.
      * @throws ParserException
      */
-    public static ResultValue dateAdj(Parser parser, ResultValue date1, ResultValue date2) throws ParserException {
-        int julian1;
-        int julian2;
-        int result;
-        ResultValue dateAdj = null;
+    public static ResultValue dateAdj(Parser parser, ResultValue date, ResultValue days) throws ParserException, ParseException {
+        int julian;
+        String result;
+        ResultValue dateAdj = new ResultValue();
 
-        parser.error("Function 'dateAdj' has not been implemented yet");
-        
-        if (!isValidDate(date1.value))
+        parser.error("Function 'dateAdj' is not completely implemented yet.");
+
+        // Validate the input for date.
+        if (!isValidDate(date.value))
         {
-            parser.errorWithCurrent("%s is not a valid date.", date1.value);
+            parser.errorWithCurrent("%s is not a valid date.", date.value);
         }
 
-        if (!isValidDate(date2.value))
+        // Days must be in integer format.
+        if (days.type != Token.INTEGER)
         {
-            parser.errorWithCurrent("%s is not a valid date.", date2.value);
+            parser.errorWithCurrent("%s must be of type %s", days.value, Token.getType(parser, Token.INTEGER));
         }
 
-        // Compare to March
-        julian1 = dateToJulian(date1.value);
-        julian2 = dateToJulian(date2.value);
+        // Compare to March (really big number in the thousands.)
+        julian = dateToJulian(date.value);
 
-        // # of days between the two dates
-        result = julian1 - julian2;
+        // Add the number of days to the julian
+        int iDays = Integer.parseInt(days.value);
+        julian = julian + iDays;
+
+        // Convert the julian back to a date.
+        result = julianToDate(julian);
+
+        // Set the result value appropriately
+        dateAdj.value = result;
+        dateAdj.type  = Token.DATE;
+        dateAdj.structure = STIdentifier.PRIMITVE;
 
         return dateAdj;
     }
@@ -846,7 +864,8 @@ public class Utility
      * @return
      * @throws ParserException
      */
-    public static ResultValue dateAge(Parser parser, ResultValue date1, ResultValue date2) throws ParserException {
+    public static ResultValue dateAge(Parser parser, ResultValue date1, ResultValue date2) throws ParserException
+    {
         int julian1;
         int julian2;
         int result;
@@ -934,11 +953,24 @@ public class Utility
             year--;
         }
 
-        countDays = 365*year
-                + year/4 - year/100 + year/400
-                + (month * 306 + 5) / 10
-                + day;
+        countDays = 365*year                    // 365 days in a year
+                + year/4 - year/100 + year/400  // add a day for each leap year
+                + (month * 306 + 5) / 10        // Days per month plus 5 months for repeats.
+                + day;                          // add the days
         return countDays;
+    }
+
+    public static String julianToDate(int julian) throws ParseException {
+        String j = String.valueOf(julian);
+        String result = "";
+
+        Date date = new SimpleDateFormat("Myydd").parse(j);
+        String tempDate = new SimpleDateFormat("dd.MM.yyyy").format(date);
+
+        int day = 0;
+
+
+        return result;
     }
     
     /**
