@@ -808,8 +808,6 @@ public class Utility
     }
 
     /**
-     * TODO: Convert a clark julian to a regular date. The julian might need to be converted to a double
-     * TODO: in order to pass it to Math.round()
      * This method takes a date and manipulates it based on a positive or negative integer. It moves the date forward
      * or backward in time based on the number input into the method.
      * @param parser - Userd for error messages.
@@ -819,12 +817,10 @@ public class Utility
      * @return       - A result array that is type DATE and contains a valid date string as its value.
      * @throws ParserException
      */
-    public static ResultValue dateAdj(Parser parser, ResultValue date, ResultValue days) throws ParserException, ParseException {
-        int julian;
-        String result;
+    public static ResultValue dateAdj(Parser parser, ResultValue date, ResultValue days) throws ParserException, ParseException
+    {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         ResultValue dateAdj = new ResultValue();
-
-        parser.error("Function 'dateAdj' is not completely implemented yet.");
 
         // Validate the input for date.
         if (!isValidDate(date.value))
@@ -838,18 +834,27 @@ public class Utility
             parser.errorWithCurrent("%s must be of type %s", days.value, Token.getType(parser, Token.INTEGER));
         }
 
-        // Compare to March (really big number in the thousands.)
-        julian = dateToJulian(date.value);
+        // Break up the date for the gregorian calendar
+        int year = Integer.parseInt(date.value.substring(0, 4));
+        int month = Integer.parseInt(date.value.substring(5,7));
+        int day = Integer.parseInt(date.value.substring(8, 10));
 
-        // Add the number of days to the julian
-        int iDays = Integer.parseInt(days.value);
-        julian = julian + iDays;
+        Calendar calendar = new GregorianCalendar(year, month, day);
 
-        // Convert the julian back to a date.
-        result = julianToDate(julian);
+        // Days to adjust the date by.
+        // NOTE: This exception will only be raised if there is an error with coerce.
+        try
+        {
+            int daysAdjustment = Integer.parseInt(days.value);
+            calendar.add(Calendar.DAY_OF_MONTH, daysAdjustment);
+        }
+        catch (Exception e)
+        {
+            parser.errorWithCurrent("dateAdj parameter 3 is of type %s but failed to parse as a valid integer.", Token.getType(parser, Token.INTEGER));
+        }
 
-        // Set the result value appropriately
-        dateAdj.value = result;
+        // Store the new calendar date in the result value object.
+        dateAdj.value = sdf.format(calendar.getTime());
         dateAdj.type  = Token.DATE;
         dateAdj.structure = STIdentifier.PRIMITVE;
 
