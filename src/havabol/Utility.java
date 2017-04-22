@@ -1,5 +1,7 @@
 package havabol;
 
+import sun.util.resources.en.CalendarData_en;
+
 import java.text.ParseException;
 import java.util.*;
 import java.text.SimpleDateFormat;
@@ -839,14 +841,20 @@ public class Utility
         int month = Integer.parseInt(date.value.substring(5,7));
         int day = Integer.parseInt(date.value.substring(8, 10));
 
-        Calendar calendar = new GregorianCalendar(year, month, day);
+        Calendar cDate = new GregorianCalendar(year, month, day);
+
+        // Validate the java converted date.
+        if (!isValidDate(sdf.format(cDate.getTime())))
+        {
+            parser.errorWithCurrent("%s is not a valid date.", sdf.format(cDate.getTime()));
+        }
 
         // Days to adjust the date by.
         // NOTE: This exception will only be raised if there is an error with coerce.
         try
         {
             int daysAdjustment = Integer.parseInt(days.value);
-            calendar.add(Calendar.DAY_OF_MONTH, daysAdjustment);
+            cDate.add(Calendar.DAY_OF_MONTH, daysAdjustment);
         }
         catch (Exception e)
         {
@@ -854,7 +862,7 @@ public class Utility
         }
 
         // Store the new calendar date in the result value object.
-        dateAdj.value = sdf.format(calendar.getTime());
+        dateAdj.value = sdf.format(cDate.getTime());
         dateAdj.type  = Token.DATE;
         dateAdj.structure = STIdentifier.PRIMITVE;
 
@@ -862,7 +870,6 @@ public class Utility
     }
 
     /**
-     * TODO: Do this
      * This takes two dates and returns only the number of years between the two.
      * @param parser - Userd for error messages.
      * @param date1  - First date, in date format.
@@ -872,13 +879,10 @@ public class Utility
      */
     public static ResultValue dateAge(Parser parser, ResultValue date1, ResultValue date2) throws ParserException
     {
-        int julian1;
-        int julian2;
-        int result;
-        ResultValue dateAge = null;
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        ResultValue dateAge = new ResultValue();
 
-        parser.error("Function 'dateAge' has not been implemented yet");
-        
+        // Validate the input dates.
         if (!isValidDate(date1.value))
         {
             parser.errorWithCurrent("%s is not a valid date.", date1.value);
@@ -890,11 +894,38 @@ public class Utility
         }
 
         // Compare to March
-        julian1 = dateToJulian(date1.value);
-        julian2 = dateToJulian(date2.value);
+        // Break up the first date for the gregorian calendar
+        int year1 = Integer.parseInt(date1.value.substring(0, 4));
+        int month1 = Integer.parseInt(date1.value.substring(5,7));
+        int day1 = Integer.parseInt(date1.value.substring(8, 10));
 
-        // # of days between the two dates
-        result = julian1 - julian2;
+        // Break up the second date for the gregorian calendar
+        int year2 = Integer.parseInt(date2.value.substring(0, 4));
+        int month2 = Integer.parseInt(date2.value.substring(5,7));
+        int day2 = Integer.parseInt(date2.value.substring(8, 10));
+
+        // Set dates
+        Calendar cDate1 = new GregorianCalendar(year1, month1, day1);
+        Calendar cDate2 = new GregorianCalendar(year2, month2, day2);
+
+        // Validate after java date conversion.
+        if (!isValidDate(sdf.format(cDate1)))
+        {
+            parser.errorWithCurrent("%s is not a valid date.", sdf.format(cDate1.getTime()));
+        }
+
+        if (!isValidDate(sdf.format(cDate2)))
+        {
+            parser.errorWithCurrent("%s is not a valid date.", sdf.format(cDate2.getTime()));
+        }
+
+        // Calculate years difference (YEAR1 - YEAR2)
+        int numYearsApart = cDate1.get(Calendar.YEAR) - cDate2.get(Calendar.YEAR);
+
+        // Store the difference in years in the result value object.
+        dateAge.value = String.valueOf(numYearsApart);
+        dateAge.type  = Token.INTEGER;
+        dateAge.structure = STIdentifier.PRIMITVE;
 
         return dateAge;
     }
