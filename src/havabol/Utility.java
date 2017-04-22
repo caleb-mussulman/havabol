@@ -909,12 +909,12 @@ public class Utility
         Calendar cDate2 = new GregorianCalendar(year2, month2, day2);
 
         // Validate after java date conversion.
-        if (!isValidDate(sdf.format(cDate1)))
+        if (!isValidDate(sdf.format(cDate1.getTime())))
         {
             parser.errorWithCurrent("%s is not a valid date.", sdf.format(cDate1.getTime()));
         }
 
-        if (!isValidDate(sdf.format(cDate2)))
+        if (!isValidDate(sdf.format(cDate2.getTime())))
         {
             parser.errorWithCurrent("%s is not a valid date.", sdf.format(cDate2.getTime()));
         }
