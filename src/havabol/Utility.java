@@ -922,6 +922,13 @@ public class Utility
         // Calculate years difference (YEAR1 - YEAR2)
         int numYearsApart = cDate1.get(Calendar.YEAR) - cDate2.get(Calendar.YEAR);
 
+        // Reduce the year if the following criteria is met.
+        if (cDate2.get(Calendar.MONTH) > cDate1.get(Calendar.MONTH) ||
+                cDate2.get(Calendar.MONTH) == cDate1.get(Calendar.MONTH) && cDate2.get(Calendar.DATE) > cDate1.get(Calendar.DATE))
+        {
+            numYearsApart--;
+        }
+
         // Store the difference in years in the result value object.
         dateAge.value = String.valueOf(numYearsApart);
         dateAge.type  = Token.INTEGER;
