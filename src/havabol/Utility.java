@@ -710,7 +710,7 @@ public class Utility
         String result = "";
         
         Numeric nOp1 = new Numeric(parser, resval1, "^", "1st operand");
-        Numeric nOp2; 
+        Numeric nOp2;
         
         coerce(parser, resval1.type, resval2, "^");
         nOp2 = new Numeric(parser, resval2, "^", "2nd operand");
@@ -794,12 +794,12 @@ public class Utility
         // Validate both inputs
         if (!isValidDate(date1.value))
         {
-            parser.errorWithCurrent("%s is not a valid date.", date1.value);
+            parser.errorWithCurrent("The first argument to dateDiff is not a valid date. | Value : %s |", date1.value);
         }
 
         if (!isValidDate(date2.value))
         {
-            parser.errorWithCurrent("%s is not a valid date.", date2.value);
+            parser.errorWithCurrent("The second argument to dateDiff is not a valid date. | Value : %s |", date2.value);
         }
 
         // Compare to March
@@ -841,13 +841,13 @@ public class Utility
         // Validate the input for date.
         if (!isValidDate(date.value))
         {
-            parser.errorWithCurrent("%s is not a valid date.", date.value);
+            parser.errorWithCurrent("The first argument to dateAdj is not a valid date. | Value : %s |", date.value);
         }
 
         // Days must be in integer format.
         if (days.type != Token.INTEGER)
         {
-            parser.errorWithCurrent("%s must be of type %s", days.value, Token.getType(parser, Token.INTEGER));
+            parser.errorWithCurrent("The second argument to dateAdj must be of type %s. | Value : %s |", Token.getType(parser, Token.INTEGER), days.value);
         }
 
         // Break up the date for the gregorian calendar
@@ -906,12 +906,12 @@ public class Utility
         // Validate the input dates.
         if (!isValidDate(date1.value))
         {
-            parser.errorWithCurrent("%s is not a valid date.", date1.value);
+            parser.errorWithCurrent("The first argument to dateAge is not a valid date. | Value : %s |", date1.value);
         }
 
         if (!isValidDate(date2.value))
         {
-            parser.errorWithCurrent("%s is not a valid date.", date2.value);
+            parser.errorWithCurrent("The second argument to dateAge is not a valid date. | Value : %s |", date2.value);
         }
 
         // Compare to March
