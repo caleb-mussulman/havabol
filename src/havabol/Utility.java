@@ -699,7 +699,7 @@ public class Utility
         //Binary operands may be of subclass ResultArray. This is not valid for this function.
         if(resParam1 instanceof ResultArray || resParam2 instanceof ResultArray)
         {
-            parser.error("Operation '^' expected Primitive parameters, Found '%s' and '%s' may be Array(s)"
+            parser.errorWithCurrent("Operation '^' expected Primitive parameters, Found '%s' and '%s' may be Array(s)"
                         , resParam1.value, resParam2.value);
         }
         // Must get a copy of the passed in result values so that the
@@ -784,15 +784,12 @@ public class Utility
         int result;
         ResultValue dateDifference = new ResultValue();
 
-        // Check that the inputs are primatives only.
-        if (date1.structure != STIdentifier.PRIMITVE) {
-            parser.errorWithCurrent("Illegal argument: %s must be a primative.", date1.value);
+        // Binary operands may be of subclass ResultArray. This is not valid for this function.
+        if(date1 instanceof ResultArray || date2 instanceof ResultArray)
+        {
+            parser.errorWithCurrent("Method 'dateDiff' expected Primitive parameters, Found '%s' and '%s' may be Array(s)"
+                    , date1.value, date2.value);
         }
-
-        if (date2.structure != STIdentifier.PRIMITVE) {
-            parser.errorWithCurrent("Illegal argument: %s must be a primative.", date2.value);
-        }
-
 
         // Validate both inputs
         if (!isValidDate(date1.value))
@@ -834,14 +831,11 @@ public class Utility
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         ResultValue dateAdj = new ResultValue();
 
-        // Check that the input for a date is a primatives only.
-        if (date.structure != STIdentifier.PRIMITVE) {
-            parser.errorWithCurrent("Illegal argument: %s must be a primative.", date.value);
-        }
-
-        // Check that the input for a day is a primatives only.
-        if (days.structure != STIdentifier.PRIMITVE) {
-            parser.errorWithCurrent("Illegal argument: %s must be a primative.", days.value);
+        // Binary operands may be of subclass ResultArray. This is not valid for this function.
+        if(date instanceof ResultArray || days instanceof ResultArray)
+        {
+            parser.errorWithCurrent("Method 'dateAdj' expected Primitive parameters, Found '%s' and '%s' may be Array(s)"
+                    , date.value, days.value);
         }
 
         // Validate the input for date.
@@ -902,13 +896,11 @@ public class Utility
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         ResultValue dateAge = new ResultValue();
 
-        // Check that the inputs are primatives only.
-        if (date1.structure != STIdentifier.PRIMITVE) {
-            parser.errorWithCurrent("Illegal argument: %s must be a primative.", date1.value);
-        }
-
-        if (date2.structure != STIdentifier.PRIMITVE) {
-            parser.errorWithCurrent("Illegal argument: %s must be a primative.", date2.value);
+        // Binary operands may be of subclass ResultArray. This is not valid for this function.
+        if(date1 instanceof ResultArray || date2 instanceof ResultArray)
+        {
+            parser.errorWithCurrent("Method 'dateAge' expected Primitive parameters, Found '%s' and '%s' may be Array(s)"
+                    , date1.value, date2.value);
         }
 
         // Validate the input dates.
