@@ -794,12 +794,12 @@ public class Utility
         // Validate both inputs
         if (!isValidDate(date1.value))
         {
-            parser.errorWithCurrent("The first argument to dateDiff is not a valid date. | Value : %s |", date1.value);
+            parser.errorWithCurrent("The first argument to dateDiff is not in form yyyy-MM-dd. | Value : %s |", date1.value);
         }
 
         if (!isValidDate(date2.value))
         {
-            parser.errorWithCurrent("The second argument to dateDiff is not a valid date. | Value : %s |", date2.value);
+            parser.errorWithCurrent("The second argument to dateDiff is not in form yyyy-MM-dd. | Value : %s |", date2.value);
         }
 
         // Compare to March
@@ -841,7 +841,7 @@ public class Utility
         // Validate the input for date.
         if (!isValidDate(date.value))
         {
-            parser.errorWithCurrent("The first argument to dateAdj is not a valid date. | Value : %s |", date.value);
+            parser.errorWithCurrent("The first argument to dateAdj is not in form yyyy-MM-dd. | Value : %s |", date.value);
         }
 
         // Days must be in integer format.
@@ -906,12 +906,12 @@ public class Utility
         // Validate the input dates.
         if (!isValidDate(date1.value))
         {
-            parser.errorWithCurrent("The first argument to dateAge is not a valid date. | Value : %s |", date1.value);
+            parser.errorWithCurrent("The first argument to dateAge is not in form yyyy-MM-dd. | Value : %s |", date1.value);
         }
 
         if (!isValidDate(date2.value))
         {
-            parser.errorWithCurrent("The second argument to dateAge is not a valid date. | Value : %s |", date2.value);
+            parser.errorWithCurrent("The second argument to dateAge is not in form yyyy-MM-dd. | Value : %s |", date2.value);
         }
 
         // Compare to March
