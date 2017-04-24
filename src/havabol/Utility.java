@@ -947,7 +947,14 @@ public class Utility
         if (cDate2.get(Calendar.MONTH) > cDate1.get(Calendar.MONTH) ||
                 cDate2.get(Calendar.MONTH) == cDate1.get(Calendar.MONTH) && cDate2.get(Calendar.DATE) > cDate1.get(Calendar.DATE))
         {
+
             numYearsApart--;
+        }
+
+        // Date1 comes before Date2 in time.
+        if (numYearsApart < 0)
+        {
+            numYearsApart++;
         }
 
         // Store the difference in years in the result value object.
