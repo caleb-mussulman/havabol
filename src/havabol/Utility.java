@@ -855,7 +855,9 @@ public class Utility
         int month = Integer.parseInt(date.value.substring(5,7));
         int day = Integer.parseInt(date.value.substring(8, 10));
 
-        Calendar cDate = new GregorianCalendar(year, month, day);
+        // Make a new java date
+        Calendar cDate = new GregorianCalendar(year, month-1, day);
+
 
         // Validate the java converted date.
         if (!isValidDate(sdf.format(cDate.getTime())))
@@ -926,8 +928,8 @@ public class Utility
         int day2 = Integer.parseInt(date2.value.substring(8, 10));
 
         // Set dates
-        Calendar cDate1 = new GregorianCalendar(year1, month1, day1);
-        Calendar cDate2 = new GregorianCalendar(year2, month2, day2);
+        Calendar cDate1 = new GregorianCalendar(year1, month1-1, day1);
+        Calendar cDate2 = new GregorianCalendar(year2, month2-1, day2);
 
         // Validate after java date conversion.
         if (!isValidDate(sdf.format(cDate1.getTime())))
