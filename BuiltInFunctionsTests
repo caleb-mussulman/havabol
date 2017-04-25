@@ -1,0 +1,64 @@
+// *************************************** WORKING ************************************************
+// STRING FUNCTIONS
+String sent = "This is a test string.";
+String spaces = "      ";
+String empty = "";
+
+print("length of test : ", LENGTH(sent));
+print("contains spaces? ", SPACES(sent));
+print("");
+
+print("length of spaces : ", LENGTH(spaces));
+print("contains spaces? ", SPACES(spaces));
+print("");
+print("length of empty : ", LENGTH(empty));
+print("contains spaces? ", SPACES(empty));
+print("");
+
+// ARRAY FUNCTIONS
+String szArr[] = "This", "is", "a", "test", "", "";
+String szFixedArr[10] = "Fixed", "arrays", "are", "super", "legit", "";
+Int iFixedArr[5] = 1, 2, 3, 4;
+
+print("Number of elements in szArr[] : ", ELEM(szArr));
+print("Number of elements in szArr[] : ", MAXELEM(szArr));
+print("");
+
+print("Number of elements in szFixedArr[] : ", ELEM(szFixedArr));
+print("Number of elements in szFixedArr[] : ", MAXELEM(szFixedArr));
+print("");
+
+print("Number of elements in iFixedArr[] : ", ELEM(iFixedArr));
+print("Number of elements in iFixedArr[] : ", MAXELEM(iFixedArr));
+print("");
+
+Int x = 54321;
+print("length of x : ", LENGTH(x));
+print("contains spaces? ", SPACES(x));
+print("");
+
+// IN/NOTIN
+String inArr = "string.";
+Int f;
+f = 10;
+Int y;
+y = 1000;
+Int numArr[] = 1, 8, 6, 14, 10, 31, 100;
+Int numArr2[5] = 1, 10, 100, 1000, 10000;
+
+print("var inArr in ? : ", inArr IN {"this", "is", "string."});
+print("var inArr not in ? : ", inArr NOTIN {"this", "is", "string."});
+print("var f in ? : ", f IN {1, 2, 3, 6, 10, 31, 24});
+print("var y in numArr : ", y IN numArr2); // breaks??
+print("var f not in ? : ", f NOTIN {1, 2, 3, 6, 10, 31, 24});
+print("constant 10 in ? : ", 10 IN {1, 2, 3, 6, 10, 31, 24});
+print("constant 15 in ? : ", 15 IN {1, 2, 3, 6, 10, 31, 24});
+
+// ************************************** NOT WORKING **********************************************
+//print("length of x : ", LENGTH(szArr));
+//print("contains spaces? ", SPACES(szArr));
+print("");
+
+//print("Number of elements in szArr[] : ", ELEM(x));
+//print("Number of elements in szArr[] : ", MAXELEM(x));
+print("");
