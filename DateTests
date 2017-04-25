@@ -71,5 +71,29 @@ print(date5, "adjusted by 30 days : ", dateAdj(date5, b);
 print(date5, "adjusted by 60 days : ", dateAdj(date5, c);
 print(date5, "adjusted by 120 days : ", dateAdj(date5, d);
 print(date5, "adjusted by 365 days : ", dateAdj(date5, e);
+print("");
+
+Float a = "15.5";
+Float b = "30.3";
+Float c = "60.6";
+Float d = "120.12";
+Float e = "365.365";
+print(date5, "adjusted by 15 days : ", dateAdj(date5, a);
+print(date5, "adjusted by 30 days : ", dateAdj(date5, b);
+print(date5, "adjusted by 60 days : ", dateAdj(date5, c);
+print(date5, "adjusted by 120 days : ", dateAdj(date5, d);
+print(date5, "adjusted by 365 days : ", dateAdj(date5, e);
+print("");
 
 // ********************************* NOT WORKING ***********************************
+String iDate[10];
+iDate[0] = "2016-02-04";
+iDate[1] = "1957-12-04";
+iDate[2] = "1999-12-32";
+String badYear = "-991-10-31";
+String overMonth = "1999-13-03";
+
+//print(dateDiff(iDate, iDate));
+//print(dateDiff(iDate[2], iDate[0]));
+//print(dateDiff(badYear, iDate[0]);
+print(dateAge(overMonth, iDate[1]);

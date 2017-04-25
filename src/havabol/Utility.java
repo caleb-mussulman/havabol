@@ -761,8 +761,8 @@ public class Utility
             
             return true;
         }
-        
-        return false;
+        else
+            return false;
     }
 
     /**
