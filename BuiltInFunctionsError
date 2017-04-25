@@ -1,0 +1,12 @@
+//print("length of x : ", LENGTH(szArr));
+//print("contains spaces? ", SPACES(szArr));
+print("");
+
+//print("Number of elements in szArr[] : ", ELEM(x));
+//print("Number of elements in szArr[] : ", MAXELEM(x));
+print("");
+
+// Coercing errors going from string to integer.
+//print("var f in string array : ", f IN {"nuts", "23", "49"});
+//print("var f in testingSent : ", f IN testingSent);
+print("");
