@@ -1,4 +1,4 @@
-// *************************************** WORKING ************************************************
+// *************************************** PRODUCES RESULTS ************************************************
 // STRING FUNCTIONS
 String sent = "This is a test string.";
 String spaces = "      ";
@@ -58,6 +58,10 @@ print("");
 
 // IN/NOTIN
 String inArr = "string.";
+String word;
+word = "testing";
+String testingSent[] = "testing", "this", "sentence. Oh my!";
+String integers[3] = "10", "20", "30";
 Int f;
 f = 10;
 Int y;
@@ -65,20 +69,42 @@ y = 1000;
 Int numArr[] = 1, 8, 6, 14, 10, 31, 100;
 Int numArr2[5] = 1, 10, 100, 1000, 10000;
 
+print("STRINGS");
 print("var inArr in ? : ", inArr IN {"this", "is", "string."});
 print("var inArr not in ? : ", inArr NOTIN {"this", "is", "string."});
+print("string fruit in ? : ", "fruit" IN {"Vegtable", "Oat", "Fruit", "fruit"});
+print("string fruit not in ? : ", "fruit" NOTIN {"Vegtable", "Oat", "Fruit", "fruit"});
+print("string word in testingSent : ", word IN testingSent);
+print("string word not in testingSent : ", word NOTIN testingSent);
+print("");
+print("INTEGERS");
 print("var f in ? : ", f IN {1, 2, 3, 6, 10, 31, 24});
 print("var f in numArr : ", f IN numArr2);
 print("var y in numArr2 : ", y IN numArr2);
 print("var f not in ? : ", f NOTIN {1, 2, 3, 6, 10, 31, 24});
 print("constant 10 in ? : ", 10 IN {1, 2, 3, 6, 10, 31, 24});
 print("constant 15 in ? : ", 15 IN {1, 2, 3, 6, 10, 31, 24});
+print("");
+print("MIX");
+print("string fruit in int array : ", "fruit" IN {10, 30, 40});
+print("string fruit not in int array : ", "fruit" NOTIN {10, 30, 40});
+print("string fruit in numArr : ", "fruit" IN numArr);
+print("string fruit not in numArr : ", "fruit" NOTIN numArr);
+print("var f in string array : ", f IN {"15", "23", "49"});
+print("var f not in string array : ", f NOTIN {"15", "23", "49"});
+print("var f in integers : ", f IN integers);
+print("var f not in integers : ", f NOTIN integers);
 
-// ************************************** NOT WORKING **********************************************
+// ************************************** PRODUCES ERRORS **********************************************
 //print("length of x : ", LENGTH(szArr));
 //print("contains spaces? ", SPACES(szArr));
 print("");
 
 //print("Number of elements in szArr[] : ", ELEM(x));
 //print("Number of elements in szArr[] : ", MAXELEM(x));
+print("");
+
+// Coercing errors going from string to integer.
+//print("var f in string array : ", f IN {"nuts", "23", "49"});
+//print("var f in testingSent : ", f IN testingSent);
 print("");
