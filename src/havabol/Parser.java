@@ -1869,6 +1869,29 @@ public class Parser
                                     error("Expecting an operand, found '%s'", token.tokenStr);
                                 }
                                 
+                                // Check that the function is followed by '{' or an array
+                                if(! scan.nextToken.tokenStr.equals("{"))
+                                {
+                                    // It is not '{'. If it is an array it must be represented by a variable
+                                    if(scan.nextToken.primClassif == Token.OPERAND && scan.nextToken.subClassif == Token.IDENTIFIER)
+                                    {
+                                        STIdentifier STVar = (STIdentifier) symbolTable.getSymbol(scan.nextToken.tokenStr);
+                                        
+                                        // Check if the identifier is not an array
+                                        if(STVar.structure == STIdentifier.PRIMITVE)
+                                        {
+                                            error("Expected an array or value list after '%s'"
+                                                  , scan.currentToken.tokenStr); 
+                                        }
+                                    }
+                                    // It is not '{' or an array
+                                    else
+                                    {
+                                        error("Expected an array or value list after '%s'"
+                                                , scan.currentToken.tokenStr); 
+                                    }
+                                }
+                                
                                 // Add a token signifying the end of the value list
                                 outList.add(endFuncArgs);
                                 postfixStack.push(token);
@@ -2336,7 +2359,7 @@ public class Parser
                                     ResultValue resNextArg = resultStack.pop();
                                     if(resNextArg.type != Token.FUNC_ARGS)
                                     {
-                                        errorWithCurrent("Expected only one array or value list after '%s', also found '%s'"
+                                        errorWithCurrent("Expected only one array or value list after '%s', found '%s'"
                                                          , outToken.tokenStr, resTopElem.value); // Parameters are reversed on stack
                                     }
                                     
