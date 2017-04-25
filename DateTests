@@ -83,3 +83,24 @@ print(date5, "adjusted by 60 days : ", dateAdj(date5, c);
 print(date5, "adjusted by 120 days : ", dateAdj(date5, d);
 print(date5, "adjusted by 365 days : ", dateAdj(date5, e);
 print("");
+
+Date aprilFools = "2017-04-01";
+Date earlier = "2015-04-01";
+print ("date1 =", aprilFools, "date2 =", earlier, "diff =", dateDiff(aprilFools, earlier);
+print ("date =", aprilFools, "adjusted by 1 =", dateAdj(aprilFools, 1));
+print ("date =", aprilFools, "adjusted by -40 =", dateAdj(aprilFools, -40));
+print ("date =", aprilFools, "adjusted by -365 =", dateAdj(aprilFools, -365));
+print ("date =", aprilFools, "adjusted by -731 =", dateAdj(aprilFools, -731));
+print("");
+
+Date recent = "2017-02-01";
+Date other = "2015-02-01";
+print ("date1 =", recent, "date2 =", other, "age =", dateAge(recent, other));
+print("");
+
+Date recent = "2017-02-01";
+String fruit = "1957-12-04";
+print ("date1 =", recent, "date2 =", fruit, "age =", dateAge(recent, fruit));
+String oldFruit = "1953-12-12";
+print ("date1 =", recent, "date2 =", oldFruit, "age =", dateAge(recent, oldFruit));
+print("");
