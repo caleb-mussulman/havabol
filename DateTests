@@ -1,0 +1,40 @@
+// *********************************** WORKING *************************************
+String date1 = "2345-02-01";
+String date2 = "2016-02-07";
+
+String date3 = "2016-02-07";
+String date4 = "2345-02-01";
+
+String date5 = "1957-12-04";
+String date6 = "2017-02-01";
+
+// Forward Difference
+print("The difference in days is : ", dateDiff(date1, date2);
+print("The difference in years is : ", dateAge(date1, date2);
+
+// Backward Difference
+print("The difference in days is : ", dateDiff(date3, date4);
+print("The difference in years is : ", dateAge(date3, date4);
+
+// Backward Difference 2
+print("The difference in days is : ", dateDiff(date5, date6);
+print("The difference in years is : ", dateAge(date5, date6);
+
+// Forward Date Adjustments
+print(date1, "adjusted by 15 days : ", dateAdj(date1, 15);
+print(date1, "adjusted by 30 days : ", dateAdj(date1, 30);
+print(date1, "adjusted by 60 days : ", dateAdj(date1, 60);
+print(date1, "adjusted by 120 days : ", dateAdj(date1, 120);
+print("");
+print(date2, "adjusted by 15 days : ", dateAdj(date2, 15);
+print(date2, "adjusted by 30 days : ", dateAdj(date2, 30);
+print(date2, "adjusted by 60 days : ", dateAdj(date2, 60);
+print(date2, "adjusted by 120 days : ", dateAdj(date2, 120);
+print("");
+print(date5, "adjusted by 15 days : ", dateAdj(date5, 15);
+print(date5, "adjusted by 30 days : ", dateAdj(date5, 30);
+print(date5, "adjusted by 60 days : ", dateAdj(date5, 60);
+print(date5, "adjusted by 120 days : ", dateAdj(date5, 120);
+
+
+// ********************************* NOT WORKING ***********************************
