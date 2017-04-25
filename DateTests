@@ -25,16 +25,51 @@ print(date1, "adjusted by 15 days : ", dateAdj(date1, 15);
 print(date1, "adjusted by 30 days : ", dateAdj(date1, 30);
 print(date1, "adjusted by 60 days : ", dateAdj(date1, 60);
 print(date1, "adjusted by 120 days : ", dateAdj(date1, 120);
+print(date1, "adjusted by 365 days : ", dateAdj(date1, 365);
 print("");
 print(date2, "adjusted by 15 days : ", dateAdj(date2, 15);
 print(date2, "adjusted by 30 days : ", dateAdj(date2, 30);
 print(date2, "adjusted by 60 days : ", dateAdj(date2, 60);
 print(date2, "adjusted by 120 days : ", dateAdj(date2, 120);
+print(date2, "adjusted by 365 days : ", dateAdj(date2, 365);
 print("");
 print(date5, "adjusted by 15 days : ", dateAdj(date5, 15);
 print(date5, "adjusted by 30 days : ", dateAdj(date5, 30);
 print(date5, "adjusted by 60 days : ", dateAdj(date5, 60);
 print(date5, "adjusted by 120 days : ", dateAdj(date5, 120);
+print(date5, "adjusted by 365 days : ", dateAdj(date5, 365);
+print("");
 
+// Backward Date Adjustments
+print(date5, "adjusted by -15 days : ", dateAdj(date5, -15);
+print(date5, "adjusted by -30 days : ", dateAdj(date5, -30);
+print(date5, "adjusted by -60 days : ", dateAdj(date5, -60);
+print(date5, "adjusted by -120 days : ", dateAdj(date5, -120);
+print(date5, "adjusted by -365 days : ", dateAdj(date5, -365);
+print("");
+
+// Variable Date Adjustments
+Int a = 15;
+Int b = 30;
+Int c = 60;
+Int d = 120;
+Int e = 365;
+print(date5, "adjusted by 15 days : ", dateAdj(date5, a);
+print(date5, "adjusted by 30 days : ", dateAdj(date5, b);
+print(date5, "adjusted by 60 days : ", dateAdj(date5, c);
+print(date5, "adjusted by 120 days : ", dateAdj(date5, d);
+print(date5, "adjusted by 365 days : ", dateAdj(date5, e);
+print("");
+
+String a = "15";
+String b = "30";
+String c = "60";
+String d = "120";
+String e = "365";
+print(date5, "adjusted by 15 days : ", dateAdj(date5, a);
+print(date5, "adjusted by 30 days : ", dateAdj(date5, b);
+print(date5, "adjusted by 60 days : ", dateAdj(date5, c);
+print(date5, "adjusted by 120 days : ", dateAdj(date5, d);
+print(date5, "adjusted by 365 days : ", dateAdj(date5, e);
 
 // ********************************* NOT WORKING ***********************************

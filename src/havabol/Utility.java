@@ -766,18 +766,15 @@ public class Utility
     }
 
     /**
-     * TODO: Determine how to handle a negative number being returned inside the result value.
-     * TODO: This happens if date1 is of lesser value than date2.
-     * TODO: Make sure that the inputs to the function are not arrays.
      * Compares 2 dates to calculate a difference in the number of days between the 2.
      * @param parser - Used for error messages
-     * @param date1  - First date, in date format.
-     * @param date2  - Second date, in date format.
+     * @param resParam1  - First date, in date format.
+     * @param resParam2  - Second date, in date format.
      * @return - A result value object containing the difference in the 2 dates. This type is now an
      *           integer.
      * @throws ParserException
      */
-    public static ResultValue dateDiff(Parser parser, ResultValue date1, ResultValue date2) throws ParserException
+    public static ResultValue dateDiff(Parser parser, ResultValue resParam1, ResultValue resParam2) throws ParserException
     {
         int julian1;
         int julian2;
@@ -785,26 +782,26 @@ public class Utility
         ResultValue dateDifference = new ResultValue();
 
         // Binary operands may be of subclass ResultArray. This is not valid for this function.
-        if(date1 instanceof ResultArray || date2 instanceof ResultArray)
+        if(resParam1 instanceof ResultArray || resParam2 instanceof ResultArray)
         {
             parser.errorWithCurrent("Method 'dateDiff' expected Primitive parameters, Found '%s' and '%s' may be Array(s)"
-                    , date1.value, date2.value);
+                    , resParam1.value, resParam2.value);
         }
 
         // Validate both inputs
-        if (!isValidDate(date1.value))
+        if (!isValidDate(resParam1.value))
         {
-            parser.errorWithCurrent("The first argument to dateDiff is not in form yyyy-MM-dd. | Value : %s |", date1.value);
+            parser.errorWithCurrent("The first argument to dateDiff is not in form yyyy-MM-dd. | Value : %s |", resParam1.value);
         }
 
-        if (!isValidDate(date2.value))
+        if (!isValidDate(resParam2.value))
         {
-            parser.errorWithCurrent("The second argument to dateDiff is not in form yyyy-MM-dd. | Value : %s |", date2.value);
+            parser.errorWithCurrent("The second argument to dateDiff is not in form yyyy-MM-dd. | Value : %s |", resParam2.value);
         }
 
         // Compare to March
-        julian1 = dateToJulian(date1.value);
-        julian2 = dateToJulian(date2.value);
+        julian1 = dateToJulian(resParam1.value);
+        julian2 = dateToJulian(resParam2.value);
 
         // # of days between the two dates
         result = julian1 - julian2;
@@ -820,40 +817,37 @@ public class Utility
      * This method takes a date and manipulates it based on a positive or negative integer. It moves the date forward
      * or backward in time based on the number input into the method.
      * @param parser - Userd for error messages.
-     * @param date   - This is a date format.
-     * @param days   - This is the number of days adjacent to the date parameter. This is an integer that can be
+     * @param resParam1   - This is a date format.
+     * @param resParam2   - This is the number of days adjacent to the date parameter. This is an integer that can be
      *                 positive or negative which compares the date to the future or past respectively.
      * @return       - A result array that is type DATE and contains a valid date string as its value.
      * @throws ParserException
      */
-    public static ResultValue dateAdj(Parser parser, ResultValue date, ResultValue days) throws ParserException, ParseException
-    {
+    public static ResultValue dateAdj(Parser parser, ResultValue resParam1, ResultValue resParam2) throws Exception {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         ResultValue dateAdj = new ResultValue();
 
         // Binary operands may be of subclass ResultArray. This is not valid for this function.
-        if(date instanceof ResultArray || days instanceof ResultArray)
+        if(resParam1 instanceof ResultArray || resParam2 instanceof ResultArray)
         {
             parser.errorWithCurrent("Method 'dateAdj' expected Primitive parameters, Found '%s' and '%s' may be Array(s)"
-                    , date.value, days.value);
+                    , resParam1.value, resParam2.value);
         }
 
         // Validate the input for date.
-        if (!isValidDate(date.value))
+        if (!isValidDate(resParam1.value))
         {
-            parser.errorWithCurrent("The first argument to dateAdj is not in form yyyy-MM-dd. | Value : %s |", date.value);
+            parser.errorWithCurrent("The first argument to dateAdj is not in form yyyy-MM-dd. | Value : %s |", resParam1.value);
         }
 
-        // Days must be in integer format.
-        if (days.type != Token.INTEGER)
-        {
-            parser.errorWithCurrent("The second argument to dateAdj must be of type %s. | Value : %s |", Token.getType(parser, Token.INTEGER), days.value);
-        }
+        // Coerce days to integer
+        ResultValue days = Utility.getResultValueCopy(resParam2);
+        Utility.coerce(parser, Token.INTEGER, days, "dateAdj");
 
         // Break up the date for the gregorian calendar
-        int year = Integer.parseInt(date.value.substring(0, 4));
-        int month = Integer.parseInt(date.value.substring(5,7));
-        int day = Integer.parseInt(date.value.substring(8, 10));
+        int year = Integer.parseInt(resParam1.value.substring(0, 4));
+        int month = Integer.parseInt(resParam1.value.substring(5,7));
+        int day = Integer.parseInt(resParam1.value.substring(8, 10));
 
         // Make a new java date
         Calendar cDate = new GregorianCalendar(year, month-1, day);
@@ -888,44 +882,44 @@ public class Utility
     /**
      * This takes two dates and returns only the number of years between the two.
      * @param parser - Userd for error messages.
-     * @param date1  - First date, in date format.
-     * @param date2  - Second date, in date format.
+     * @param resParam1  - First date, in date format.
+     * @param resParam2  - Second date, in date format.
      * @return       - The number of years between the two dates stored in a result value that is of type integer.
      * @throws ParserException
      */
-    public static ResultValue dateAge(Parser parser, ResultValue date1, ResultValue date2) throws ParserException
+    public static ResultValue dateAge(Parser parser, ResultValue resParam1, ResultValue resParam2) throws ParserException
     {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         ResultValue dateAge = new ResultValue();
 
         // Binary operands may be of subclass ResultArray. This is not valid for this function.
-        if(date1 instanceof ResultArray || date2 instanceof ResultArray)
+        if(resParam1 instanceof ResultArray || resParam2 instanceof ResultArray)
         {
             parser.errorWithCurrent("Method 'dateAge' expected Primitive parameters, Found '%s' and '%s' may be Array(s)"
-                    , date1.value, date2.value);
+                    , resParam1.value, resParam2.value);
         }
 
         // Validate the input dates.
-        if (!isValidDate(date1.value))
+        if (!isValidDate(resParam1.value))
         {
-            parser.errorWithCurrent("The first argument to dateAge is not in form yyyy-MM-dd. | Value : %s |", date1.value);
+            parser.errorWithCurrent("The first argument to dateAge is not in form yyyy-MM-dd. | Value : %s |", resParam1.value);
         }
 
-        if (!isValidDate(date2.value))
+        if (!isValidDate(resParam2.value))
         {
-            parser.errorWithCurrent("The second argument to dateAge is not in form yyyy-MM-dd. | Value : %s |", date2.value);
+            parser.errorWithCurrent("The second argument to dateAge is not in form yyyy-MM-dd. | Value : %s |", resParam2.value);
         }
 
         // Compare to March
         // Break up the first date for the gregorian calendar
-        int year1 = Integer.parseInt(date1.value.substring(0, 4));
-        int month1 = Integer.parseInt(date1.value.substring(5,7));
-        int day1 = Integer.parseInt(date1.value.substring(8, 10));
+        int year1 = Integer.parseInt(resParam1.value.substring(0, 4));
+        int month1 = Integer.parseInt(resParam1.value.substring(5,7));
+        int day1 = Integer.parseInt(resParam1.value.substring(8, 10));
 
         // Break up the second date for the gregorian calendar
-        int year2 = Integer.parseInt(date2.value.substring(0, 4));
-        int month2 = Integer.parseInt(date2.value.substring(5,7));
-        int day2 = Integer.parseInt(date2.value.substring(8, 10));
+        int year2 = Integer.parseInt(resParam2.value.substring(0, 4));
+        int month2 = Integer.parseInt(resParam2.value.substring(5,7));
+        int day2 = Integer.parseInt(resParam2.value.substring(8, 10));
 
         // Set dates
         Calendar cDate1 = new GregorianCalendar(year1, month1-1, day1);
