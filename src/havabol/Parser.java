@@ -2332,6 +2332,14 @@ public class Parser
                                 // The second parameter to the function is an array
                                 else
                                 {
+                                    // Since it was an array, ensure it is the only parameter
+                                    ResultValue resNextArg = resultStack.pop();
+                                    if(resNextArg.type != Token.FUNC_ARGS)
+                                    {
+                                        errorWithCurrent("Expected only one array or value list after '%s', also found '%s'"
+                                                         , outToken.tokenStr, resTopElem.value); // Parameters are reversed on stack
+                                    }
+                                    
                                     // Check that the parameter is actually an array
                                     if(resTopElem.structure == STIdentifier.PRIMITVE)
                                     {
@@ -2378,6 +2386,7 @@ public class Parser
                     // corresponding function that it is at the end of its parameter list
                     ResultValue resEndFuncArgs = new ResultValue();
                     resEndFuncArgs.type = Token.FUNC_ARGS;
+                    resEndFuncArgs.value = "END_FUNC_ARGS";
                     resultStack.push(resEndFuncArgs);
                     break;
                     
@@ -2387,6 +2396,7 @@ public class Parser
                     // (i.e., all elements on the stack until FUNC_ARGS are part of the value list)
                     ResultValue resValueList = new ResultValue();
                     resValueList.type = Token.VALUE_LIST;
+                    resValueList.value = "VALUE_LIST";
                     resultStack.push(resValueList);
             }
         }
