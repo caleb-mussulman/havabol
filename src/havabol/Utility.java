@@ -1034,19 +1034,6 @@ public class Utility
                 + day;                          // add the days
         return countDays;
     }
-
-    public static String julianToDate(int julian) throws ParseException {
-        String j = String.valueOf(julian);
-        String result = "";
-
-        Date date = new SimpleDateFormat("Myydd").parse(j);
-        String tempDate = new SimpleDateFormat("dd.MM.yyyy").format(date);
-
-        int day = 0;
-
-
-        return result;
-    }
     
     /**
      ******************************** START OF FUNCTIONS ***************************************************
