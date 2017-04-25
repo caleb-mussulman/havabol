@@ -3,6 +3,12 @@
 String sent = "This is a test string.";
 String spaces = "      ";
 String empty = "";
+Int iAmString;
+iAmString = 123123;
+Bool meToo;
+meToo = T;
+Float meThree;
+meThree = 3.1457932432424242424244;
 
 print("length of test : ", LENGTH(sent));
 print("contains spaces? ", SPACES(sent));
@@ -11,8 +17,21 @@ print("");
 print("length of spaces : ", LENGTH(spaces));
 print("contains spaces? ", SPACES(spaces));
 print("");
+
 print("length of empty : ", LENGTH(empty));
 print("contains spaces? ", SPACES(empty));
+print("");
+
+print("length of iAmString : ", LENGTH(iAmString));
+print("contains spaces? ", SPACES(iAmString));
+print("");
+
+print("length of meToo : ", LENGTH(meToo));
+print("contains spaces? ", SPACES(meToo));
+print("");
+
+print("length of meThree : ", LENGTH(meThree));
+print("contains spaces? ", SPACES(meThree));
 print("");
 
 // ARRAY FUNCTIONS
@@ -21,15 +40,15 @@ String szFixedArr[10] = "Fixed", "arrays", "are", "super", "legit", "";
 Int iFixedArr[5] = 1, 2, 3, 4;
 
 print("Number of elements in szArr[] : ", ELEM(szArr));
-print("Number of elements in szArr[] : ", MAXELEM(szArr));
+print("Size of in szArr[] : ", MAXELEM(szArr));
 print("");
 
 print("Number of elements in szFixedArr[] : ", ELEM(szFixedArr));
-print("Number of elements in szFixedArr[] : ", MAXELEM(szFixedArr));
+print("Size of in szFixedArr[] : ", MAXELEM(szFixedArr));
 print("");
 
 print("Number of elements in iFixedArr[] : ", ELEM(iFixedArr));
-print("Number of elements in iFixedArr[] : ", MAXELEM(iFixedArr));
+print("Size of in iFixedArr[] : ", MAXELEM(iFixedArr));
 print("");
 
 Int x = 54321;
@@ -49,7 +68,8 @@ Int numArr2[5] = 1, 10, 100, 1000, 10000;
 print("var inArr in ? : ", inArr IN {"this", "is", "string."});
 print("var inArr not in ? : ", inArr NOTIN {"this", "is", "string."});
 print("var f in ? : ", f IN {1, 2, 3, 6, 10, 31, 24});
-print("var y in numArr : ", y IN numArr2); // breaks??
+print("var f in numArr : ", f IN numArr2);
+print("var y in numArr2 : ", y IN numArr2);
 print("var f not in ? : ", f NOTIN {1, 2, 3, 6, 10, 31, 24});
 print("constant 10 in ? : ", 10 IN {1, 2, 3, 6, 10, 31, 24});
 print("constant 15 in ? : ", 15 IN {1, 2, 3, 6, 10, 31, 24});
