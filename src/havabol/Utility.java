@@ -939,18 +939,25 @@ public class Utility
         // Calculate years difference (YEAR1 - YEAR2)
         int numYearsApart = cDate1.get(Calendar.YEAR) - cDate2.get(Calendar.YEAR);
 
-        // Reduce the year if the following criteria is met.
-        if (cDate2.get(Calendar.MONTH) > cDate1.get(Calendar.MONTH) ||
-                cDate2.get(Calendar.MONTH) == cDate1.get(Calendar.MONTH) && cDate2.get(Calendar.DATE) > cDate1.get(Calendar.DATE))
+        // Need to check the difference in months/days to determine the correct difference in years.
+        // This depends on the ordering of the parameters, e.g., Given the dates 15 Nov 1995
+        // and 15 Feb 1997, 1997 - 1995 = 2, but the difference in years is 1 year
+        if(cDate2.after(cDate1))
         {
-
-            numYearsApart--;
+            // Reduce the year if the following criteria is met.
+            if (cDate1.get(Calendar.MONTH) > cDate2.get(Calendar.MONTH) ||
+                    (cDate1.get(Calendar.MONTH) == cDate2.get(Calendar.MONTH) && cDate1.get(Calendar.DATE) > cDate2.get(Calendar.DATE)))
+            {
+                numYearsApart++;
+            }
         }
-
-        // Date1 comes before Date2 in time.
-        if (numYearsApart < 0)
+        else
         {
-            numYearsApart++;
+            if (cDate2.get(Calendar.MONTH) > cDate1.get(Calendar.MONTH) ||
+                    ((cDate2.get(Calendar.MONTH) == cDate1.get(Calendar.MONTH) && cDate2.get(Calendar.DATE) > cDate1.get(Calendar.DATE))))
+            {
+                numYearsApart--;
+            }
         }
 
         // Store the difference in years in the result value object.
