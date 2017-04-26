@@ -791,12 +791,12 @@ public class Utility
         // Validate both inputs
         if (!isValidDate(resParam1.value))
         {
-            parser.errorWithCurrent("The first argument to dateDiff is not in form yyyy-MM-dd. | Value : %s |", resParam1.value);
+            parser.errorWithCurrent("The first argument to dateDiff is not a valid date. | Value : %s |", resParam1.value);
         }
 
         if (!isValidDate(resParam2.value))
         {
-            parser.errorWithCurrent("The second argument to dateDiff is not in form yyyy-MM-dd. | Value : %s |", resParam2.value);
+            parser.errorWithCurrent("The second argument to dateDiff is not a valid date. | Value : %s |", resParam2.value);
         }
 
         // Compare to March
@@ -837,7 +837,7 @@ public class Utility
         // Validate the input for date.
         if (!isValidDate(resParam1.value))
         {
-            parser.errorWithCurrent("The first argument to dateAdj is not in form yyyy-MM-dd. | Value : %s |", resParam1.value);
+            parser.errorWithCurrent("The first argument to dateAdj is not a valid date. | Value : %s |", resParam1.value);
         }
 
         // Coerce days to integer
@@ -902,12 +902,12 @@ public class Utility
         // Validate the input dates.
         if (!isValidDate(resParam1.value))
         {
-            parser.errorWithCurrent("The first argument to dateAge is not in form yyyy-MM-dd. | Value : %s |", resParam1.value);
+            parser.errorWithCurrent("The first argument to dateAge is not a valid date. | Value : %s |", resParam1.value);
         }
 
         if (!isValidDate(resParam2.value))
         {
-            parser.errorWithCurrent("The second argument to dateAge is not in form yyyy-MM-dd. | Value : %s |", resParam2.value);
+            parser.errorWithCurrent("The second argument to dateAge is not a valid date. | Value : %s |", resParam2.value);
         }
 
         // Compare to March
@@ -1033,19 +1033,6 @@ public class Utility
                 + (month * 306 + 5) / 10        // Days per month plus 5 months for repeats.
                 + day;                          // add the days
         return countDays;
-    }
-
-    public static String julianToDate(int julian) throws ParseException {
-        String j = String.valueOf(julian);
-        String result = "";
-
-        Date date = new SimpleDateFormat("Myydd").parse(j);
-        String tempDate = new SimpleDateFormat("dd.MM.yyyy").format(date);
-
-        int day = 0;
-
-
-        return result;
     }
     
     /**

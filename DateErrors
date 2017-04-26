@@ -1,0 +1,13 @@
+String iDate[10];
+iDate[0] = "2016-02-04";
+iDate[1] = "1957-12-04";
+iDate[2] = "1999-12-32";
+String badYear = "-991-10-31";
+String overMonth = "1999-13-03";
+String leapYearDate = "2015-02-29";
+
+print(dateDiff(iDate, iDate));
+print(dateDiff(iDate[2], iDate[0]));
+print(dateDiff(badYear, iDate[0]);
+print(dateAge(overMonth, iDate[1]);
+print(dateDiff(leapYearDate, overMonth));
