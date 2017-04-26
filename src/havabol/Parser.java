@@ -1460,7 +1460,7 @@ public class Parser
         }
     }
     
-    // Add documentation...
+    // Add documentation... TODO
     public ResultValue expr() throws Exception
     {
         ArrayList<Token> outList = new ArrayList<Token>(); // List to hold prefix expr
@@ -2275,9 +2275,9 @@ public class Parser
                                 // Print each parameter for the 'print' statement
                                 while(! printParamStack.isEmpty())
                                 {
-                                    ResultValue resPrintParam = printParamStack.pop();
+                                    ResultValue resPrintParam = Utility.getResultValueCopy(printParamStack.pop());
+                                    Utility.coerce(this, Token.STRING, resPrintParam, "print");
                                     System.out.printf("%s ", resPrintParam.value);
-                                    
                                 }
                                 System.out.printf("\n");
                                 
