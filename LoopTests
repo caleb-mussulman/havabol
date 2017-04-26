@@ -86,7 +86,7 @@ while i > 10:
 endwhile;
 
 print("");
-print("### Reversing a string using fixed arrays. ###");
+print("### Reversing a string as well as every word in that string. ###");
 String input[6] = "There", "is", "no", "place", "like", "home.";
 String reversed[6] = "", "", "", "", "", "";
 String word[] = "";
@@ -104,6 +104,45 @@ for i=0 to ELEM(input):
 endfor;
 print("After the loop : ", reversed[0]#" "#reversed[1]#" "#reversed[2]#" "#reversed[3]#" "#reversed[4]#" "#reversed[5]);
 print("");
+
+
+print("### Reversing a string using an unbounded array. ###");
+String input[unbound] = "There", "is", "no", "place", "like", "home.";
+String inputString = "";
+String reversed[unbound];
+String word;
+for i=0 to ELEM(input):
+    if i != ELEM(input)-1:
+        inputString = inputString # input[i] # " ";
+    else:
+        inputString = inputString # input[i];
+    endif;
+endfor;
+print("Before reverse : ", inputString);
+for i=0 to ELEM(input):
+    String temp[unbound];
+    word = input[i];
+    for j=0 to LENGTH(word):
+        temp[j] = word[LENGTH(word)-1-j];
+    endfor;
+    String reversedWord = "";
+    for j=0 to ELEM(temp):
+        reversedWord = reversedWord # temp[j];
+    endfor;
+    word = reversedWord;
+    reversed[i] = word;
+endfor;
+String reversedString = "";
+for i=0 to ELEM(reversed):
+    if i != ELEM(reversed)-1:
+        reversedString = reversedString # reversed[i] # " ";
+    else:
+        reversedString = reversedString # reversed[i];
+    endif;
+endfor;
+print("After reverse  : ", reversedString);
+print("");
+
 
 print("### Find all pairs of elements in a fixed array whose sum is equal to a given number. ###");
 Int inputArr[7] = "4", "6", "5", "-10", "8", "5", "20";
