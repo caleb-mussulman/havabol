@@ -106,8 +106,6 @@ print("After the loop : ", reversed[0]#" "#reversed[1]#" "#reversed[2]#" "#rever
 print("");
 
 
-
-
 print("### Reversing a string as well as every word in that string. ###");
 String input[unbound] = "There", "is", "no", "place", "like", "home.";
 String inputString = "";
@@ -157,6 +155,7 @@ for i=0 to ELEM(inputArr):
     endfor;
 endfor;
 print("");
+
 
 print("### Find roman equivalent of a decimal number. ###");
 String romanSymbols[13] = "M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I";
