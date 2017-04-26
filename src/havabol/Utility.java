@@ -364,7 +364,7 @@ public class Utility
         // Determine the passed in comparison operation
         switch(operation) {
             case EQUAL:
-                if ((resval2.type == Token.STRING) || (resval2.type == Token.BOOLEAN))
+                if ((resval2.type == Token.STRING) || (resval2.type == Token.BOOLEAN) || (resval2.type == Token.DATE))
                 {
                     result = resval1.value.equals(resval2.value) ? "T" : "F";
                 }
@@ -384,7 +384,7 @@ public class Utility
                 }
                 break;
             case NOT_EQUAL:
-                if ((resval2.type == Token.STRING) || (resval2.type == Token.BOOLEAN))
+                if ((resval2.type == Token.STRING) || (resval2.type == Token.BOOLEAN) || (resval2.type == Token.DATE))
                 {
                     result = resval1.value.equals(resval2.value) ? "F" : "T";
                 }
@@ -488,20 +488,11 @@ public class Utility
                 }
                 break;
             case AND:
-                if (resval2.type == Token.STRING)
+                if ((resval2.type == Token.STRING) || (resval2.type == Token.BOOLEAN))
                 {
-                    parser.errorWithCurrent("Cannot && %s and %s together", resval1.type, resval2.type);
-                }
-                else if (resval2.type == Token.INTEGER)
-                {
-                    parser.errorWithCurrent("Cannot && %s and %s together", resval1.type, resval2.type);
-                }
-                else if (resval2.type == Token.FLOAT)
-                {
-                    parser.errorWithCurrent("Cannot && %s and %s together", resval1.type, resval2.type);
-                }
-                else if (resval2.type == Token.BOOLEAN)
-                {
+                    Utility.coerce(parser, Token.BOOLEAN, resval1, logicalOperator.get(operation));
+                    Utility.coerce(parser, Token.BOOLEAN, resval2, logicalOperator.get(operation));
+                    
                     if (resval1.value.equals("T") && resval2.value.equals("T"))
                     {
                         result = "T";
@@ -519,20 +510,11 @@ public class Utility
                 }
                 break;
             case OR:
-                if (resval2.type == Token.STRING)
+                if ((resval2.type == Token.STRING) || (resval2.type == Token.BOOLEAN))
                 {
-                    parser.errorWithCurrent("Cannot || %s and %s together", resval1.type, resval2.type);
-                }
-                else if (resval2.type == Token.INTEGER)
-                {
-                    parser.errorWithCurrent("Cannot || %s and %s together", resval1.type, resval2.type);
-                }
-                else if (resval2.type == Token.FLOAT)
-                {
-                    parser.errorWithCurrent("Cannot || %s and %s together", resval1.type, resval2.type);
-                }
-                else if (resval2.type == Token.BOOLEAN)
-                {
+                    Utility.coerce(parser, Token.BOOLEAN, resval1, logicalOperator.get(operation));
+                    Utility.coerce(parser, Token.BOOLEAN, resval2, logicalOperator.get(operation));
+
                     if (resval1.value.equals("F") && resval2.value.equals("F"))
                     {
                         result = "F";
