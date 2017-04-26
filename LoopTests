@@ -116,3 +116,27 @@ for i=0 to ELEM(inputArr):
     endfor;
 endfor;
 print("");
+
+print("### Find roman equivalent of a decimal number. ###");
+String romanSymbols[12] = "M", "CM", "D", "CD", "C", "XC", "L", "X", "IX", "V", "IV", "I";
+Int decimals[13] = 1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1;
+
+Int inputNumber;
+inputNumber = 3015;
+Int copyOfInputNumber;
+copyOfInputNumber = inputNumber;
+String roman = "";
+Int i;
+
+if inputNumber >= 1 and inputNumber <= 3999:
+    for i=0 to ELEM(romanSymbols):
+        while inputNumber >= decimals[i]:
+            inputNumber -= decimals[i];
+            roman = roman#romanSymbols[i]; // Build the roman numeral
+        endwhile;
+    endfor;
+    print("Roman equivalent of ", copyOfInputNumber, " is : ", roman);
+else:
+    print("Invalid Number"); // Number is too large, too small.
+endif;
+print("");
