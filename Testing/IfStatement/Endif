@@ -1,0 +1,2 @@
+if F:
+	print(T);

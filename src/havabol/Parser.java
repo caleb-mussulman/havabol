@@ -534,7 +534,7 @@ public class Parser
                     // The increment amount should be primitive and coercible to an int type
                     if(resIncr.structure != STIdentifier.PRIMITVE)
                     {
-                        error("Expected a primitive value as the 'for' loop increment amount, found array '%s'", resLimit.value);
+                        error("Expected a primitive value as the 'for' loop increment amount, found array '%s'", resIncr.value);
                     }
                     Utility.coerce(this, Token.INTEGER, resIncr, "for loop increment value");
                 }
@@ -2262,7 +2262,7 @@ public class Parser
                             case "print":
                                 resOp = resultStack.pop();
                                 
-                                // The paramters for 'print' are in reverse order, so need to re-reverse them
+                                // The parameters for 'print' are in reverse order, so need to re-reverse them
                                 Stack<ResultValue> printParamStack = new Stack<ResultValue>();
                                 
                                 // Get values to print as long as we have not hit the end of the print statements parameters

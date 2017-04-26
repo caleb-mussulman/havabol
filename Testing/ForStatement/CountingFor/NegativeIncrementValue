@@ -1,0 +1,4 @@
+Int arr[] = 1,2,3;
+for i = 0 to 4 by -1:
+	print(i);
+endfor;

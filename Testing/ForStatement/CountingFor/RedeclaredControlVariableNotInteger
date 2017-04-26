@@ -1,0 +1,5 @@
+Int arr[] = 1,2,3;
+for i = 0 to 4:
+	print(i);
+	String i = "hello";
+endfor;

@@ -1,0 +1,4 @@
+Int arr[] 1,2,3;
+for in arr:
+	print("invalid");
+endfor;

@@ -1,0 +1,4 @@
+Int arr[] = 1,2,3;
+for i = "hello" to 4:
+	print(i);
+endfor;
