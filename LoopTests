@@ -68,7 +68,7 @@ endfor;
 
 print("");
 Int numArr[] = 10, 20, 30, 40, 50;
-print("Fixed Integer array");
+print("Unbounded Integer array");
 for integer in numArr:
     print(integer);
 endfor;
@@ -86,16 +86,20 @@ while i > 10:
 endwhile;
 
 print("");
-print("Reversing every word in a given string");
-String input = "There is no place like home.";
+print("### Reversing a string using fixed arrays. ###");
+String input[6] = "There", "is", "no", "place", "like", "home.";
+String reversed[6] = "", "", "", "", "", "";
 String word[] = "";
-print("word : ", word[0]);
+//print("word : ", word[0]);
 word[0] = "1";
-word[1] = "bad";
-for i=0 to LENGTH(input):
+//word[1] = "bad";
+print("Before the loop : ", input[0]#" "#input[1]#" "#input[2]#" "#input[3]#" "#input[4]#" "#input[5]);
+for i=0 to ELEM(input):
+    reversed[i] = input[ELEM(input)-1-i];
     //word[i] = "hello";
     //print(word);
     if input[i] == ' ':
         print(i, input[i]);
     endif;
 endfor;
+print("After the loop : ", reversed[0]#" "#reversed[1]#" "#reversed[2]#" "#reversed[3]#" "#reversed[4]#" "#reversed[5]);
