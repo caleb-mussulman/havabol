@@ -103,3 +103,16 @@ for i=0 to ELEM(input):
     endif;
 endfor;
 print("After the loop : ", reversed[0]#" "#reversed[1]#" "#reversed[2]#" "#reversed[3]#" "#reversed[4]#" "#reversed[5]);
+print("");
+
+print("### Find all pairs of elements in a fixed array whose sum is equal to a given number. ###");
+Int inputArr[7] = "4", "6", "5", "-10", "8", "5", "20";
+Int inputNum = 10;
+for i=0 to ELEM(inputArr):
+    for j=i+1 to ELEM(inputArr):
+        if inputArr[i] + inputArr[j] == inputNum:
+            print(inputArr[i], " + ", inputArr[j], " = ", inputNum);
+        endif;
+    endfor;
+endfor;
+print("");
