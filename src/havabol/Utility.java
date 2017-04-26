@@ -1128,7 +1128,6 @@ public class Utility
     }
     
     /**
-     * TODO: Cover this with Caleb
      * Havabol built-in function:
      * ELEM - short for ELEMENTS
      * FIXED or UNBOUNDED
@@ -1154,11 +1153,12 @@ public class Utility
     }
 
     /**
-     *
+     * Gets the Maximum declared size of a Fixed Array and returns
      * <p>
-     * @param parser - responsible for handling error messages.
-     * @param resultArray
-     * @return
+     * This value is saved inside the ResultArray Object.
+     * @param parser      - Responsible for handling error messages.
+     * @param resultArray - The array that is being referenced by Parser.
+     * @return            - A Result Value of the max elem value in result array.
      */
     public static ResultValue MAXELEM(Parser parser, ResultArray resultArray) throws ParserException
     {
