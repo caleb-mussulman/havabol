@@ -945,7 +945,7 @@ public class Parser
             bGettingArraySize = true;
             resIndex = expr();
             this.iParseTokenLineNr = scan.currentToken.iSourceLineNr;
-            Utility.coerce(this, Token.INTEGER, resIndex, "declared size of array");
+            Utility.coerce(this, Token.INTEGER, resIndex, "index of assignment target");
             bGettingArraySize = false;
         }
         // If there was a '[', the call to 'expr' will land the current token on what
@@ -1130,6 +1130,11 @@ public class Parser
                 // Otherwise, the target was a primitive variable
                 else
                 {
+                    // '-=' is not defined for indexing a string
+                    if(bArrayElemAssign)
+                    {
+                        error("Operation '-=' is not defined for indexing a string, found '%s[%s]'", variableStr, resIndex.value);
+                    }
                     resOp1 = symbolTable.retrieveVariableValue(this, variableStr);
                     // Subtract second operand from first operand
                     resAssign = Utility.subtract(this, resOp1, resOp2, "-=");
@@ -1166,6 +1171,11 @@ public class Parser
                 // Otherwise, the target was a primitive variable
                 else
                 {
+                    // '+=' is not defined for indexing a string
+                    if(bArrayElemAssign)
+                    {
+                        error("Operation '+=' is not defined for indexing a string, found '%s[%s]'", variableStr, resIndex.value);
+                    }
                     resOp1 = symbolTable.retrieveVariableValue(this, variableStr);
                     // Subtract second operand from first operand
                     resAssign = Utility.add(this, resOp1, resOp2, "+=");
@@ -1949,8 +1959,10 @@ public class Parser
         while(! postfixStack.isEmpty())
         {
             Token popped = postfixStack.pop();
-            // Should not have any left parenthesis
-            if(popped.tokenStr.equals("("))
+            // Should not have any left parenthesis or functions, unless the function was
+            // 'IN' or 'NOTIN' since they do not use parenthesis
+            if(popped.tokenStr.equals("(") || ((popped.primClassif == Token.FUNCTION)
+               && ((! popped.tokenStr.equals("IN")) || (! popped.tokenStr.equals("IN")))))
             {
                 // The second part of this error message is in regards to a
                 // possible error from an expression call from a print statement
