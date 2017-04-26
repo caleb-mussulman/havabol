@@ -1,0 +1,46 @@
+print("INTEGERS");
+Int x = 5;
+print(x, "\t--Add 5");
+x += 5;
+print(x, "\t--Subtract 10");
+x -= 10;
+print(x, "\t--Subtract 5");
+x -= 5;
+print(x, "\t--Final Answer");
+
+print("");
+print("FLOATS");
+Float y = 3.14;
+print(y, "\t--Add 3.14");
+y += 3.14;
+print(y, "\t--Add 28.28");
+y += 28.28;
+print(y, "\t--Subtract 31.42");
+y -= 31.42;
+print(y, "\t--Substract 6.28");
+y -= 6.28;
+print(y, "\t--Final Answer");
+
+print("");
+print("NUMERIC INTEGER STRINGS");
+String z = "15";
+print(z, "\t--Add 5");
+z += 5;
+print(z, "\t--Subtract 10");
+z -= 10;
+print(z, "\t--Subtract 5");
+z -= 5;
+print(z, "\t--Final Answer");
+
+print("");
+print("NUMERIC FLOAT STRINGS");
+String q = "69.14232323";
+print(q, "\t--Add 3.14");
+q += 3.14;
+print(q, "\t--Add 28.28");
+q += 28.28;
+print(q, "\t--Subtract 31.42");
+q -= 31.42;
+print(q, "\t--Substract 6.28");
+q -= 6.28;
+print(q, "\t--Final Answer");
