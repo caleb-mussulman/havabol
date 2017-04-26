@@ -2181,7 +2181,7 @@ public class Parser
                                 break;
                                     
                             case "or":
-                                resultStack.push(Utility.compare(this, Utility.GREATER_THAN_EQUAL, resOp1, resOp2));
+                                resultStack.push(Utility.compare(this, Utility.OR, resOp1, resOp2));
                                 break;
                                 
                             default:
