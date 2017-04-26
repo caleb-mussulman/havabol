@@ -118,7 +118,7 @@ endfor;
 print("");
 
 print("### Find roman equivalent of a decimal number. ###");
-String romanSymbols[12] = "M", "CM", "D", "CD", "C", "XC", "L", "X", "IX", "V", "IV", "I";
+String romanSymbols[13] = "M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I";
 Int decimals[13] = 1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1;
 
 Int inputNumber;
