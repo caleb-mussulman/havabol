@@ -1,0 +1,86 @@
+Bool bFlag;
+Int i;
+String fruit;
+String climber;
+bFlag = T;
+i = 0;
+fruit = 'larry';
+climber = 'pike';
+while bFlag:
+    i = i + 1;
+    print("i=", i);
+    if fruit == "apple" or fruit == "orange" or fruit == "larry":
+        print("it is a fruit");
+        if i > 2:
+           print("i is greater than 2");
+        else:
+           print("i is <= 2");
+        endif;
+        print("inside while, after first inner if");
+        if climber == "pike":
+             print("it is pike");
+             climber = "notpike";
+        else:
+             print("it is not pike");
+             bFlag = F;
+        endif;
+        print("after inner if");
+    endif;
+    print("after outer if");
+endwhile;
+print("after while loop i=", i);
+
+print("Unsorted array");
+Int iDM[20] = 60,30,20,10,5,50,70,25,35,45,15;
+Int iTemp;
+for iTemp in iDM:
+    print("\t", iTemp);
+endfor;
+
+print("Nested for loops, sorting the array");
+Bool bChange;
+Int j;
+for i=0 to ELEM(iDM)-1:
+    bChange = F;
+    for j=0 to ELEM(iDM)-i-1 by 1:
+        if iDM[j+1] < iDM[j]:
+           iTemp = iDM[j+1];
+           iDM[j+1] = iDM[j];
+           iDM[j] = iTemp;
+           bChange = T;
+        endif;
+    endfor;
+    if not bChange:
+        print("\tready to leave, i=", i);
+    endif;
+endfor;
+print("sorted array");
+for i=0 to ELEM(iDM):
+    print("\t", iDM[i]);
+endfor;
+
+print("");
+String testSent = "Testing looping for a sentence.";
+print("Normal String array");
+for i in testSent:
+    print(i);
+endfor;
+
+print("");
+Int numArr[] = 10, 20, 30, 40, 50;
+print("Fixed Integer array");
+for integer in numArr:
+    print(integer);
+endfor;
+
+Int i = 30;
+while i > 10:
+    print("i = : ", i);
+    if i == 15:
+        print("Half way there!");
+    endif;
+    i = i - 1;
+    if i == 10:
+        print("GoodBye!");
+    endif;
+endwhile;

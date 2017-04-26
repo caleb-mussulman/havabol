@@ -1,0 +1,4 @@
+//(invalid)
+//Testing reference to an uninitialized element in an Unbounded Array.
+Int iArrUnbound[unbound] = 1, 2, 3;
+print(iArrUnbound[100]);
