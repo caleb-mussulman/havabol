@@ -75,7 +75,7 @@ endfor;
 
 Int i = 30;
 while i > 10:
-    print("i = : ", i);
+    print("i = ", i);
     if i == 15:
         print("Half way there!");
     endif;
@@ -84,3 +84,18 @@ while i > 10:
         print("GoodBye!");
     endif;
 endwhile;
+
+print("");
+print("Reversing every word in a given string");
+String input = "There is no place like home.";
+String word[] = "";
+print("word : ", word[0]);
+word[0] = "1";
+word[1] = "bad";
+for i=0 to LENGTH(input):
+    //word[i] = "hello";
+    //print(word);
+    if input[i] == ' ':
+        print(i, input[i]);
+    endif;
+endfor;
