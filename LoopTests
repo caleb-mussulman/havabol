@@ -86,7 +86,7 @@ while i > 10:
 endwhile;
 
 print("");
-print("### Reversing a string as well as every word in that string. ###");
+print("### Reversing a string using an unbounded array. ###");
 String input[6] = "There", "is", "no", "place", "like", "home.";
 String reversed[6] = "", "", "", "", "", "";
 String word[] = "";
@@ -106,7 +106,9 @@ print("After the loop : ", reversed[0]#" "#reversed[1]#" "#reversed[2]#" "#rever
 print("");
 
 
-print("### Reversing a string using an unbounded array. ###");
+
+
+print("### Reversing a string as well as every word in that string. ###");
 String input[unbound] = "There", "is", "no", "place", "like", "home.";
 String inputString = "";
 String reversed[unbound];
