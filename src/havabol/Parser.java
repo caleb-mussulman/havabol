@@ -1667,7 +1667,8 @@ public class Parser
                                 }
                                 
                                 // Found matching function call's parenthesis
-                                if(popped.primClassif == Token.FUNCTION)
+                                if(popped.primClassif == Token.FUNCTION  && (! popped.tokenStr.equals("IN")) 
+                                                                         && (! popped.tokenStr.equals("NOTIN")))
                                 {
                                     bFoundParen = true;
                                     outList.add(popped);
@@ -1982,7 +1983,7 @@ public class Parser
             {
                 // The second part of this error message is in regards to a
                 // possible error from an expression call from a print statement
-                errorLineNr(popped.iSourceLineNr, "Missing ')'. If not, may be missing ';' or ':'");
+                errorLineNr(popped.iSourceLineNr, "Missing ')'. If not, may be missing ';' or ':', %s", popped.tokenStr);
             }
             
             // Also should not have any left brackets (i.e., an array element reference)
