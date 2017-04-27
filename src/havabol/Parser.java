@@ -1978,7 +1978,7 @@ public class Parser
             // Should not have any left parenthesis or functions, unless the function was
             // 'IN' or 'NOTIN' since they do not use parenthesis
             if(popped.tokenStr.equals("(") || ((popped.primClassif == Token.FUNCTION)
-               && ((! popped.tokenStr.equals("IN")) || (! popped.tokenStr.equals("IN")))))
+               && ((! popped.tokenStr.equals("IN")) && (! popped.tokenStr.equals("NOTIN")))))
             {
                 // The second part of this error message is in regards to a
                 // possible error from an expression call from a print statement
