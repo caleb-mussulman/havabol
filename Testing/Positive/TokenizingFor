@@ -1,0 +1,66 @@
+// Testing for tokenizing 'for' loop
+print("Testing for tokenizing a 'for' loop");
+print("-----------------------------------\n");
+
+String empty = "";
+String spaces = "       ";
+String helloWorld = "Hello World!";
+String goodbye  = "Goodbye Maynard!";
+String sentence = "The big red fox jumped over the lazy dog";
+String seashell = "suzy sells seashells by the seashore";
+String strURL   = "This%20string%20is%20delimited%20by%20URL%20spaces";
+String delim    = ' ';
+
+print("Tokenizing a sentence word by word (i.e., by spaces)");
+print("sentence:", sentence);
+for word from sentence by " ":
+	print("\t", word);
+endfor;
+
+print("\nTokenizing a URL by '%20', a URL space");
+print("URL string:", strURL);
+print("URL delim: ", "%20");
+for elem from strURL by "%20":
+	print("\t", elem);
+endfor;
+
+print("\nChanging the string during the loop will not affect iteration");
+print("original string:", helloWorld);
+print("changed to:", goodbye);
+for word from helloWorld by " ":
+	helloWorld = goodbye;
+	print("\t", word);
+endfor;
+
+print("\nChanging the delimiter during the loop will not affect iteration");
+print("original delimiter: ' '");
+print("changed to: 's'");
+for word from seashell by delim:
+	delim = 's';
+	print("\t", word);
+endfor;
+
+print("\nAn empty delimiter tokenizes character by character");
+print("string:", helloWorld);
+for char from helloWorld by "":
+	print("\t", char);
+endfor;
+
+print("\nNested tokenizing loops");
+String names = "Caleb:Mussulman|Steven:Cenci|Taylor:Brauer";
+print("Team members");
+Int i = 1;
+for name from names by '|':
+	print("\t", i);
+	Int j = 0;
+	debug Postfix on;
+	for word from name by ':':
+		if j == 0:
+			print("\t\tFirst name:", word);
+		else:
+			print("\t\tLast name:", word);
+		endif;
+		j += 1;
+	endfor;
+	i += 1;
+endfor;

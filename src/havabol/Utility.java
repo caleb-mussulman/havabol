@@ -861,12 +861,12 @@ public class Utility
         // Validate after the conversion as well.
         if (!isValidDate(sdf.format(cDate.getTime())))
         {
-            parser.errorWithCurrent("%s is not a valid date.", sdf.format(cDate.getTime()));
+            parser.errorWithCurrent("Resulting date from function 'dateAdj' is invalid, found '%s'", sdf.format(cDate.getTime()));
         }
 
         if (cDate.get(Calendar.ERA) < 1)
         {
-            parser.errorWithCurrent("Year must be greater than 0000.");
+            parser.errorWithCurrent("Resulting year from function 'dateAdj' is invalid (year <= 0), year must be between '0001' and '9999'");
         }
 
 
