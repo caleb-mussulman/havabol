@@ -251,7 +251,7 @@ public class StorageManager
         }
 
         //Checking for out of bounds error
-        if((resultArray.structure == STIdentifier.FIXED_ARRAY) && ((iIndex > resultArray.maxElem-1) || (iTmp_Index < 0)))
+        if(((resultArray.structure == STIdentifier.FIXED_ARRAY) && (iIndex > resultArray.maxElem-1)) || (iTmp_Index < 0))
         {
             errParse.error("Reference to index '%s' for array '%s' is out of bounds"
                           ,resIndex.value ,arraySymbol);
