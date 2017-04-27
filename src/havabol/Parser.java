@@ -1394,6 +1394,14 @@ public class Parser
                     // Get the token after the '=' or ','
                     scan.getNext();
                     
+                    // If we found a unary minus, get the next token and make it a negative numeric value
+                    if(scan.currentToken.tokenStr.equals("-") && scan.currentToken.subClassif == Token.UNARY)
+                    {
+                        scan.getNext();
+                        ResultValue resValNegative = Utility.uminus(this, scan.currentToken.toResultValue(this));
+                        scan.currentToken.tokenStr = resValNegative.value;
+                    }
+                    
                     // The value list must consist of operands that are not identifiers
                     if((scan.currentToken.primClassif != Token.OPERAND) || (scan.currentToken.subClassif == Token.IDENTIFIER))
                     {
@@ -1443,6 +1451,14 @@ public class Parser
             {
                 // Go to the token after '='
                 scan.getNext();
+                
+                // If we found a unary minus, get the next token and make it a negative numeric value
+                if(scan.currentToken.tokenStr.equals("-") && scan.currentToken.subClassif == Token.UNARY)
+                {
+                    scan.getNext();
+                    ResultValue resValNegative = Utility.uminus(this, scan.currentToken.toResultValue(this));
+                    scan.currentToken.tokenStr = resValNegative.value;
+                }
                 
                 // The value must be an operand that is not an identifier
                 if((scan.currentToken.primClassif != Token.OPERAND) || (scan.currentToken.subClassif == Token.IDENTIFIER))
