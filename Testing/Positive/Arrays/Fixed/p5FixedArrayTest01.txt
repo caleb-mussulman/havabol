@@ -1,0 +1,90 @@
+//This is the Test file for Fixed Arrays. These tests maybe duplicates of Tests instructor Larry Clark has
+//already provided.
+
+//(valid)
+// Testing iterator variable does not affect the values or reference to the original FIXED ARRAY variable 'array'
+print("--- Duplicate CV and TV Names Test Start ---");
+Int array[] = 0, 1, 2, 3, 4, 5, 6, 7, 8, 9;
+for array in array:
+    print("\t", array^array);
+endfor;
+print("--- Duplicate CV and TV Names Test  End ---");
+print("");
+
+//(valid)
+print("--- Change iterations of Loop within Loop Test Start ---");
+//Testing change in number of iterations inside loop
+Int array_02[10];
+//This should originally run 10 times.
+print("\t i=0 ", "MAXELEM=10");
+for i = 0 to MAXELEM(array_02):
+    print("\t", i);
+    i += 1;
+endfor;
+print("--- Change iterations of Loop within Loop Test  End ---");
+print("");
+
+//(valid)
+print("--- Scalar Assignment Test Start ---");
+//Testing Scalar assignments.
+Int array_03[] = 0, 1, 2, 3, 4, 5;
+array_03 = 3332;
+for i = 0 to ELEM(array_03):
+    print("\t",array_03[i]);
+endfor;
+print("--- Scalar AssignmentTest End ---");
+print("");
+
+//valid
+print("--- Testing Fixed Array to Fixed Array Assignment Start ---");
+//Testing assignment of two fixed length arrays.
+Int iArr[10] = 100, 200, 300, 400, 500, 600, 700;
+Int iArr2[10] = 11, 12, 13, 14, 15, 16, 17, 18;
+Int iArr3[20] = 1, 2, 3, 4, 5, 6;
+String strTmp = "";
+String space = " ";
+
+//print out iArr before assignment
+for i = 0 to ELEM(iArr):
+    strTmp = strTmp#iArr[i]#space;
+endfor;
+print("iArr  = ", strTmp);
+
+strTmp = "";
+
+//print out iArr2 before assignment
+for i = 0 to ELEM(iArr2):
+    strTmp = strTmp#iArr2[i]#space;
+endfor;
+print("iArr2 = ", strTmp);
+
+strTmp = "";
+
+//print out iArr2 before assignment
+for i = 0 to ELEM(iArr3):
+    strTmp = strTmp#iArr3[i]#space;
+endfor;
+print("iArr3 = ", strTmp);
+
+strTmp = "";
+
+//Fills the remaining portion of iArr
+iArr = iArr3;
+print("\niArr = iArr3");
+for i = 0 to ELEM(iArr):
+    strTmp = strTmp#iArr[i]#space;
+endfor;
+print("iArr = "#strTmp,"\n");
+
+strTmp = "";
+
+//Fills the remaining portion of iArr2
+iArr3 = iArr2;
+print("iArr3 = iArr2");
+for i = 0 to ELEM(iArr3):
+    strTmp = strTmp#iArr3[i]#space;
+endfor;
+print("iArr3 = "#strTmp);
+
+print("--- Testing Array to Array Assignment End ---");
+print("");

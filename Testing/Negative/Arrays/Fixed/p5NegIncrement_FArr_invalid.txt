@@ -1,0 +1,8 @@
+//(invalid)
+//Testing negative values for 'for-loop' construct do not allow negative values for incrementing.
+String strArray[100] = "The", "World", "is", "Still", "Young";
+
+for k = 0 to ELEM(strArray) by -1:      //invalid '-1 is not a valid increment value.'
+    print("\t", strArray[k]);
+endfor;
+//End

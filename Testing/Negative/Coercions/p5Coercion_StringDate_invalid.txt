@@ -1,0 +1,9 @@
+//Testing String -> Date strict.
+print("Testing String -> Date");
+
+String sStr = "Larry";
+Date dY = "2016-05-05";
+
+//Not all strings can become valid dates.
+dY = sStr;
+print("Invalid Assigmnet", dY);

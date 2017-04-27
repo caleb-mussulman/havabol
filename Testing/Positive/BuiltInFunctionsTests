@@ -1,0 +1,166 @@
+// STRING FUNCTIONS
+String sent = "This is a test string.";
+String spaces = "      ";
+String empty = "";
+Int iAmString;
+iAmString = 123123;
+Bool meToo;
+meToo = T;
+Float meThree;
+meThree = 3.1457932432424242424244;
+
+print("length of test : ", LENGTH(sent));
+print("contains spaces? ", SPACES(sent));
+print("");
+
+print("length of spaces : ", LENGTH(spaces));
+print("contains spaces? ", SPACES(spaces));
+print("");
+
+print("length of empty : ", LENGTH(empty));
+print("contains spaces? ", SPACES(empty));
+print("");
+
+print("length of iAmString : ", LENGTH(iAmString));
+print("contains spaces? ", SPACES(iAmString));
+print("");
+
+print("length of meToo : ", LENGTH(meToo));
+print("contains spaces? ", SPACES(meToo));
+print("");
+
+print("length of meThree : ", LENGTH(meThree));
+print("contains spaces? ", SPACES(meThree));
+print("");
+
+// ARRAY FUNCTIONS
+String szArr[] = "This", "is", "a", "test", "", "";
+String szFixedArr[10] = "Fixed", "arrays", "are", "super", "legit", "";
+Int iFixedArr[5] = 1, 2, 3, 4;
+
+print("Number of elements in szArr[] : ", ELEM(szArr));
+print("Size of in szArr[] : ", MAXELEM(szArr));
+print("");
+
+print("Number of elements in szFixedArr[] : ", ELEM(szFixedArr));
+print("Size of in szFixedArr[] : ", MAXELEM(szFixedArr));
+print("");
+
+print("Number of elements in iFixedArr[] : ", ELEM(iFixedArr));
+print("Size of in iFixedArr[] : ", MAXELEM(iFixedArr));
+print("");
+
+Int x = 54321;
+print("length of x : ", LENGTH(x));
+print("contains spaces? ", SPACES(x));
+print("");
+
+// CLARK'S FUNCTION TESTS
+String name = "Anita";
+print("name=", name, "length=", LENGTH(name));
+
+name = name # " " # "Byte";
+print("name=", name, "length=", LENGTH(name));
+
+name = "Joe";
+print("concat name=", name#' '#"King", "length=", LENGTH(name#' '#"King"));
+
+Float gradeM[10] = 100, 99, 70.5;  // max elements of 10, but
+                                   // only 3 populated
+print("gradeM has max elements of", MAXELEM(gradeM)
+    , " and", ELEM(gradeM), " are populated");
+
+Float temperatureM[] = 54, 60, 75, 89, 65, 49; // max elements of 6
+print("temperatureM has max elements of", MAXELEM(temperatureM)
+    , " and", ELEM(temperatureM), " are populated");
+
+String nameM[20];                  // max elements of 20, not populated
+print("nameM has max elements of", MAXELEM(nameM)
+    , " and", ELEM(nameM), " are populated");
+
+Int value = 5;
+Int arrayM[value * 5];         // max elements of 25
+print("arrayM has max elements of", MAXELEM(arrayM)
+    , " and", ELEM(arrayM), " are populated");
+
+Int weirdM[] = 10, "20", 30.5; // All of these are valid coercions to Int
+print("weirdM has max elements of", MAXELEM(weirdM)
+    , " and", ELEM(weirdM), " are populated");
+
+String name = "Joe";
+print("concat name=", name#' '#"King", "length=", LENGTH(name#' '#"King"));
+
+name = "Lee";
+print("concat name=", name#' '#"King", "length=", LENGTH(name#' '#"King"));
+print("1+LENGTH('Lee King')*2=", 1+LENGTH(name#' '#"King")*2);
+
+String str = "";
+print("str=", str, "SPACES(str)=", SPACES(str));
+str = ' ';
+print("str=", str, "SPACES(str)=", SPACES(str));
+print("str=", str, "LENGTH(SPACES(str))=", LENGTH(SPACES(str)));
+
+// IN/NOTIN
+String inArr = "string.";
+String word;
+word = "testing";
+String testingSent[] = "testing", "this", "sentence. Oh my!";
+String integers[3]   = "10", "20", "30";
+String floats[3]     = "11.12", "10.23", "9.99";
+Int f;
+f = 10;
+Int y;
+y = 1000;
+Int numArr[]     = 1, 8, 6, 14, 10, 31, 100;
+Int numArr2[5]   = 1, 10, 100, 1000, 10000;
+Float floatArr[] = 1.23, 2.45, 3.67, 4.89, 9.26, 10.23;
+Float myFloat;
+myFloat = 10.23;
+Float myFloat2;
+myFloat = 11.11;
+
+print("STRINGS");
+print("var inArr in ? : ", inArr IN {"this", "is", "string."});
+print("var inArr not in ? : ", inArr NOTIN {"this", "is", "string."});
+print("string fruit in ? : ", "fruit" IN {"Vegtable", "Oat", "Fruit", "fruit"});
+print("string fruit not in ? : ", "fruit" NOTIN {"Vegtable", "Oat", "Fruit", "fruit"});
+print("string word in testingSent : ", word IN testingSent);
+print("string word not in testingSent : ", word NOTIN testingSent);
+print("");
+print("INTEGERS");
+print("var f in ? : ", f IN {10, 10, 10, 10, 10, 31, 24});
+print("var f in numArr : ", f IN numArr2);
+print("var y in numArr2 : ", y IN numArr2);
+print("var f not in ? : ", f NOTIN {1, 2, 3, 6, 10, 31, 24});
+print("constant 10 in ? : ", 10 IN {1, 2, 3, 6, 10, 31, 24});
+print("constant 15 in ? : ", 15 IN {1, 2, 3, 6, 10, 31, 24});
+print("");
+print("FLOATS");
+print("var myFloat in ? : ", myFloat IN {10.34, 10.96, 10.23, 10.0, 10.89, 31.21, 24.23});
+print("var myFloat in floatArr : ", f IN floatArr);
+print("var myFloat2 in floatArr : ", myFloat2 IN floatArr);
+print("var myFloat2 not in ? : ", myFloat2 NOTIN {1.86, 2.43, 3.23, 6.89, 11.11, 31.32, 24.24});
+print("constant 10.56 in ? : ", 10.56 IN {10.56, 2.4, 3.3, 66.6, 10.0, 31.1, 24.4});
+print("constant 15.55 in ? : ", 15.55 IN {15.55, 2.2, 3.6, 6.4, 10.99, 31.78, 24.45});
+print("");
+print("MIX--FLOAT, STRING, INTEGER");
+print("string fruit in int array : ", "fruit" IN {10, 30, 40});
+print("string fruit not in int array : ", "fruit" NOTIN {10, 30, 40});
+print("string fruit in numArr : ", "fruit" IN numArr);
+print("string fruit not in numArr : ", "fruit" NOTIN numArr);
+print("var f in string array : ", f IN {"15", "23", "49"});
+print("var f not in string array : ", f NOTIN {"15", "23", "49"});
+print("var f in integers : ", f IN integers);
+print("var f not in integers : ", f NOTIN integers);
+print("string fruit in float array : ", "fruit" IN {10.6, 30.34, 40.12});
+print("string fruit not in float array : ", "fruit" NOTIN {10.34, 30.65, 40.87});
+print("string fruit in floatArr : ", "fruit" IN floatArr);
+print("string fruit not in floatArr : ", "fruit" NOTIN floatArr);
+print("var myFloat in string array : ", myFloat IN {"15", "23", "49"});
+print("var myFloat not in string array : ", f NOTIN {"15.5", "23.75", "49.39", "10.23"});
+print("var myFloat in floats : ", myFloat IN floats);
+print("var myFloat not in floats : ", myFloat NOTIN floats);
+print("var f in floats : ", f IN floats);
+print("var f not in floats : ", f NOTIN floats);
+print("var myFloat in integers : ", myFloat NOTIN integers);
+print("var myFloat not in integers : ", myFloat NOTIN integers);

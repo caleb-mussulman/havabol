@@ -1,0 +1,14 @@
+//(invalid)
+//Testing Int -> Bool
+print("Testing Int -> Bool (and versa)");
+Int iX;
+Bool bY;
+
+iX = 5;
+bY = F;
+print("iX = ", iX, "\nbY =", bY);
+if(5 == F):
+    print("Invalid");
+else:
+    print("Invalid");
+endif;
