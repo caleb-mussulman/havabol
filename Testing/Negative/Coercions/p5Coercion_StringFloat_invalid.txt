@@ -1,0 +1,8 @@
+//Testing String -> Float
+print("Testing String -> Float (Arithmetic)");
+Float fD;
+String sF;
+sF = "Chewy";
+fD = 3.332;
+fD = sF + 3.332;
+print(fD);

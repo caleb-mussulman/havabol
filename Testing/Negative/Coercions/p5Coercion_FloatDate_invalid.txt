@@ -1,0 +1,6 @@
+//Testing Flaot -> Date and vice versa
+print("Testing Float -> Date (and Versa)");
+Float fX = 201605.05;
+Date dY = "2016-05-05";
+fX = dY;
+print("Invalid assignment :", fX);

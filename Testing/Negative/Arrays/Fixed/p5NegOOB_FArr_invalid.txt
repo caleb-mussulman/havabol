@@ -1,0 +1,9 @@
+//(invalid)
+//Testing out of bounds for negative subscripts
+Int array_03[] = 0, 1, 2, 3;
+print(array_03[-5]);
+
+//reference the negative subscript with a declared array[MAXELEM]
+Int array_03[10] = 0,1, 2, 3, 4, 5;
+print(array_03[-7])
+//End

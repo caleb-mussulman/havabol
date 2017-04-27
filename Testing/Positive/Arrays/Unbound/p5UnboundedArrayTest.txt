@@ -1,0 +1,149 @@
+//valid
+//Testing Fixed Array assignment to Unbound Array.
+print("--- Testing Fixed Array to Unbound Array Assignment Start ---");
+Int iArrFixed[10] = 1, 2, 3, 4, 5, 6, 7, 8, 9;
+Int iArrUnbound[unbound] = 10, 20, 30;
+
+
+String strTmp = "";
+String space = " ";
+
+//print out iArrFixed before assignment
+for i = 0 to ELEM(iArrFixed):
+    strTmp = strTmp#iArrFixed[i]#space;
+endfor;
+print("iArrFixed[10]  = ", strTmp);
+
+strTmp = "";
+
+//print out iArrUnbound before assignment
+for i = 0 to ELEM(iArrUnbound):
+    strTmp = strTmp#iArrUnbound[i]#space;
+endfor;
+print("iArrUnbound  = ", strTmp);
+
+strTmp = "";
+
+//Unbounded Array = Fixed Array
+iArrUnbound  = iArrFixed;
+
+print("\niArrUnbound = iArrFixed");
+for i = 0 to ELEM(iArrUnbound):
+    strTmp = strTmp#iArrUnbound[i]#space;
+endfor;
+print("iArrUnbound = "#strTmp,"\n");
+
+strTmp = "";
+print("--- Testing Fixed Array to Unbound Array Assignment End ---");
+print("");
+
+//valid
+//Testing Unbound Array to Fixed Array Assignment
+print("--- Testing Unbound Array to Fixed Array Assignment Start ---");
+Int iArrFixed[10] = 1, 2, 3, 4, 5;
+Int iArrUnbound[unbound] = 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130;
+
+//print out iArrFixed before assignment
+for i = 0 to ELEM(iArrFixed):
+    strTmp = strTmp#iArrFixed[i]#space;
+endfor;
+print("iArrFixed[10]  = ", strTmp);
+
+strTmp = "";
+
+//print out iArrUnbound before assignment.
+for i = 0 to ELEM(iArrUnbound):
+    strTmp = strTmp#iArrUnbound[i]#space;
+endfor;
+print("iArrUnbound  = ", strTmp);
+
+strTmp = "";
+
+//Unbounded Array = Fixed Array
+iArrFixed = iArrUnbound;
+
+print("\niArrFixed = iUnbound");
+for i = 0 to ELEM(iArrFixed):
+    strTmp = strTmp#iArrFixed[i]#space;
+endfor;
+print("iArrFixed = "#strTmp,"\n");
+print("--- Testing Unbound Array to Fixed Array Assignment End ---");
+print("");
+
+//valid
+//Testing Scalar assignments to unbounded arrays.
+print("--- Testing Scalar Assignment to Unbound Array Start ---");
+Int iArrUnbound[unbound] = 10, 20, 30, 40, 50, 60, 70;
+
+String strTmp = "";
+String space = " ";
+
+//print out iArrUnbound before assignment
+for i = 0 to ELEM(iArrUnbound):
+    strTmp = strTmp#iArrUnbound[i]#space;
+endfor;
+print("iArrUnbound  = ", strTmp);
+
+strTmp = "";
+
+iArrUnbound = 3332;
+
+//print out iArrUnbound after assignment
+for i = 0 to ELEM(iArrUnbound):
+    strTmp = strTmp#iArrUnbound[i]#space;
+endfor;
+print("iArrUnbound  = ", strTmp);
+
+strTmp = "";
+
+//Unbounded arrays know when previously scaled and will always replace its value at a uninit. index with the scalar val.
+print("\nReference to random position at iArrUnbound[1290] =", iArrUnbound[1290],"\n");
+
+print("--- Testing Scalar Assignment to Unbound Array End ---");
+print("");
+
+print("--- Testing For using 'in' Start ---");
+
+Int iArrFixed[10];
+Int iArrUnbounded[unbound];
+
+String strTmp = "";
+String space = " ";
+
+for i = 0 to MAXELEM(iArrFixed):
+    iArrFixed[i] = i^2;
+endfor;
+
+//In a For-Each fashion...
+//Testing using 'in' to go through the elements in iArrFixed
+for item in iArrFixed:
+    strTmp = strTmp#item#space;
+endfor;
+    print("iArrFixed = ", strTmp);
+    String strTmp = "";
+print("--- Testing For using 'in' End ---");
+print("");
+
+
+print("--- Testing Increment 'by' Unbounded Start ---");
+Int iArrUnbound[unbound];
+
+String strTmp = "";
+String space = " ";
+
+for i = 0 to 20:
+    iArrUnbound[i]= i^2;
+    strTmp = strTmp#iArrUnbound[i]#space;
+endfor;
+print("iArrUnbound =",strTmp);
+
+strTmp = "";
+
+print("\nIncrement through iArrUnbound by 4 indices at a time.");
+for i = 0 to ELEM(iArrUnbound) by 2:
+    strTmp = strTmp#iArrUnbound[i]#space;
+endfor;
+print("iArrUnbound Incremented =",strTmp);
+strTmp = "";
+print("--- Testing Increment 'by' Unbounded  End ---");
+print("");

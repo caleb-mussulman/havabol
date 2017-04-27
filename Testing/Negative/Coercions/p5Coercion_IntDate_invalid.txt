@@ -1,0 +1,8 @@
+//Testing Int -> Date (and vice versa)
+print("Testing Int -> Date (and versa)");
+
+Int iX = 20160505;
+Date dY = "20160505";
+//Assignment operation should be representative enough.
+iX = dY;
+print("Invalid Assignment :", iX);

@@ -1,0 +1,9 @@
+//(invalid)
+//Testing Date -> Bool
+print("Date -> Bool (and versa)");
+Bool bX = F;
+Date dY = "2016-05-05";
+//Assignment test should be representative enough.
+bX = dY;
+print("Invalid assignment :", bX);
+//The converse of this does not function.
