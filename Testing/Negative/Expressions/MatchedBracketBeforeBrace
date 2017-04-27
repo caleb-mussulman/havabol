@@ -1,0 +1,6 @@
+// Yes, this code is stupid since it tries to get
+// the element of an array using a boolean index. But,
+// it shows that we check for the order of braces/brackets
+Int arr[] = 1,2,3,4,5;
+Int x;
+x = arr[7 IN {4, 5, 6, 7]};

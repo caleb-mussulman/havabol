@@ -1793,7 +1793,7 @@ public class Parser
                                 outList.add(popped);
                             }
                             
-                            // Check that the matching function call was fond for the ','
+                            // Check that the matching function call was found for the ','
                             if(! bFoundFunction)
                             {
                                 error("Expected a corresponding function call before ','");
@@ -1884,7 +1884,7 @@ public class Parser
                         {
                             // The 'debug' function is a statement and should only be called from 'statements'
                             case "debug":
-                                error("Call to 'debug' function should not be nested inside an expression");
+                                error("Invalid call to 'debug' function from an expression");
                                 break;
                                 
                             case "IN":
@@ -1990,6 +1990,12 @@ public class Parser
             if(popped.identifierType == Token.ARRAY_ELEM)
             {
                 errorLineNr(popped.iSourceLineNr, "Missing ']'");
+            }
+            
+            // Also should not have any left braces (i.e., value list)
+            if(popped.tokenStr.equals("{"))
+            {
+                errorLineNr(popped.iSourceLineNr, "Missing '}'");
             }
             outList.add(popped);
         }

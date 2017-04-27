@@ -1,0 +1,2 @@
+Int arr[] = 1,2,3;
+print(3 IN {arr[0], ELEM(arr}));

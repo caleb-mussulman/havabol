@@ -1,0 +1,5 @@
+// A unary operator may follow a binary operator
+// , but a binary operator may not follow another
+// binary operator
+Int x;
+x = 14 * -3 * * 17;
