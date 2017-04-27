@@ -1,0 +1,6 @@
+Int arr[] = 1,2,3;
+for elem in arr
+	if F:
+		print(elem);
+	endif;
+endfor;

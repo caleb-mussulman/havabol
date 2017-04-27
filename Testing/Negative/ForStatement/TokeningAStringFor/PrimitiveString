@@ -1,0 +1,4 @@
+String arr[] = "Hello World";
+for elem from arr by " ":
+	print(elem);
+endfor;
