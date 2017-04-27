@@ -8,43 +8,43 @@ String date5 = "1957-12-04";
 String date6 = "2017-02-01";
 
 // Forward Difference
-print("The difference in days is : ", dateDiff(date1, date2);
-print("The difference in years is : ", dateAge(date1, date2);
+print("The difference in days is : ", dateDiff(date1, date2));
+print("The difference in years is : ", dateAge(date1, date2));
 
 // Backward Difference
-print("The difference in days is : ", dateDiff(date3, date4);
-print("The difference in years is : ", dateAge(date3, date4);
+print("The difference in days is : ", dateDiff(date3, date4));
+print("The difference in years is : ", dateAge(date3, date4));
 
 // Backward Difference 2
-print("The difference in days is : ", dateDiff(date5, date6);
-print("The difference in years is : ", dateAge(date5, date6);
+print("The difference in days is : ", dateDiff(date5, date6));
+print("The difference in years is : ", dateAge(date5, date6));
 
 // Forward Date Adjustments
-print(date1, "adjusted by 15 days : ", dateAdj(date1, 15);
-print(date1, "adjusted by 30 days : ", dateAdj(date1, 30);
-print(date1, "adjusted by 60 days : ", dateAdj(date1, 60);
-print(date1, "adjusted by 120 days : ", dateAdj(date1, 120);
-print(date1, "adjusted by 365 days : ", dateAdj(date1, 365);
+print(date1, "adjusted by 15 days : ", dateAdj(date1, 15));
+print(date1, "adjusted by 30 days : ", dateAdj(date1, 30));
+print(date1, "adjusted by 60 days : ", dateAdj(date1, 60));
+print(date1, "adjusted by 120 days : ", dateAdj(date1, 120));
+print(date1, "adjusted by 365 days : ", dateAdj(date1, 365));
 print("");
-print(date2, "adjusted by 15 days : ", dateAdj(date2, 15);
-print(date2, "adjusted by 30 days : ", dateAdj(date2, 30);
-print(date2, "adjusted by 60 days : ", dateAdj(date2, 60);
-print(date2, "adjusted by 120 days : ", dateAdj(date2, 120);
-print(date2, "adjusted by 365 days : ", dateAdj(date2, 365);
+print(date2, "adjusted by 15 days : ", dateAdj(date2, 15));
+print(date2, "adjusted by 30 days : ", dateAdj(date2, 30));
+print(date2, "adjusted by 60 days : ", dateAdj(date2, 60));
+print(date2, "adjusted by 120 days : ", dateAdj(date2, 120));
+print(date2, "adjusted by 365 days : ", dateAdj(date2, 365));
 print("");
-print(date5, "adjusted by 15 days : ", dateAdj(date5, 15);
-print(date5, "adjusted by 30 days : ", dateAdj(date5, 30);
-print(date5, "adjusted by 60 days : ", dateAdj(date5, 60);
-print(date5, "adjusted by 120 days : ", dateAdj(date5, 120);
-print(date5, "adjusted by 365 days : ", dateAdj(date5, 365);
+print(date5, "adjusted by 15 days : ", dateAdj(date5, 15));
+print(date5, "adjusted by 30 days : ", dateAdj(date5, 30));
+print(date5, "adjusted by 60 days : ", dateAdj(date5, 60));
+print(date5, "adjusted by 120 days : ", dateAdj(date5, 120));
+print(date5, "adjusted by 365 days : ", dateAdj(date5, 365));
 print("");
 
 // Backward Date Adjustments
-print(date5, "adjusted by -15 days : ", dateAdj(date5, -15);
-print(date5, "adjusted by -30 days : ", dateAdj(date5, -30);
-print(date5, "adjusted by -60 days : ", dateAdj(date5, -60);
-print(date5, "adjusted by -120 days : ", dateAdj(date5, -120);
-print(date5, "adjusted by -365 days : ", dateAdj(date5, -365);
+print(date5, "adjusted by -15 days : ", dateAdj(date5, -15));
+print(date5, "adjusted by -30 days : ", dateAdj(date5, -30));
+print(date5, "adjusted by -60 days : ", dateAdj(date5, -60));
+print(date5, "adjusted by -120 days : ", dateAdj(date5, -120));
+print(date5, "adjusted by -365 days : ", dateAdj(date5, -365));
 print("");
 
 // Variable Date Adjustments
@@ -53,11 +53,11 @@ Int b = 30;
 Int c = 60;
 Int d = 120;
 Int e = 365;
-print(date5, "adjusted by 15 days : ", dateAdj(date5, a);
-print(date5, "adjusted by 30 days : ", dateAdj(date5, b);
-print(date5, "adjusted by 60 days : ", dateAdj(date5, c);
-print(date5, "adjusted by 120 days : ", dateAdj(date5, d);
-print(date5, "adjusted by 365 days : ", dateAdj(date5, e);
+print(date5, "adjusted by 15 days : ", dateAdj(date5, a));
+print(date5, "adjusted by 30 days : ", dateAdj(date5, b));
+print(date5, "adjusted by 60 days : ", dateAdj(date5, c));
+print(date5, "adjusted by 120 days : ", dateAdj(date5, d));
+print(date5, "adjusted by 365 days : ", dateAdj(date5, e));
 print("");
 
 String a = "15";
@@ -65,11 +65,11 @@ String b = "30";
 String c = "60";
 String d = "120";
 String e = "365";
-print(date5, "adjusted by 15 days : ", dateAdj(date5, a);
-print(date5, "adjusted by 30 days : ", dateAdj(date5, b);
-print(date5, "adjusted by 60 days : ", dateAdj(date5, c);
-print(date5, "adjusted by 120 days : ", dateAdj(date5, d);
-print(date5, "adjusted by 365 days : ", dateAdj(date5, e);
+print(date5, "adjusted by 15 days : ", dateAdj(date5, a));
+print(date5, "adjusted by 30 days : ", dateAdj(date5, b));
+print(date5, "adjusted by 60 days : ", dateAdj(date5, c));
+print(date5, "adjusted by 120 days : ", dateAdj(date5, d));
+print(date5, "adjusted by 365 days : ", dateAdj(date5, e));
 print("");
 
 Float a = "15.5";
@@ -77,16 +77,16 @@ Float b = "30.3";
 Float c = "60.6";
 Float d = "120.12";
 Float e = "365.365";
-print(date5, "adjusted by 15 days : ", dateAdj(date5, a);
-print(date5, "adjusted by 30 days : ", dateAdj(date5, b);
-print(date5, "adjusted by 60 days : ", dateAdj(date5, c);
-print(date5, "adjusted by 120 days : ", dateAdj(date5, d);
-print(date5, "adjusted by 365 days : ", dateAdj(date5, e);
+print(date5, "adjusted by 15 days : ", dateAdj(date5, a));
+print(date5, "adjusted by 30 days : ", dateAdj(date5, b));
+print(date5, "adjusted by 60 days : ", dateAdj(date5, c));
+print(date5, "adjusted by 120 days : ", dateAdj(date5, d));
+print(date5, "adjusted by 365 days : ", dateAdj(date5, e));
 print("");
 
 Date aprilFools = "2017-04-01";
 Date earlier = "2015-04-01";
-print ("date1 =", aprilFools, "date2 =", earlier, "diff =", dateDiff(aprilFools, earlier);
+print ("date1 =", aprilFools, "date2 =", earlier, "diff =", dateDiff(aprilFools, earlier));
 print ("date =", aprilFools, "adjusted by 1 =", dateAdj(aprilFools, 1));
 print ("date =", aprilFools, "adjusted by -40 =", dateAdj(aprilFools, -40));
 print ("date =", aprilFools, "adjusted by -365 =", dateAdj(aprilFools, -365));
@@ -104,3 +104,20 @@ print ("date1 =", recent, "date2 =", fruit, "age =", dateAge(recent, fruit));
 String oldFruit = "1953-12-12";
 print ("date1 =", recent, "date2 =", oldFruit, "age =", dateAge(recent, oldFruit));
 print("");
+
+print("#################### Caleb Dates #####################################################");
+Date d1 = "0001-01-01";
+Date newDate1;
+Date newDate2;
+//print("hello" 9);
+newDate1 = dateAdj(d1, -1);
+newDate2 = dateAdj(d1,  100);
+print("date1 =", d1);
+print("dateAdj(date1, -100) =", newDate1, " // Incorrect");
+print("dateAdj(date1,  100) =", newDate2, " // Correct", "\n");
+Date d2 = "9999-12-31";
+newDate1 = dateAdj(d2, -100);
+newDate2 = dateAdj(d2, 100);
+print("date2 =", d2);
+print("dateAdj(date2, -100) =", newDate1, " // Correct");
+print("dateAdj(date2,  100) =", newDate2, "// Incorrect");
