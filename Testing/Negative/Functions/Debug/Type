@@ -1,0 +1,4 @@
+debug Assign on;
+debug Expr on;
+debug Token on;
+debug Declare on;
