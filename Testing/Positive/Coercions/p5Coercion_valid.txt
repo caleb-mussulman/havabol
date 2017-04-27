@@ -1,0 +1,259 @@
+//****************************************************
+//
+//      Variable Key for Output of this file
+//
+//      Integer - Variables Begin with 'i'
+//      Float   - Variables Begin with 'f'
+//      String  - Variables Begin with 's'
+//      Bool    - Variables Begin with 'b'
+//      Date    - Variables Begin with 'd'
+//
+//
+//****************************************************
+
+Int iA;
+Int iB;
+Int iW;
+Int iX;
+
+Float fC;
+Float fD;
+
+String sE;
+String sF;
+
+Bool bG;
+Bool bH;
+
+Date dI;
+Date dJ;
+
+print("Testing Coercions...\n\n");
+//Testing Int -> Float
+print("Int -> Float");
+iA = 2^7;
+print("iA =", iA);
+fC = 3.332;
+print("fC =", fC);
+//Int -> Float
+fC = fC + iA;
+print("fC + iA =", fC);
+print("");
+
+//Testing Float -> Int
+print("Float -> Int");
+iB = 2^4;
+print("iB =", iB);
+fD = 3.3332;
+print("fD =", fD);
+iB = iB + fD;
+print("iB + fD =", iB);
+print("");
+
+
+//Testing Int -> String
+print("Int -> String (Concatenation)");
+sE  = "Larry";
+print("sE =", sE);
+iW = 2^5;
+print("iW =", iW);
+sE = sE # iW;
+print("sE # iW =", sE);
+print("");
+
+print("Int -> String (Assignment)");
+sE = "256";
+print("sE =", sE);
+iW = 2^6;
+print("iW =", iW);
+sE = iW;
+print("sE = iW :", sE);
+print("");
+
+print("Int -> String (Comparison)");
+sE = "32";
+print("sE =", sE);
+iW = 2^5-1;
+print("iW =", iW);
+if(sE > iW):
+    print("sE > iW ? : Correct");
+else:
+    print("Incorrect");
+endif;
+print("");
+
+
+//Testing String -> Int
+print("String -> Int (Assignment)");
+sF = "58";
+print("sF =", sF);
+iX = 2^3;
+print("iX =", iX);
+iX = sF;
+print("iX = sF :", iX);
+print("");
+
+print("String -> Int (Arithmetic)");
+sF = "16";
+print("sF =", sF);
+iX = 2^2;
+print("iX =", iX);
+iX = iX + 16;
+print("iX + sF =", iX);
+print("");
+
+print("String -> Int (Comparison)");
+sF = "64";
+print("sF =", sF);
+iX = 2^6;
+print("iX =", iX);
+if(iX == sF):
+    print("iX == sF ? : Correct");
+else:
+    print("Incorrect");
+endif;
+print("");
+
+
+//Testing Float -> String
+print("Float -> String (Concatenation)");
+sF = "Clark";
+print("sF =", sF);
+fC = 55.51;
+print("fC =", fC);
+sF = sF#fC;
+print("sF # fC =", sF);
+print("");
+
+print("Float -> String (Assignment)");
+sF = "58.745";
+print("sF =", sF);
+fC = 3.332;
+print("fC =", fC);
+sF = fC;
+print("sF = fC :", sF);
+print("");
+
+print("Float -> String (Comparison)");
+sF = "21.21";
+print("sF =", sF);
+fC = 21.21;
+print("fC =", fC);
+if(sF == fC):
+    print("sF == fC ? : Correct");
+else:
+    print("Incorrect");
+endif;
+print("");
+
+
+//Testing String -> Float
+print("String -> Float (Assignment/Truncation)");
+sF = "909.707";
+print("sF =", sF);
+fC = "606.808";
+print("fC =", fC);
+fC = sF;
+print("fC = sF :", fC);
+print("");
+
+print("String -> Float (Arithmetic/Truncation)");
+sF = "99.9290";
+print("sF =", sF);
+fC = "0.12934642";
+print("fC =", fC);
+fC = fC + sF;
+print("fC + sF =", fC);
+print("");
+
+print("String -> Float (Comparison)");
+sF = "11.55";
+print("sF =", sF);
+fC = 11.54;
+print("fC =", fC);
+if(fC < sF):
+    print("fC < sF ? : Correct");
+else:
+    print("Incorrect");
+endif;
+
+print("");
+
+
+print("Bool -> String (Assignment)");
+sF = "T";
+print("sF = ", sF);
+bG = F;
+print("bG =", bG);
+sF = bG;
+print("sF =", sF);
+print("");
+
+print("Bool -> String (Comparison)");
+
+sF = "T";
+print("sF = ", sF);
+bG = F;
+print("bG =", bG);
+if(sF != bG):
+    print("sF != bG ? : Correct");
+else:
+    print("Incorrect");
+endif;
+print("");
+
+print("String -> Bool (Assignment)");
+sF = "T";
+print("sF = ", sF);
+bG = F;
+print("bG =", bG);
+bG = sF;
+print("bG =", bG);
+print("");
+
+print("String -> Bool (Comparison)");
+sF = "T";
+print("sF = ", sF);
+bG = F;
+print("bG =", bG);
+if(bG != sF):
+    print("sF != bG ? : Correct");
+else:
+    print("Incorrect");
+endif;
+print("");
+
+
+//String -> Date
+print("String -> Date (Assignment)");
+dI = "2001-01-01";
+print("dI =", dI);
+sF = "2017-04-30";  //Steven's birthday
+print("sF =", sF);
+dI = sF;
+print("dI = sF :", dI);
+
+print("");
+
+
+//Date -> String
+print("Date -> String (Assignment)");
+dI = "2017-04-30";
+print("dI =", dI);
+sF = "Llark Carry";
+print("sF =", sF);
+sF = dI;
+print("sF = dI :", sF);
+print("");
+
+print("Date -> String (Comparison)");
+dI = "2001-01-09";
+print("dI =", dI);
+sF = "2017-04-04";
+print("sF =", sF);
+if(sF != dI):
+    print("dI != sF ? : Correct");
+else:
+    print("Incorrect");
+endif;
+print("");

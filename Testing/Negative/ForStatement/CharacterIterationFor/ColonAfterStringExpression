@@ -1,0 +1,5 @@
+for char in "Hello World"
+	if F:
+		print(char);
+	endif;
+endfor;

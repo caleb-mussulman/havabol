@@ -1,0 +1,4 @@
+String arr[10] = "Bye";
+String str = "Hello World";
+str[4] = arr;
+print(str);

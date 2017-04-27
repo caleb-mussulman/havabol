@@ -1,6 +1,9 @@
 //(invalid)
 //Testing String -> Int
 print("String -> Int (Concatenation)");
+Int iX;
+String sF;
+
 sF = "16";
 print("sF =", sF);
 iX = 2^2;

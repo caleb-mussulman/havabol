@@ -1,0 +1,3 @@
+for elem from "Hello World" by " ";
+	print(elem);
+endfor;

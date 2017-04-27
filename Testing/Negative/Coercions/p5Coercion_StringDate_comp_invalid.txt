@@ -1,0 +1,16 @@
+//Testing a quit comparison on Date -> String
+print("String -> Date (Comparison)");
+Date dI;
+String sF;
+dI = "2001-01-09";
+print("dI =", dI);
+sF = "2017-04-04";
+print("sF =", sF);
+if(dI != sF):
+    print("dI != sF ? : Correct");
+else:
+    print("Incorrect");
+endif;
+print("");
+
+print("");

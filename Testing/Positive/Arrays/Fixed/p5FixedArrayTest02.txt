@@ -1,0 +1,40 @@
+//=========================================================== VALID ====================================================
+//(valid)
+//Testing String->Int coercion in arrays.
+print("--- Test String->Int coercion Start ---");
+
+Int iArr[5];
+String strArr[5];
+
+//Scalar Assignment (previously tested)
+strArr = "9";
+
+//Assignment of type STRING to array of type INT
+for i = 0 to MAXELEM(iArr):
+    iArr[i] = strArr[i];
+    print("\t", iArr[i]);
+endfor;
+
+print("--- Test String->Int coercion End ---");
+print("");
+
+//valid
+print("--- Test Int->String coercion Start ---");
+
+Int iArr[5];
+String strArr[5] = "Hello";
+
+for i = 0 to MAXELEM(iArr):
+    strArr[i] = 5;
+endfor;
+
+strArr[1] = "Hello";
+strArr[4] = "Hello";
+
+for i = 0 to MAXELEM(iArr):
+    print("\t", strArr[i]);
+endfor;
+
+print("--- Test Int->String coercion End---\n");
+print("");
+

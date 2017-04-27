@@ -1,0 +1,14 @@
+//(invalid)
+//Testing Float -> Bool
+print("Float -> Bool (and versa)");
+Float fX;
+Bool bY;
+
+fX = 5.5;
+bY = F;
+print("fX =", fX, "\nbY =", bY);
+if(5.5 == F):
+    print("Invalid");
+else:
+    print("Invalid");
+endif;
