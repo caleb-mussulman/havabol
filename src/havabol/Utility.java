@@ -729,6 +729,10 @@ public class Utility
         if (date.matches("\\d{4}-\\d{2}-\\d{2}"))
         {
             int year = Integer.parseInt(date.substring(0, 4));
+            if (year < 0001)
+            {
+                return false;
+            }
             int month = Integer.parseInt(date.substring(5,7));
             if (month > 12 || month == 0)
             {
@@ -800,7 +804,7 @@ public class Utility
      * or backward in time based on the number input into the method.
      * @param parser - Userd for error messages.
      * @param resParam1   - This is a date format.
-     * @param resParam2   - This is the number of days adjacent to the date parameter. This is an integer that can be
+     * @param resParam2   - This is the number of days to adjust the date by. This is an integer that can be
      *                 positive or negative which compares the date to the future or past respectively.
      * @return       - A result array that is type DATE and contains a valid date string as its value.
      * @throws ParserException
@@ -847,11 +851,24 @@ public class Utility
         {
             int daysAdjustment = Integer.parseInt(days.value);
             cDate.add(Calendar.DAY_OF_MONTH, daysAdjustment);
+            //System.err.println(cDate.get(Calendar.ERA) + " " + sdf.format(cDate.getTime()));
         }
         catch (Exception e)
         {
             parser.errorWithCurrent("dateAdj parameter 3 is of type %s but failed to parse as a valid integer.", Token.getType(parser, Token.INTEGER));
         }
+
+        // Validate after the conversion as well.
+        if (!isValidDate(sdf.format(cDate.getTime())))
+        {
+            parser.errorWithCurrent("%s is not a valid date.", sdf.format(cDate.getTime()));
+        }
+
+        if (cDate.get(Calendar.ERA) < 1)
+        {
+            parser.errorWithCurrent("Year must be greater than 0000.");
+        }
+
 
         // Store the new calendar date in the result value object.
         dateAdj.value = sdf.format(cDate.getTime());
