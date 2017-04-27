@@ -1,0 +1,3 @@
+String str1 = "hello";
+String str2 = "world";
+print(LENGTH(str1, str2));

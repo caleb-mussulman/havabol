@@ -1,0 +1,3 @@
+String str = "hello world";
+String x;
+x = str[20];

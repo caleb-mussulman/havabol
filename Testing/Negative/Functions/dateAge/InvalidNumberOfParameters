@@ -1,0 +1,2 @@
+Date d = "2017-05-08";
+print(dateAge(d));

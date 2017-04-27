@@ -1,0 +1,3 @@
+Bool b;
+Int arr[] = 1,2,3;
+b = 3 IN {4, 5, arr};

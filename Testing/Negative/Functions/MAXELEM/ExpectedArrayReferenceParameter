@@ -1,0 +1,2 @@
+Int x = 5;
+print(MAXELEM(x));
