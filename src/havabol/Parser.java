@@ -1071,7 +1071,7 @@ public class Parser
                                   , resIndex.value, variableStr, resString.value);
                         }
                         
-                        // Get the part of the original string up until where the new strings starts (may be empty string)
+                        // Get the part of the original string up until where the InvalidDateFirstParam strings starts (may be empty string)
                         String beginning = resString.value.substring(0, numIndex.integerValue);
                         
                         // Get the part of the original string after the end of the inserted string (may be empty string)
@@ -1082,7 +1082,7 @@ public class Parser
                             end = resString.value.substring(iStartOfEnd, resString.value.length()); 
                         }
                         
-                        // Create the new string
+                        // Create the InvalidDateFirstParam string
                         resString.value = beginning + resAssign.value + end;
                     }
                     // 5) Otherwise, this is a regular assignment to a primitive
@@ -2146,7 +2146,7 @@ public class Parser
                                 resultStack.push(Utility.not(this, resOp));
                                 break;
                             default:
-                                // This error message would only occur if we added a new operator to the language
+                                // This error message would only occur if we added a InvalidDateFirstParam operator to the language
                                 // and forgot to add its appropriate case in this switch statement
                                 errorWithCurrent("Unrecognized operator, found '%s'", outToken.tokenStr);
                         }
@@ -2232,7 +2232,7 @@ public class Parser
                                 break;
                                 
                             default:
-                                // This error message would only occur if we added a new operator to the language
+                                // This error message would only occur if we added a InvalidDateFirstParam operator to the language
                                 // and forgot to add its appropriate case in this switch statement
                                 errorWithCurrent("Unrecognized operator, found '%s'", outToken.tokenStr);
                         }

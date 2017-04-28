@@ -139,7 +139,7 @@ public class Scanner
         String error;
         
         /*
-        // If the line numbers between tokens are different, print new line of input.
+        // If the line numbers between tokens are different, print InvalidDateFirstParam line of input.
         if(currentToken.iSourceLineNr != nextToken.iSourceLineNr)
         {
             iPrintLineNr = currentToken.iSourceLineNr;

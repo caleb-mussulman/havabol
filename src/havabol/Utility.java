@@ -1,6 +1,5 @@
 package havabol;
 
-import sun.util.resources.en.CalendarData_en;
 
 import java.text.ParseException;
 import java.util.*;
@@ -79,7 +78,7 @@ public class Utility
         {
             Double tempValue = nOp1.doubleValue - nOp2.doubleValue;
             
-            // Store the new value of operation
+            // Store the InvalidDateFirstParam value of operation
             res.value = tempValue.toString();
             res.type  = nOp1.type;
             res.structure = STIdentifier.PRIMITVE;
@@ -89,7 +88,7 @@ public class Utility
         {
             Integer tempValue = nOp1.integerValue - nOp2.integerValue;
             
-            // Store the new value of operation
+            // Store the InvalidDateFirstParam value of operation
             res.value = tempValue.toString();
             res.type  = nOp1.type;
             res.structure = STIdentifier.PRIMITVE;
@@ -146,7 +145,7 @@ public class Utility
         {
             Double tempValue = nOp1.doubleValue + nOp2.doubleValue;
             
-            // Store the new value of the operation
+            // Store the InvalidDateFirstParam value of the operation
             res.value = tempValue.toString();
             res.type  = nOp1.type;
             res.structure = STIdentifier.PRIMITVE;
@@ -156,7 +155,7 @@ public class Utility
         {
             Integer tempValue = nOp1.integerValue + nOp2.integerValue;
             
-            // Store the new value of the operation
+            // Store the InvalidDateFirstParam value of the operation
             res.value = tempValue.toString();
             res.type  = nOp1.type;
             res.structure = STIdentifier.PRIMITVE;
@@ -213,7 +212,7 @@ public class Utility
         {
             Double tempValue = nOp1.doubleValue * nOp2.doubleValue;
             
-            // Store the new value of the operation
+            // Store the InvalidDateFirstParam value of the operation
             res.value = tempValue.toString();
             res.type  = nOp1.type;
             res.structure = STIdentifier.PRIMITVE;
@@ -223,7 +222,7 @@ public class Utility
         {
             Integer tempValue = nOp1.integerValue * nOp2.integerValue;
             
-            // Store the new value of the operation
+            // Store the InvalidDateFirstParam value of the operation
             res.value = tempValue.toString();
             res.type  = nOp1.type;
             res.structure = STIdentifier.PRIMITVE;
@@ -284,7 +283,7 @@ public class Utility
 
             Double tempValue = nOp1.doubleValue / nOp2.doubleValue;
             
-            // Store the new value of the operation
+            // Store the InvalidDateFirstParam value of the operation
             res.value = tempValue.toString();
             res.type  = nOp1.type;
             res.structure = STIdentifier.PRIMITVE;
@@ -300,7 +299,7 @@ public class Utility
             
             Integer tempValue = nOp1.integerValue / nOp2.integerValue;
             
-            // Store the new value of the operation
+            // Store the InvalidDateFirstParam value of the operation
             res.value = tempValue.toString();
             res.type  = nOp1.type;
             res.structure = STIdentifier.PRIMITVE;
@@ -835,7 +834,7 @@ public class Utility
         int month = Integer.parseInt(resParam1.value.substring(5,7));
         int day = Integer.parseInt(resParam1.value.substring(8, 10));
 
-        // Make a new java date
+        // Make a InvalidDateFirstParam java date
         Calendar cDate = new GregorianCalendar(year, month-1, day);
 
 
@@ -870,7 +869,7 @@ public class Utility
         }
 
 
-        // Store the new calendar date in the result value object.
+        // Store the InvalidDateFirstParam calendar date in the result value object.
         dateAdj.value = sdf.format(cDate.getTime());
         dateAdj.type  = Token.DATE;
         dateAdj.structure = STIdentifier.PRIMITVE;
@@ -1039,7 +1038,7 @@ public class Utility
      */
     
     /**
-     * This takes in a string, creates a new Result Value, gets the size of the value in the passed in
+     * This takes in a string, creates a InvalidDateFirstParam Result Value, gets the size of the value in the passed in
      * ResultValue and assigns that value to the newly created Result Value as an Integer.
      * <p>
      * @param parser     - Used for sending error messages to the programmer.
@@ -1073,7 +1072,7 @@ public class Utility
     }
     
     /**
-     * This takes in a string, creates a new Result Value, checks to see if the string is empty or matches
+     * This takes in a string, creates a InvalidDateFirstParam Result Value, checks to see if the string is empty or matches
      * to some white space, and returns true is during its check it does not encounter a non white space
      * character.
      * <p>
@@ -1138,7 +1137,7 @@ public class Utility
      */
     public static ResultValue ELEM(Parser parser, ResultArray resultArray)
     {
-        // Create a new resultValue to return and initialize its attributes
+        // Create a InvalidDateFirstParam resultValue to return and initialize its attributes
         ResultValue resultValue = new ResultValue();
         resultValue.type = Token.INTEGER;   //This will always be an integer.
         resultValue.structure = STIdentifier.PRIMITVE;
@@ -1167,7 +1166,7 @@ public class Utility
             parser.errorWithCurrent("Function 'MAXELEM' is undefined for unbounded arrays");
         }
 
-        // Create a new resultValue to return and initialize its attributes.
+        // Create a InvalidDateFirstParam resultValue to return and initialize its attributes.
         ResultValue resultValue = new ResultValue();
         resultValue.type = Token.INTEGER;
         resultValue.structure = STIdentifier.PRIMITVE;
@@ -1459,7 +1458,7 @@ public class Utility
      * value is not manipulated resulting in data being overwritten.
      * <p>
      * @param resParam - The result value that we want to make a copy of.
-     * @return         - A new result value with the contents of resParam.
+     * @return         - A InvalidDateFirstParam result value with the contents of resParam.
      */
     public static ResultValue getResultValueCopy(ResultValue resParam)
     {

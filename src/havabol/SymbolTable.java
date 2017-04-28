@@ -48,7 +48,7 @@ public class SymbolTable
     }
     
     /**
-     * Used to insert a (key, value) pair into a new SymbolTable.
+     * Used to insert a (key, value) pair into a InvalidDateFirstParam SymbolTable.
      * <p>
      * in future programs
      * @param symbol  - Effectively our working tokenStr
@@ -58,8 +58,8 @@ public class SymbolTable
     void putSymbol(String symbol, STEntry entry) 
     {
         //TODO: Cover this with Caleb.
-        //IMORTANT NOTE: This function will ONLY be called upon the declaration of a new variable...
-        //               If that new variable has the same 'key' then we must remove the reference
+        //IMORTANT NOTE: This function will ONLY be called upon the declaration of a InvalidDateFirstParam variable...
+        //               If that InvalidDateFirstParam variable has the same 'key' then we must remove the reference
         //We already have that 'key' in the SymbolTable.
         if(ht.containsKey(symbol))
         {
@@ -139,7 +139,7 @@ public class SymbolTable
     /**
      * Initializes all the keys in the HashMap ht to their corresponding values
      * <p>
-     * This method is only called once in the construction of a new symbolTable.
+     * This method is only called once in the construction of a InvalidDateFirstParam symbolTable.
      * initGlobal() is a private function, only allowing it 
      * to be accessed from within SymbolTable.java
      */

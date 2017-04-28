@@ -17,7 +17,7 @@ public class StorageManager
      */
     StorageManager()
     {
-        //Create a new HashMap -- Empty
+        //Create a InvalidDateFirstParam HashMap -- Empty
         sm = new HashMap<String,ResultValue>();
     }
     
@@ -336,7 +336,7 @@ public class StorageManager
                 resultArray.valueList.set(i, Utility.getResultValueCopy(scalar));
             }
             
-            // Create new indexes in the array list to store a copy of the scalar,
+            // Create InvalidDateFirstParam indexes in the array list to store a copy of the scalar,
             // up to the size of the fixed size array
             for(j = i; j < resultArray.maxElem; j++)
             {
