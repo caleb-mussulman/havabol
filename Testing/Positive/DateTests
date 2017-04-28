@@ -109,9 +109,25 @@ print("#################### Date Boundaries ####################################
 Date newDate1 = "9999-12-30";
 Date newDate2 = "0001-01-01";
 Date xmas = "2017-12-25";
-Date something = "2017-04-15";
+Date something = "2016-04-15";
 print("dateAdj(newDate1, 1) = ", dateAdj(newDate1, 1));
 print("dateAdf(newDate2, 0) = ", dateAdj(newDate2, 0));
 print("dateDiff(xmas, something) = ", dateDiff(xmas, something));
 print("dateDiff inside dateAdj = ", dateAdj(xmas, dateDiff(xmas, something)));
 print("dateDiff inside dateAdj inside dateDiff = ", dateDiff(dateAdj(xmas, dateDiff(xmas, something)), dateAdj(something, dateDiff(something, xmas))));
+String year;
+year = dateDiff(dateAdj(xmas, dateDiff(xmas, something)), dateAdj(something, dateDiff(something, xmas)));
+print("year : ", year);
+String month;
+month = dateDiff(dateAdj(xmas, -612), dateAdj(something, -5));
+print("month : ", month);
+String day;
+day = dateDiff(dateAdj(xmas, -612), dateAdj(something, -15));
+print("day : ", day);
+
+String dateAbomination;
+dateAbomination = year # "-" # month # "-" # day;
+print("Date Abmonination : ", dateAbomination);
+Date weird;
+weird = dateAbomination;
+print("Date weird : ", weird);
