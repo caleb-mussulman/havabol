@@ -37,6 +37,7 @@ print("");
 String szArr[] = "This", "is", "a", "test", "", "";
 String szFixedArr[10] = "Fixed", "arrays", "are", "super", "legit", "";
 Int iFixedArr[5] = 1, 2, 3, 4;
+Float dUnboundedArr[unbound] = 3.14, 9.89, 10.24, 78.34;
 
 print("Number of elements in szArr[] : ", ELEM(szArr));
 print("Size of in szArr[] : ", MAXELEM(szArr));
@@ -50,9 +51,7 @@ print("Number of elements in iFixedArr[] : ", ELEM(iFixedArr));
 print("Size of in iFixedArr[] : ", MAXELEM(iFixedArr));
 print("");
 
-Int x = 54321;
-print("length of x : ", LENGTH(x));
-print("contains spaces? ", SPACES(x));
+print("Number of elements in dUnboundedArr[] : ", ELEM(dUnboundedArr));
 print("");
 
 // CLARK'S FUNCTION TESTS
@@ -118,14 +117,16 @@ Float myFloat;
 myFloat = 10.23;
 Float myFloat2;
 myFloat2 = 11.11;
+Bool boolArr[unbound] = T, F, T;
+Bool myBool = T;
 
 print("STRINGS");
-//print("var inArr in ? : ", inArr IN {"this", "is", "string."});
-//print("var inArr not in ? : ", inArr NOTIN {"this", "is", "string."});
-//print("string fruit in ? : ", "fruit" IN {"Vegtable", "Oat", "Fruit", "fruit"});
-//print("string fruit not in ? : ", "fruit" NOTIN {"Vegtable", "Oat", "Fruit", "fruit"});
-//print("string word in testingSent : ", word IN testingSent);
-//print("string word not in testingSent : ", word NOTIN testingSent);
+print("var inArr in ? : ", inArr IN {"this", "is", "string."});
+print("var inArr not in ? : ", inArr NOTIN {"this", "is", "string."});
+print("string fruit in ? : ", "fruit" IN {"Vegtable", "Oat", "Fruit", "fruit"});
+print("string fruit not in ? : ", "fruit" NOTIN {"Vegtable", "Oat", "Fruit", "fruit"});
+print("string word in testingSent : ", word IN testingSent);
+print("string word not in testingSent : ", word NOTIN testingSent);
 print("");
 print("INTEGERS");
 print("var f in ? : ", f IN {10, 10, 10, 10, 10, 31, 24});
@@ -162,3 +163,8 @@ print("var myFloat in floats : ", myFloat IN floats);
 print("var myFloat not in floats : ", myFloat NOTIN floats);
 print("var myFloat in integers : ", myFloat NOTIN integers);
 print("var myFloat not in integers : ", myFloat NOTIN integers);
+print("BOOLS");
+print("var myBool in ? : ", myBool IN {F, F});
+print("var myBool in boolArr : ", myBool IN boolArr);
+print("var myBool in ? : ", myBool NOTIN {F, F});
+print("var myBool in boolArr : ", myBool NOTIN boolArr);

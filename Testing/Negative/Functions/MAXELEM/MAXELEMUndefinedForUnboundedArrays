@@ -1,0 +1,3 @@
+Float dUnboundedArr[unbound] = 3.14, 9.89, 10.24, 78.34;
+
+print("Size of in dUnboundedArr[] : ", MAXELEM(dUnboundedArr));
