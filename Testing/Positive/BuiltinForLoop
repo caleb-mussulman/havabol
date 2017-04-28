@@ -81,3 +81,39 @@ for char in str:
 	print("\tstr in loop:", str);
 endfor;
 print("\tstr after loop:", str);
+
+print("\n\n------------------------------------------");
+print("Testing array element iteration 'for' loop");
+print("------------------------------------------");
+
+print("Standard element iteration over a fixed array");
+Int arr[] = 1,2,3,4,5;
+for elem in arr:
+	print("\telem:", elem);
+endfor;
+
+print("Standard element iteration over an unbounded array");
+Int arr[unbound] = 1,2,3;
+arr[45] = 42;
+arr[900] = 33;
+for elem in arr:
+	print("\telem:", elem);
+endfor;
+
+print("\nChanging the number of elements in a fixed array does not affect the number of iterations");
+Int arr[10] = 1,2,3,4,5;
+print("\tELEM(arr) before loop:", ELEM(arr));
+for elem in arr:
+	arr[5] = 53;
+	print("\telem:", elem);
+endfor;
+print("\tELEM(arr) after loop:", ELEM(arr));
+
+print("\nChanging the number of elements in an unbounded array does not affect the number of iterations");
+Int arr[unbound] = 1,2,3,4,5;
+print("\tELEM(arr) before loop:", ELEM(arr));
+for elem in arr:
+	arr[499] = 53;
+	print("\telem:", elem);
+endfor;
+print("\tELEM(arr) after loop:", ELEM(arr));

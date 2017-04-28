@@ -700,7 +700,8 @@ public class Parser
                         }
                     }
                     
-                    for(int i = 0; i < iForIterateNum; i++)
+                    int iCurrentElementAmount = 0;
+                    for(int i = 0; i < resArray.valueList.size() && iCurrentElementAmount < iForIterateNum; i++)
                     {
                         // Get the current element of the array
                         ResultValue resArrayElem = resArray.valueList.get(i);
@@ -708,6 +709,7 @@ public class Parser
                         // Only iterate if there was actually an element at that index
                         if(resArrayElem != null)
                         {
+                            iCurrentElementAmount++;
                             // Declare the previously given variable
                             STIdentifier STItem= new STIdentifier(variableStr, Token.OPERAND, Token.STRING, STIdentifier.NOT_A_PARAMETER
                                     , STIdentifier.PRIMITVE, STIdentifier.LOCAL);
