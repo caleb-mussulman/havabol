@@ -1,0 +1,5 @@
+String iDate[10];
+iDate[0] = "2016-02-04";
+String badYear = "-991-10-31";
+
+print(dateDiff(badYear, iDate[0]));

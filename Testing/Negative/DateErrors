@@ -14,11 +14,4 @@ Date d1 = "0001-01-01";
 Date newDate1;
 newDate1 = dateAdj(d1, -1);
 Date d2 = "9999-12-31";
-
-print(dateDiff(iDate, iDate));
-print(dateDiff(iDate[2], iDate[0]));
-print(dateDiff(badYear, iDate[0]);
-print(dateAge(overMonth, iDate[1]);
-print(dateDiff(leapYearDate, overMonth));
-print("dateAdj(date1, -100) =", newDate1); // Subtracts into BC era.
-newDate2 = dateAdj(d2, 100);               // year 10,000
+newDate2 = dateAdj(d2, 100); // year 10,000

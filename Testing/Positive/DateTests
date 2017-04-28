@@ -131,3 +131,7 @@ print("Date Abmonination : ", dateAbomination);
 Date weird;
 weird = dateAbomination;
 print("Date weird : ", weird);
+
+print("");
+print("************* Really Large Number ******************************************");
+print("dateDiff(newDate1, newDate2) = ", dateDiff(newDate1, newDate2));

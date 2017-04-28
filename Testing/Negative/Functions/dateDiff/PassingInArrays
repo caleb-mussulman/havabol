@@ -1,0 +1,3 @@
+String iDate[10];
+
+print(dateDiff(iDate, iDate));

@@ -1,0 +1,7 @@
+Date d1 = "0001-01-01";
+Date newDate1;
+newDate1 = dateAdj(d1, -1);
+Date d2 = "9999-12-31";
+
+
+print("dateAdj(date1, -100) =", newDate1);
