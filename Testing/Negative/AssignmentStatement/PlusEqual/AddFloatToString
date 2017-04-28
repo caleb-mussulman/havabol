@@ -1,0 +1,3 @@
+String y = "floaty";
+print(y, "\t--Add 3.14, oops can't");
+y += 3.14;
