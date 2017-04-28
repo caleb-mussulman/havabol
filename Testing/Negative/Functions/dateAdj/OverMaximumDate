@@ -1,0 +1,4 @@
+Date d2 = "9999-12-31";
+Date newDate2;
+
+newDate2 = dateAdj(d2, 100); // year 10,000
