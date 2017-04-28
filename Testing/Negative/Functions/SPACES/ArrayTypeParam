@@ -1,0 +1,2 @@
+String szArr[] = "This", "is", "a", "test", "", "";
+print("contains spaces? ", SPACES(szArr));

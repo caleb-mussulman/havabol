@@ -1,0 +1,4 @@
+Int f;
+f = 10;
+String testingSent[] = "testing", "this", "sentence. Oh my!";
+print("var f in testingSent : ", f NOTIN testingSent);

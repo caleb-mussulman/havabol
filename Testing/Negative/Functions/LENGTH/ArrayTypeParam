@@ -1,0 +1,2 @@
+String szArr[] = "This", "is", "a", "test", "", "";
+print("length of x : ", LENGTH(szArr));

@@ -1,0 +1,4 @@
+Int f;
+f = 10;
+String floats[3]     = "11.12", "10.23", "9.99";
+print("var f not in floats : ", f NOTIN floats);
