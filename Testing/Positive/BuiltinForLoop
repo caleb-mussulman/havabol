@@ -1,6 +1,6 @@
-print("---------------------");
+print("---------------------------");
 print("Testing counting 'for' loop");
-print("---------------------");
+print("---------------------------");
 
 print("Standard counting for loop");
 for i = 0 to 10:
@@ -55,3 +55,29 @@ for i = 0 to 10 by incr:
 endfor;
 print("\tincr after loop:", incr);
 print("\ti after loop:", i);
+
+print("\n\n--------------------------------------");
+print("Testing character iteration 'for' loop");
+print("--------------------------------------");
+
+print("Standard character iteration over a string");
+for char in "Hello":
+	print("\tchar:", char);
+endfor;
+
+print("\nChanging the character control variable does not affect the number of loops");
+String str = "Hello";
+for char in str:
+	print("\tchar:", char);
+	char = str[4];
+endfor;
+
+print("\nChanging the string to iterate over does not affect the number of loops");
+String str = "Hello";
+print("\tstr before loop:", str);
+for char in str:
+	print("\tchar:", char);
+	str = "World";
+	print("\tstr in loop:", str);
+endfor;
+print("\tstr after loop:", str);
