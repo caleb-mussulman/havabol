@@ -1,0 +1,283 @@
+// Testing for += and -=
+print("---------------------");
+print("Testing for +=");
+print("---------------------");
+
+// Initializations before tests
+Int iX = 12345;
+Float iY = 12.34;
+String strZ = "9999";
+Int iPos = 100;
+Int iNeg = -50;
+Int iArr[] = 123, 5353, 995;
+Float fPos = 353.65;
+Float fNeg = -774.23423;
+Float fArr[] = 53.23, 11.11, 123.53;
+String strInt = "5000";
+String strFloat = "99.99";
+String strArrNumerics[] = "734", "22.645", "0.0";
+
+print("\n--Target is Int identifier--");
+print("iX += iPos");
+print("Before:", iX);
+iX += iPos;
+print("After:", iX);
+
+print("\niX += iNeg");
+print("Before:", iX);
+iX += iNeg;
+print("After:", iX);
+
+print("\niX += fPos");
+print("Before:", iX);
+iX += fPos;
+print("After:", iX);
+
+print("\niX += fNeg");
+print("Before:", iX);
+iX += fNeg;
+print("After:", iX);
+
+print("\niX += strInt");
+print("Before:", iX);
+iX += strInt;
+print("After:", iX);
+
+print("\niX += strArrNumerics[0]");
+print("Before:", iX);
+iX += strArrNumerics[0];
+print("After:", iX);
+
+print("\niX += iArr[2]");
+print("Before:", iX);
+iX += iArr[2];
+print("After:", iX);
+
+print("\niX += fArr[1]");
+print("Before:", iX);
+iX += fArr[1];
+print("After:", iX);
+
+print("\n--Target is Float identifier--");
+print("iY += iPos");
+print("Before:", iY);
+iY += iPos;
+print("After:", iY);
+
+print("\niY += iNeg");
+print("Before:", iY);
+iY += iNeg;
+print("After:", iY);
+
+print("\niY += fPos");
+print("Before:", iY);
+iY += fPos;
+print("After:", iY);
+
+print("\niY += fNeg");
+print("Before:", iY);
+iY += fNeg;
+print("After:", iY);
+
+print("\niY += strInt");
+print("Before:", iY);
+iY += strInt;
+print("After:", iY);
+
+print("\niY += strArrNumerics[0]");
+print("Before:", iY);
+iY += strArrNumerics[0];
+print("After:", iY);
+
+print("\niY += iArr[2]");
+print("Before:", iY);
+iY += iArr[2];
+print("After:", iY);
+
+print("\niY += fArr[1]");
+print("Before:", iY);
+iY += fArr[1];
+print("After:", iY);
+
+print("\n--Target is array element reference--");
+print("fArr[0] += iPos");
+print("Before:", fArr[0]);
+fArr[0] += iPos;
+print("After:", fArr[0]);
+
+print("\nfArr[0] += iNeg");
+print("Before:", fArr[0]);
+fArr[0] += iNeg;
+print("After:", fArr[0]);
+
+print("\nfArr[0] += fPos");
+print("Before:", fArr[0]);
+fArr[0] += fPos;
+print("After:", fArr[0]);
+
+print("\nfArr[0] += fNeg");
+print("Before:", fArr[0]);
+fArr[0] += fNeg;
+print("After:", fArr[0]);
+
+print("\nfArr[0] += strInt");
+print("Before:", fArr[0]);
+fArr[0] += strInt;
+print("After:", fArr[0]);
+
+print("\nfArr[0] += strArrNumerics[0]");
+print("Before:", fArr[0]);
+fArr[0] += strArrNumerics[0];
+print("After:", fArr[0]);
+
+print("\nfArr[0] += iArr[2]");
+print("Before:", fArr[0]);
+fArr[0] += iArr[2];
+print("After:", fArr[0]);
+
+print("\nfArr[0] += fArr[1]");
+print("Before:", fArr[0]);
+fArr[0] += fArr[1];
+print("After:", fArr[0]);
+
+print("\n\n---------------------");
+print("Testing for -=");
+print("---------------------");
+
+// Initializations before tests
+Int iX = 12345;
+Float iY = 12.34;
+String strZ = "9999";
+Int iPos = 100;
+Int iNeg = -50;
+Int iArr[] = 123, 5353, 995;
+Float pi = 3.14;
+Float fPos = 353.65;
+Float fNeg = -774.23423;
+Float fArr[] = 53.23, 11.11, 123.53;
+String strInt = "5000";
+String strFloat = "99.99";
+String strArrNumerics[] = "734", "22.645", "0.0";
+
+print("\n--Target is Int identifier--");
+print("iX -= iPos");
+print("Before:", iX);
+iX -= iPos;
+print("After:", iX);
+
+print("\niX -= iNeg");
+print("Before:", iX);
+iX -= iNeg;
+print("After:", iX);
+
+print("\niX -= fPos");
+print("Before:", iX);
+iX -= fPos;
+print("After:", iX);
+
+print("\niX -= fNeg");
+print("Before:", iX);
+iX -= fNeg;
+print("After:", iX);
+
+print("\niX -= strInt");
+print("Before:", iX);
+iX -= strInt;
+print("After:", iX);
+
+print("\niX -= strArrNumerics[0]");
+print("Before:", iX);
+iX -= strArrNumerics[0];
+print("After:", iX);
+
+print("\niX -= iArr[2]");
+print("Before:", iX);
+iX -= iArr[2];
+print("After:", iX);
+
+print("\niX -= fArr[1]");
+print("Before:", iX);
+iX -= fArr[1];
+print("After:", iX);
+
+print("\n--Target is Float identifier--");
+print("iY -= iPos");
+print("Before:", iY);
+iY -= iPos;
+print("After:", iY);
+
+print("\niY -= iNeg");
+print("Before:", iY);
+iY -= iNeg;
+print("After:", iY);
+
+print("\niY -= fPos");
+print("Before:", iY);
+iY -= fPos;
+print("After:", iY);
+
+print("\niY -= fNeg");
+print("Before:", iY);
+iY -= fNeg;
+print("After:", iY);
+
+print("\niY -= strInt");
+print("Before:", iY);
+iY -= strInt;
+print("After:", iY);
+
+print("\niY -= strArrNumerics[0]");
+print("Before:", iY);
+iY -= strArrNumerics[0];
+print("After:", iY);
+
+print("\niY -= iArr[2]");
+print("Before:", iY);
+iY -= iArr[2];
+print("After:", iY);
+
+print("\niY -= fArr[1]");
+print("Before:", iY);
+iY -= fArr[1];
+print("After:", iY);
+
+print("\n--Target is array element reference--");
+print("\nfArr[0] -= iPos");
+print("Before:", fArr[0]);
+fArr[0] -= iPos;
+print("After:", fArr[0]);
+
+print("\nfArr[0] -= iNeg");
+print("Before:", fArr[0]);
+fArr[0] -= iNeg;
+print("After:", fArr[0]);
+
+print("\nfArr[0] -= fPos");
+print("Before:", fArr[0]);
+fArr[0] -= fPos;
+print("After:", fArr[0]);
+
+print("\nfArr[0] -= fNeg");
+print("Before:", fArr[0]);
+fArr[0] -= fNeg;
+print("After:", fArr[0]);
+
+print("\nfArr[0] -= strInt");
+print("Before:", fArr[0]);
+fArr[0] -= strInt;
+print("After:", fArr[0]);
+
+print("\nfArr[0] -= strArrNumerics[0]");
+print("Before:", fArr[0]);
+fArr[0] -= strArrNumerics[0];
+print("After:", fArr[0]);
+
+print("\nfArr[0] -= iArr[2]");
+print("Before:", fArr[0]);
+fArr[0] -= iArr[2];
+print("After:", fArr[0]);
+
+print("\nfArr[0] -= fArr[1]");
+print("Before:", fArr[0]);
+fArr[0] -= fArr[1];
+print("After:", fArr[0]);
