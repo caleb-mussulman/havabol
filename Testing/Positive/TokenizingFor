@@ -24,6 +24,14 @@ for elem from strURL by "%20":
 	print("\t", elem);
 endfor;
 
+print("\nDelimiter does not match anywhere in string");
+print("string:", sentence);
+print("delim: ", helloWorld);
+Int i = 0;
+for match from sentence by helloWorld:
+	print("\t", match);
+endfor;
+
 print("\nChanging the string during the loop will not affect iteration");
 print("original string:", helloWorld);
 print("changed to:", goodbye);
@@ -46,19 +54,30 @@ for char from helloWorld by "":
 	print("\t", char);
 endfor;
 
+print("\nAn empty delimiter for an empty string will not enter the loop");
+print("(since it contains no characters to iterate over)");
+print("Before loop");
+for elem from "" by '':
+	print("Inside loop");
+endfor;
+print("After loop");
+
 print("\nNested tokenizing loops");
 String names = "Caleb:Mussulman|Steven:Cenci|Taylor:Brauer";
-print("Team members");
+print("string:", names);
+print("delim1:", "|");
+print("delim2:", ":");
+print("--------Team members--------");
+print("\tOuter\tInner");
 Int i = 1;
 for name from names by '|':
 	print("\t", i);
 	Int j = 0;
-	debug Postfix on;
 	for word from name by ':':
 		if j == 0:
 			print("\t\tFirst name:", word);
 		else:
-			print("\t\tLast name:", word);
+			print("\t\tLast name: ", word);
 		endif;
 		j += 1;
 	endfor;
