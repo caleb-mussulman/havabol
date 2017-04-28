@@ -1513,9 +1513,21 @@ public class Parser
         }
         
         // Get the next token as long as it isn't an expression delimiter or the end of file
-        while((scan.currentToken.primClassif != Token.CONTROL) && (! exprDelimiters.contains(scan.currentToken.tokenStr))
-               && (scan.currentToken.primClassif != Token.EOF) && (! assignmentTokens.contains(scan.currentToken.tokenStr)))
+        while(true)
         {
+            // It is possible to have a current token string that is ':' or ';', but
+            // it may be within a user made string, e.g.,
+            //     for word from sentence by ':':
+            // The first colon is a user made string while the second is a delimiter
+            if(! (scan.currentToken.primClassif == Token.OPERAND && scan.currentToken.subClassif == Token.STRING))
+            {
+                // If we hit a delimiter, then we are at the end of the expression
+                if((scan.currentToken.primClassif == Token.CONTROL) || (exprDelimiters.contains(scan.currentToken.tokenStr))
+                    || (scan.currentToken.primClassif == Token.EOF) || (assignmentTokens.contains(scan.currentToken.tokenStr)))
+                {
+                    break;
+                }
+            }
             Token token = scan.currentToken;
             switch(token.primClassif)
             {
