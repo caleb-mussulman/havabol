@@ -1,0 +1,57 @@
+print("---------------------");
+print("Testing counting 'for' loop");
+print("---------------------");
+
+print("Standard counting for loop");
+for i = 0 to 10:
+	print("\ti in loop:", i);
+endfor;
+print("\ti after loop:", i);
+
+print("\nCounting for loop with specified increment value");
+for i = 0 to 10 by 2:
+	print("\ti in loop:", i);
+endfor;
+print("\ti after loop:", i);
+
+print("\nChanging the control variable affects the number of loops");
+for i = 0 to 10:
+	print("\ti in loop:", i);
+	if i == 0:
+		i = 8;
+	endif;
+endfor;
+print("\ti after loop:", i);
+
+print("\nChanging the source value expression does not affect the number of loops");
+Int sv = 0;
+print("\tsv before loop:", sv);
+for i = sv to 4:
+	sv = 4;
+	print("\tsv in loop:", sv);
+	print("\ti in loop:", i);
+endfor;
+print("\tsv after loop:", sv);
+print("\ti after loop:", i);
+
+print("\nChanging the limit value expression does not affect the number of loops");
+Int limit = 4;
+print("\tlimit before loop:", limit);
+for i = 0 to limit:
+	limit = 10;
+	print("\tlimit in loop:", limit);
+	print("\ti in loop:", i);
+endfor;
+print("\tlimit after loop:", limit);
+print("\ti after loop:", i);
+
+print("\nChanging the increment value expression does not affect the number of loops");
+Int incr = 2;
+print("\tincr before loop:", incr);
+for i = 0 to 10 by incr:
+	incr = 5;
+	print("\tincr in loop:", incr);
+	print("\ti in loop:", i);
+endfor;
+print("\tincr after loop:", incr);
+print("\ti after loop:", i);
