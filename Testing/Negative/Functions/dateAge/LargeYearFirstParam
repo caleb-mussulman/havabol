@@ -1,0 +1,7 @@
+String overYear = "10000-01-03";
+String iDate[10];
+iDate[0] = "2016-02-04";
+iDate[1] = "1957-12-04";
+iDate[2] = "1999-12-32";
+
+print(dateAge(overYear, iDate[1]));
