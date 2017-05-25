@@ -22,6 +22,12 @@ public class Parser
     public final static List<String> assignmentTokens = Collections.unmodifiableList(Arrays.asList("=", "+=", "-=", "*=", "/="));
     public final static List<String> exprDelimiters   = Collections.unmodifiableList(Arrays.asList(":", ";")); // The delimiters for an expression
     
+    // Execution Constants
+    public final static int EXEC_FALSE = 40;
+    public final static int EXEC_TRUE = 41;
+    public final static int EXEC_BREAK = 42;
+    public final static int EXEC_CONTINUE = 43;
+    
     Parser(Scanner scan, SymbolTable symbolTable)
     {
         this.scan = scan;
@@ -37,7 +43,7 @@ public class Parser
     public void parse() throws Exception
     {
         ResultValue resStmtsReturn;
-        resStmtsReturn = statements(true);
+        resStmtsReturn = statements(EXEC_TRUE);
         
         // Check that execution ended from EOF
         if(resStmtsReturn.type != Token.EOF)
@@ -111,9 +117,10 @@ public class Parser
      * @param bExec      whether or not we will execute the statements
      * @throws Exception if the given statement is an unknown type
      */
-    public ResultValue statements(boolean bExec) throws Exception
+    public ResultValue statements(int iExec) throws Exception
     {
         ResultValue resValue = new ResultValue();
+        int iExecReturn;
         
         // Keep executing statements until EOF or FLOW END
         while(true){
@@ -134,33 +141,65 @@ public class Parser
             {
                 resValue.type = Token.CONTROL;
                 resValue.terminatingStr = scan.currentToken.tokenStr;
+                
+                // If we are not executing, then we don't want to break / continue
+                if(scan.currentToken.tokenStr.equals("break") ||
+                   scan.currentToken.tokenStr.equals("continue"))
+                {
+                    // Check that the next token is ';', then skip it
+                    if(! scan.nextToken.tokenStr.equals(";"))
+                    {
+                        error("Exepected ';' after '%s'", scan.currentToken.tokenStr);
+                    }
+                    scan.getNext();
+                    
+                    // If we are not currently executing, we don't want to actually break / continue
+                    if(iExec != EXEC_TRUE)
+                    {
+                        continue;
+                    }
+                }
                 return resValue;
             }
         
             // Current token is start of if statement
             if(scan.currentToken.tokenStr.equals("if"))
             {
-                ifStmt(bExec);
+                // If a break/continue was encountered, stop execution and
+                // return what was found to outer scope
+                iExecReturn = ifStmt(iExec);
+                if(iExecReturn == EXEC_BREAK)
+                {
+                    resValue.type = Token.CONTROL;
+                    resValue.terminatingStr = "break";
+                    return resValue;
+                }
+                if(iExecReturn == EXEC_CONTINUE)
+                {
+                    resValue.type = Token.CONTROL;
+                    resValue.terminatingStr = "continue";
+                    return resValue;
+                }
             }
             // Current token is start of while statement
             else if(scan.currentToken.tokenStr.equals("while"))
             {
-                whileStmt(bExec);
+                whileStmt(iExec);
             }
             // Current token is start of for statement
             else if(scan.currentToken.tokenStr.equals("for"))
             {
-                forStmt(bExec);
+                forStmt(iExec);
             }
             // Current token is start of assignment statement
             else if((scan.currentToken.primClassif == Token.OPERAND) && (scan.currentToken.subClassif == Token.IDENTIFIER))
             {
-                assignStmt(bExec);
+                assignStmt(iExec);
             }
             // Current token is start of declaration statement
             else if((scan.currentToken.primClassif == Token.CONTROL) && (scan.currentToken.subClassif == Token.DECLARE))
             {
-                declareStmt(bExec);
+                declareStmt(iExec);
             }
             // Current token is the start of a function call
             else if(scan.currentToken.primClassif == Token.FUNCTION)
@@ -172,7 +211,7 @@ public class Parser
                 if(scan.currentToken.subClassif == Token.BUILTIN)
                 {
                     // If we are not executing, then skip the function call
-                    if(! bExec)
+                    if(iExec != EXEC_TRUE)
                     {
                         skipTo(scan.currentToken.iSourceLineNr, scan.currentToken.tokenStr, ";");
                     }
@@ -222,16 +261,18 @@ public class Parser
      * @throws Exception if the 'if' statement is not ended with an 'endif'
      *                   missing ';' after the 'endif'
      */
-    public void ifStmt(boolean bExec) throws Exception
+    public int ifStmt(int iExec) throws Exception
     {
         ResultValue resTrueStmts;  // block of code after the 'if'
         ResultValue resFalseStmts; // block of code after the 'else'
         int iIfLineNr; // line number that the if statement starts on
+        int iExecVal; // returns constant for break / continue
         
         iIfLineNr = scan.currentToken.iSourceLineNr;
+        iExecVal = EXEC_FALSE;
         
         // Do we need to evaluate the condition?
-        if(bExec)
+        if(iExec == EXEC_TRUE)
         {
             // We are executing (not ignoring)
             ResultValue resCond = expr();
@@ -253,7 +294,22 @@ public class Parser
             if(resCond.value.equals("T"))
             {
                 // Cond returned true, execute the statements after the 'if'
-                resTrueStmts = statements(true);
+                resTrueStmts = statements(EXEC_TRUE);
+                
+                // If we encountered a break/continue, go to the endif
+                // and return what we found to the outer scope
+                // NOTE: statements method will check for the ';'
+                if(resTrueStmts.terminatingStr.equals("break"))
+                {
+                    iExecVal = EXEC_BREAK;
+                    resTrueStmts = statements(EXEC_FALSE);
+                }
+                if(resTrueStmts.terminatingStr.equals("continue"))
+                {
+                    iExecVal = EXEC_CONTINUE;
+                    resTrueStmts = statements(EXEC_FALSE);
+                }
+                
                 // What ended the statements after the true part? 'else:' or 'endif;'
                 // If it is an 'else', ignore the statements after the 'else'
                 if(resTrueStmts.terminatingStr.equals("else"))
@@ -265,7 +321,7 @@ public class Parser
                     {
                         error("Expected ':' after 'else'");
                     }
-                    resFalseStmts = statements(false);
+                    resFalseStmts = statements(EXEC_FALSE);
                     
                     // 'if' control block must end with 'endif'
                     if(! resFalseStmts.terminatingStr.equals("endif"))
@@ -287,7 +343,7 @@ public class Parser
             else
             {
                 // Cond returned false, ignore the statements after the 'if'
-                resTrueStmts = statements(false);
+                resTrueStmts = statements(EXEC_FALSE);
                 // What ended the statements after the true part? 'else:' or 'endif;'
                 // If it is an 'else', execute the statements after the 'else'
                 if(resTrueStmts.terminatingStr.equals("else"))
@@ -299,7 +355,20 @@ public class Parser
                     {
                         error("Expected ':' after 'else'");
                     }
-                    resFalseStmts = statements(true);
+                    resFalseStmts = statements(EXEC_TRUE);
+                    
+                    // If we encountered a break/continue, go to the endif
+                    // and return what we found to the outer scope
+                    if(resFalseStmts.terminatingStr.equals("break"))
+                    {
+                        iExecVal = EXEC_BREAK;
+                        resFalseStmts = statements(EXEC_FALSE);
+                    }
+                    if(resFalseStmts.terminatingStr.equals("continue"))
+                    {
+                        iExecVal = EXEC_CONTINUE;
+                        resFalseStmts = statements(EXEC_FALSE);
+                    }
                     
                     // 'if' control block must end with 'endif'
                     if(! resFalseStmts.terminatingStr.equals("endif"))
@@ -327,7 +396,7 @@ public class Parser
             skipTo(iIfLineNr, "if", ":");
             
             // Ignore the true part
-            resTrueStmts = statements(false);
+            resTrueStmts = statements(EXEC_FALSE);
             // What ended the statements after the true part? 'else:' or 'endif;'
             // If it is an 'else', ignore the statements after the 'else'
             if(resTrueStmts.terminatingStr.equals("else"))
@@ -339,7 +408,7 @@ public class Parser
                 {
                     error("Expected ':' after 'else'");
                 }
-                resFalseStmts = statements(false);
+                resFalseStmts = statements(EXEC_FALSE);
                 
                 // 'if' control block must end with 'endif'
                 if(! resFalseStmts.terminatingStr.equals("endif"))
@@ -358,6 +427,7 @@ public class Parser
                 error("Expected ';' after 'endif'");
             }
         }
+        return iExecVal;
     }
     
     /**
@@ -376,16 +446,17 @@ public class Parser
      * @throws Exception if the 'while' block is not ended with an 'endwhile'
      *                   missing ';' after the 'endwhile'
      */
-    public void whileStmt(boolean bExec) throws Exception
+    public void whileStmt(int iExec) throws Exception
     {
         ResultValue resStmts;
         Token whileToken;
+        boolean bBreakLoop = false;
         
         // Save the 'while' token
         whileToken = scan.currentToken;
         
         // Do we need to evaluate the condition?
-        if(bExec)
+        if(iExec == EXEC_TRUE)
         {
             // We are executing (not ignoring)
             ResultValue resCond = expr();
@@ -407,7 +478,21 @@ public class Parser
             while(resCond.value.equals("T"))
             {
                 // Execute the statements after the 'while'
-                resStmts = statements(true);
+                resStmts = statements(EXEC_TRUE);
+                
+                // If a 'break' was encountered, go to the 'endwhile' and stop execution of the loop
+                if(resStmts.terminatingStr.equals("break"))
+                {
+                    bBreakLoop = true;
+                    resStmts = statements(EXEC_FALSE);
+                }
+                
+                // If a 'continue' was encountered, go to the 'endwhile' and begin next iteration of the loop
+                if(resStmts.terminatingStr.equals("continue"))
+                {
+                    resStmts = statements(EXEC_FALSE);
+                }
+                
                 // 'while' control block must end with 'endwhile'
                 if(! resStmts.terminatingStr.equals("endwhile"))
                 {
@@ -422,10 +507,15 @@ public class Parser
                 scan.setPosition(whileToken);
                 //Re-evaluate the expression
                 resCond = expr();
+                
+                if(bBreakLoop)
+                {
+                    break;
+                }
             }
             
             // The expression was false so go to the 'endwhile'
-            resStmts = statements(false);
+            resStmts = statements(EXEC_FALSE);
         }
         else
         {
@@ -434,7 +524,7 @@ public class Parser
             // Skip the 'while' condition
             skipTo(whileToken.iSourceLineNr, "while", ":");
             // Ignore the statements after the while
-            resStmts = statements(false);
+            resStmts = statements(EXEC_FALSE);
         }
         
         // 'while' control block must end with 'endwhile'
@@ -454,6 +544,7 @@ public class Parser
      * Assumption: current token is on a 'for'
      * <p>
      * TODO add description
+     * TODO add functionality for break / continue TODO
      * <p>
      * There are four different types of 'for' statements, each
      * indicated by the initializations after the 'for' token:
@@ -464,7 +555,7 @@ public class Parser
      * @param bExec
      * @throws ParserException
      */
-    public void forStmt(boolean bExec) throws Exception
+    public void forStmt(int iExec) throws Exception
     {
         ResultValue resStmts = new ResultValue();
         Token forToken;
@@ -473,7 +564,7 @@ public class Parser
         forToken = scan.currentToken;
 
         // Do we need to evaluate the parameters?
-        if(bExec)
+        if(iExec == EXEC_TRUE)
         {
             // We are executing (not ignoring)
 
@@ -574,7 +665,7 @@ public class Parser
                 while(numControlVar.integerValue < numLimit.integerValue)
                 {
                     // Execute the statements after the 'for' parameters
-                    resStmts = statements(true);
+                    resStmts = statements(EXEC_TRUE);
                     
                     // 'for' control block must end with 'endfor'
                     if(! resStmts.terminatingStr.equals("endfor"))
@@ -617,7 +708,7 @@ public class Parser
                 }
                 
                 // 'controlVar >= limit' so go to the 'endfor'
-                resStmts = statements(false);
+                resStmts = statements(EXEC_FALSE);
                 
             }
             // Check for the second and third types of 'for' loops
@@ -654,7 +745,7 @@ public class Parser
                         symbolTable.storeVariableValue(this, variableStr, resChar);
                         
                         // Execute the statements after the 'for' parameters
-                        resStmts = statements(true);
+                        resStmts = statements(EXEC_TRUE);
                         
                         // 'for' control block must end with 'endfor'
                         if(! resStmts.terminatingStr.equals("endfor"))
@@ -673,7 +764,7 @@ public class Parser
                         skipTo(forToken.iSourceLineNr, "for", ":");
                     }
                     // There are no more characters in the string, so go to the 'endfor'
-                    resStmts = statements(false);
+                    resStmts = statements(EXEC_FALSE);
                 }
                 // 3) If the result is not a primitive, then the 'for' loop is element iteration over an array
                 else
@@ -720,7 +811,7 @@ public class Parser
                             symbolTable.storeVariableValue(this, variableStr, resArrayElemCopy);
                             
                             // Execute the statements after the 'for' parameters
-                            resStmts = statements(true);
+                            resStmts = statements(EXEC_TRUE);
                             
                             // 'for' control block must end with 'endfor'
                             if(! resStmts.terminatingStr.equals("endfor"))
@@ -740,7 +831,7 @@ public class Parser
                         }
                     }
                     // We iterated over all the valid elements, so go to the 'endfor'
-                    resStmts = statements(false);
+                    resStmts = statements(EXEC_FALSE);
                 }
             }
             // 4) If we have a 'from', then the 'for' loop is iteration over a string by a specified delimiter
@@ -833,7 +924,7 @@ public class Parser
                     }
                     
                     // Execute the statements after the 'for' parameters
-                    resStmts = statements(true);
+                    resStmts = statements(EXEC_TRUE);
                     
                     // 'for' control block must end with 'endfor'
                     if(! resStmts.terminatingStr.equals("endfor"))
@@ -853,7 +944,7 @@ public class Parser
                 }
                 
                 // The delimiter was the end of the string so go to the 'endfor'
-                resStmts = statements(false);
+                resStmts = statements(EXEC_FALSE);
             }
             // Current token does not match any 'for' loop types
             else
@@ -869,7 +960,7 @@ public class Parser
             skipTo(forToken.iSourceLineNr, "for", ":");
             
             // Ignore the statements after the 'for' parameters
-            resStmts = statements(false);
+            resStmts = statements(EXEC_FALSE);
         }
         
         // 'for' control block must end with 'endfor'
@@ -904,7 +995,7 @@ public class Parser
      *                   the statement is invalid
      *                   
      */
-    public void assignStmt(boolean bExec) throws Exception
+    public void assignStmt(int iExec) throws Exception
     {
         boolean bArrayElemAssign; // Indicates if this is an assignment to an array/string index (i.e., there
                                   // are a pair of brackets indicating an element reference)
@@ -912,7 +1003,7 @@ public class Parser
         iAssignLineNr = scan.currentToken.iSourceLineNr;
         
         // Do we need to ignore execution of the assignment?
-        if(! bExec)
+        if(iExec != EXEC_TRUE)
         {
             // We are ignoring execution
             // Skip to the end of the assignment statement
@@ -1231,13 +1322,13 @@ public class Parser
      *                   the declaration type is not valid
      *                   missing ';' after declaration
      */
-    public void declareStmt(boolean bExec) throws Exception
+    public void declareStmt(int iExec) throws Exception
     {
         int iDeclareLineNr; // line number for beginning of declare statement
         iDeclareLineNr = scan.currentToken.iSourceLineNr;
         
         // Do we need to ignore execution of the declaration?
-        if(! bExec)
+        if(iExec != EXEC_TRUE)
         {
             // We are ignoring execution
             // Skip to the end of the declare statement

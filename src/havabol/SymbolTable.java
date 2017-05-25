@@ -161,6 +161,8 @@ public class SymbolTable
         ht.put("else", new STControl("else",Token.CONTROL,Token.END));
         ht.put("endfor", new STControl("endfor", Token.CONTROL, Token.END));
         ht.put("endwhile", new STControl("endwhile",Token.CONTROL,Token.END));
+        ht.put("break", new STControl("break", Token.CONTROL, Token.END));
+        ht.put("continue", new STControl("continue", Token.CONTROL, Token.END));
         
         ht.put("Int", new STControl("Int",Token.CONTROL,Token.DECLARE));
         ht.put("Float", new STControl("Float",Token.CONTROL,Token.DECLARE));
